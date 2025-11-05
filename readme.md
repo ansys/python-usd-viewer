@@ -6,3 +6,6 @@
 2.- With venv open, build OpenUSD binaries
 
 - Must have OpenUSD installed
+
+
+Maya style controls: Press alt to move around with the mouse.

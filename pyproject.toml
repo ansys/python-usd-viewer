@@ -1,0 +1,123 @@
+[build-system]
+build-backend = "hatchling.build"
+requires = [ "hatchling" ]
+
+[project]
+name = "ansys-tools-usdviewer"
+version = "0.1.dev0"
+description = "A USD viewer built with PySide6 and Pixar's USD library."
+readme = "README.md"
+license = "MIT"
+license-files = [ "LICENSE" ]
+maintainers = [ { name = "ANSYS, Inc.", email = "pyansys.core@ansys.com" } ]
+authors = [ { name = "ANSYS, Inc.", email = "pyansys.core@ansys.com" } ]
+requires-python = ">=3.10,<4"
+classifiers = [
+  "Development Status :: 4 - Beta",
+  "Intended Audience :: Science/Research",
+  "Operating System :: OS Independent",
+  "Programming Language :: Python :: 3 :: Only",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+  "Programming Language :: Python :: 3.14",
+  "Topic :: Scientific/Engineering :: Information Analysis",
+]
+dependencies = [
+  "numpy",
+  "pyside6"
+]
+
+
+[dependency-groups]
+tests = [
+  "pytest==8.4.2",
+]
+
+doc = [
+  "ansys-sphinx-theme[autoapi]==1.6.3",
+]
+
+[tool.hatch.build.targets.wheel]
+packages = [ "src/ansys" ]
+
+[tool.ruff]
+line-length = 120
+extend-exclude = [ "examples/**/*.py" ]
+
+fix = true
+format.indent-style = "space"
+format.quote-style = "double"
+format.line-ending = "auto"
+format.docstring-code-line-length = "dynamic"
+format.docstring-code-format = true
+lint.select = [
+  "D",   # pydocstyle, see https://beta.ruff.rs/docs/rules/#pydocstyle-d
+  "E",   # pycodestyle, see https://beta.ruff.rs/docs/rules/#pycodestyle-e-w
+  "F",   # pyflakes, see https://beta.ruff.rs/docs/rules/#pyflakes-f
+  "I",   # isort, see https://beta.ruff.rs/docs/rules/#isort-i
+  "N",   # pep8-naming, see https://beta.ruff.rs/docs/rules/#pep8-naming-n
+  "PTH", # flake8-use-pathlib, https://beta.ruff.rs/docs/rules/#flake8-use-pathlib-pth
+]
+lint.ignore = [  ]
+lint.isort.combine-as-imports = true
+lint.isort.force-sort-within-sections = true
+lint.isort.known-first-party = [ "ansys" ]
+# Settings: https://docs.astral.sh/ruff/settings/#lintpydocstyle
+lint.pydocstyle.convention = "numpy"
+
+[tool.pytest.ini_options]
+addopts = "-ra --cov=ansys.tools.common --cov-report html:.cov/html --cov-report xml:.cov/xml --cov-report term --capture=sys -vv"
+
+[tool.towncrier]
+package = "ansys.tools.common"
+directory = "doc/source/changelog"
+filename = "doc/source/changelog.rst"
+start_string = ".. towncrier release notes start\n"
+template = "doc/changelog/template"
+title_format = "`{version} <https://github.com/ansys/ansys-tools-usdviewer/releases/tag/v{version}>`_ - {project_date}"
+issue_format = "`#{issue} <https://github.com/ansys/ansys-tools-usdviewer/pull/{issue}>`_"
+
+[[tool.towncrier.type]]
+directory = "added"
+name = "Added"
+showcontent = true
+
+[[tool.towncrier.type]]
+directory = "changed"
+name = "Changed"
+showcontent = true
+
+[[tool.towncrier.type]]
+directory = "fixed"
+name = "Fixed"
+showcontent = true
+
+[[tool.towncrier.type]]
+directory = "dependencies"
+name = "Dependencies"
+showcontent = true
+
+[[tool.towncrier.type]]
+directory = "miscellaneous"
+name = "Miscellaneous"
+showcontent = true
+
+[[tool.towncrier.type]]
+directory = "documentation"
+name = "Documentation"
+showcontent = true
+
+[[tool.towncrier.type]]
+directory = "maintenance"
+name = "Maintenance"
+showcontent = true
+
+[[tool.towncrier.type]]
+directory = "test"
+name = "Test"
+showcontent = true
+
+[tool.uv]
+package = true
