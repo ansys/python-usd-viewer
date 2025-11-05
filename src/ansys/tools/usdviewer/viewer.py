@@ -1,76 +1,117 @@
-"""
-MIT License
-Copyright (c) 2019 Roy Nieterau
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
-"""
+# Copyright (C) 2025 ANSYS, Inc. and/or its affiliates.
+# SPDX-FileCopyrightText: 2019 Roy Nieterau
+
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+"""USDViewer main module."""
 
 import sys
+
 import numpy as np
-from PySide6 import QtGui, QtCore, QtWidgets
-from pxr import Usd, UsdUtils, Sdf, Gf
+from pxr import Gf, Sdf, Usd, UsdUtils
 from pxr.Usdviewq.stageView import StageView
+from PySide6 import QtCore, QtWidgets
 
 
 class Widget(QtWidgets.QWidget):
+    """USD Viewer Widget to display USD stages in Qt.
+
+    Parameters
+    ----------
+    stage : Usd.Stage, optional
+        The USD stage to display.
+    """
+
     def __init__(self, stage=None):
+        """Initialize the USD Viewer Widget."""
         super(Widget, self).__init__()
         self.model = StageView.DefaultDataModel()
-        
+
         self.view = StageView(dataModel=self.model)
-        
+
         layout = QtWidgets.QVBoxLayout(self)
         layout.addWidget(self.view)
         layout.setContentsMargins(0, 0, 0, 0)
-        
+
         if stage:
             self.setStage(stage)
-        
-    def setStage(self, stage):
+
+    def setStage(self, stage):  # noqa
+        """Set the USD stage to display."""
         self.model.stage = stage
-                              
-    def closeEvent(self, event):
+
+    def closeEvent(self, event):  # noqa
+        """Handle the close event to clean up resources."""
         # Ensure to close the renderer to avoid GlfPostPendingGLErrors
         self.view.closeRenderer()
 
-class USDViewer():
+
+class USDViewer:
+    """USD Viewer to load and display USD files in a Qt window.
+
+    Parameters
+    ----------
+    title : str, optional
+        The title of the viewer window. Default is "Viewer".
+    size : tuple[int, int], optional
+        The size of the viewer window as (width, height). Default is (750, 750).
+    """
+
     def __init__(self, title: str = "Viewer", size: tuple[int, int] = (750, 750)):
+        """Initialize the USD Viewer."""
         self._app = QtWidgets.QApplication([])
 
         self._title = title
         self._size = size
 
+    def plot(self, stage: Usd.Stage) -> None:
+        """Plot the given USD stage in the viewer window.
 
-    def plot(self, stage):
+        Parameters
+        ----------
+        stage : Usd.Stage
+            The USD stage to display.
+
+        """
         self.window = Widget(stage)
         self.window.setWindowTitle(self._title)
         self.window.resize(QtCore.QSize(*self._size))
 
-    def show(self):
+    def show(self) -> None:
+        """Show the viewer window.
+
+        Displays the USD viewer window and starts the Qt application event loop.
+        """
         self.window.show()
         self._app.exec()
 
     def load_usd(self, path: str) -> Usd.Stage:
-        """Load a USD stage from the given file path."""
+        """Load a USD stage from the given file path.
+
+        Parameters
+        ----------
+        path : str
+            The file path to the USD file.
+        """
         with Usd.StageCacheContext(UsdUtils.StageCache.Get()):
             stage = Usd.Stage.Open(path)
 
         if stage:
             print(f"Stage loaded: {stage.GetRootLayer().GetDisplayName()}")
-            
+
             # Create simplified stage for better compatibility with StageView
             simplified_stage = self._create_simplified_stage(stage)
 
@@ -86,21 +127,39 @@ class USDViewer():
         # plot the stage
         self.plot(stage)
 
-    def _copy_lights_to_stage(self, source_stage, target_stage):
-        """Copy all DistantLight prims from source to target stage."""
+    def _copy_lights_to_stage(self, source_stage: Usd.Stage, target_stage: Usd.Stage):
+        """Copy all DistantLight prims from source to target stage.
+
+        Parameters
+        ----------
+        source_stage : Usd.Stage
+            The source USD stage to copy lights from.
+        target_stage : Usd.Stage
+            The target USD stage to copy lights to.
+        """
         for prim in source_stage.Traverse():
             if prim.GetTypeName() == "DistantLight":
                 light_path = prim.GetPath()
                 new_light = target_stage.DefinePrim(light_path, "DistantLight")
-                
+
                 # Copy light attributes
                 for attr in prim.GetAttributes():
                     if attr.Get() is not None:
                         new_attr = new_light.CreateAttribute(attr.GetName(), attr.GetTypeName())
                         new_attr.Set(attr.Get())
 
-    def _find_best_time_code(self, stage, expected_mesh_count=2):
-        """Find the best time code where all expected meshes have valid geometry."""
+    def _find_best_time_code(self, stage: Usd.Stage, expected_mesh_count=2):
+        """Find the best time code where all expected meshes have valid geometry.
+
+        TODO: Properly show the animations instead of picking the first valid time code.
+
+        Parameters
+        ----------
+        stage : Usd.Stage
+            The USD stage to analyze.
+        expected_mesh_count : int, optional
+            The expected number of meshes with valid geometry. Default is 2.
+        """
         for time_code in [100.0, 200.0, 300.0, 50.0, 0.0]:
             valid_meshes = 0
             for prim in stage.Traverse():
@@ -110,23 +169,32 @@ class USDViewer():
                         points = points_attr.Get(time_code)
                         if points and len(points) > 0 and not np.allclose(np.array(points), 0):
                             valid_meshes += 1
-            
+
             if valid_meshes >= expected_mesh_count:
                 return time_code
-        
         return None
 
-    def _copy_mesh_geometry(self, source_mesh, target_mesh, time_code):
-        """Copy mesh geometry data (points, faces, counts) at the specified time code."""
+    def _copy_mesh_geometry(self, source_mesh: Usd.Prim, target_mesh: Usd.Prim, time_code: float):
+        """Copy mesh geometry data (points, faces, counts) at the specified time code.
+
+        Parameters
+        ----------
+        source_mesh : Usd.Prim
+            The source mesh prim to copy geometry from.
+        target_mesh : Usd.Prim
+            The target mesh prim to copy geometry to.
+        time_code : float
+            The time code at which to copy the geometry.
+        """
         points_attr = source_mesh.GetAttribute("points")
         faces_attr = source_mesh.GetAttribute("faceVertexIndices")
         counts_attr = source_mesh.GetAttribute("faceVertexCounts")
-        
+
         if points_attr:
             points = points_attr.Get(time_code)
             faces = faces_attr.Get(time_code) if faces_attr else None
             counts = counts_attr.Get(time_code) if counts_attr else None
-            
+
             if points and len(points) > 0 and not np.allclose(np.array(points), 0):
                 # Set mesh geometry
                 target_mesh.CreateAttribute("points", Sdf.ValueTypeNames.Point3fArray).Set(points)
@@ -135,14 +203,14 @@ class USDViewer():
                 if counts:
                     target_mesh.CreateAttribute("faceVertexCounts", Sdf.ValueTypeNames.IntArray).Set(counts)
                 return True
-        
+
         return False
 
     def _copy_transform_attributes(self, source_mesh, target_mesh, time_code):
         """Copy transform attributes from source to target mesh."""
         xform_attrs = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
         xform_order = []
-        
+
         for attr_name in xform_attrs:
             attr = source_mesh.GetAttribute(attr_name)
             if attr:
@@ -151,79 +219,90 @@ class USDViewer():
                     new_attr = target_mesh.CreateAttribute(attr_name, attr.GetTypeName())
                     new_attr.Set(value)
                     xform_order.append(attr_name)
-        
+
         if xform_order:
             target_mesh.CreateAttribute("xformOpOrder", Sdf.ValueTypeNames.TokenArray).Set(xform_order)
 
-    def _create_simplified_stage(self, original_stage):
-        """Create a simplified USD stage without WarpComputationAPI for better compatibility."""
+    def _create_simplified_stage(self, original_stage: Usd.Stage) -> Usd.Stage:
+        """Create a simplified USD stage without WarpComputationAPI for better compatibility.
+
+        Parameters
+        ----------
+        original_stage : Usd.Stage
+            The original USD stage to simplify.
+        """
         simple_stage = Usd.Stage.CreateInMemory()
-        
+
         # Set up root
         root_prim = simple_stage.DefinePrim("/root", "Xform")
         simple_stage.SetDefaultPrim(root_prim)
-        
+
         # Copy lights
         self._copy_lights_to_stage(original_stage, simple_stage)
-        
+
         # Find best time code with valid geometry
         best_time_code = self._find_best_time_code(original_stage)
         if best_time_code is None:
             return None
-        
+
         # Create simplified meshes
         mesh_count = 0
         for prim in original_stage.Traverse():
             if prim.GetTypeName() == "Mesh":
                 mesh_path = prim.GetPath()
                 new_mesh = simple_stage.DefinePrim(mesh_path, "Mesh")
-                
+
                 # Copy geometry and transforms
                 if self._copy_mesh_geometry(prim, new_mesh, best_time_code):
                     self._copy_transform_attributes(prim, new_mesh, best_time_code)
                     mesh_count += 1
-        
+
         return simple_stage if mesh_count > 0 else None
 
-    def _setup_camera(self, view):
-        """Position camera to show both rabbit meshes optimally."""
+    def _setup_camera(self, view: StageView) -> None:
+        """Position camera to show both rabbit meshes optimally.
+
+        Parameters
+        ----------
+        view : StageView
+            The StageView containing the camera to set up.
+        """
         camera = view.gfCamera
         if camera:
             # Position camera to see both rabbits (one at origin, one offset in Y)
             eye = Gf.Vec3d(0, 12, 50)
             target = Gf.Vec3d(0, 12, 0)
             up = Gf.Vec3d(0, 1, 0)
-            
+
             forward = (target - eye).GetNormalized()
             right = Gf.Cross(forward, up).GetNormalized()
             camera_up = Gf.Cross(right, forward)
-            
-            transform_matrix = Gf.Matrix4d(
-                right[0], camera_up[0], -forward[0], eye[0],
-                right[1], camera_up[1], -forward[1], eye[1],
-                right[2], camera_up[2], -forward[2], eye[2],
-                0, 0, 0, 1
-            )
-            
-            camera.transform = transform_matrix
-            
-            try:
-                camera.SetFieldOfView(60.0)
-            except:
-                pass  # Field of view adjustment is optional
 
-    def _initialize_view(self):
+            transform_matrix = Gf.Matrix4d(
+                right[0],
+                camera_up[0],
+                -forward[0],
+                eye[0],
+                right[1],
+                camera_up[1],
+                -forward[1],
+                eye[1],
+                right[2],
+                camera_up[2],
+                -forward[2],
+                eye[2],
+                0,
+                0,
+                0,
+                1,
+            )
+
+            camera.transform = transform_matrix
+
+    def _initialize_view(self) -> None:
+        """Initialize the view after a short delay to ensure proper rendering."""
         self.window.view.updateView(resetCam=True, forceComputeBBox=True)
         self._setup_camera(self.window.view)
         self.window.view.updateView()
         # Initialize view after a short delay
         QtCore.QTimer.singleShot(200, self._initialize_view)
-
-
-
-
-
-
-
-
-

@@ -26,9 +26,8 @@ classifiers = [
 ]
 dependencies = [
   "numpy",
-  "pyside6"
+  "pyside6",
 ]
-
 
 [dependency-groups]
 tests = [
