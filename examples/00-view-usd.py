@@ -31,7 +31,7 @@ This example shows the plain usage of the USD Viewer.
 from ansys.tools.usdviewer import USDViewer
 
 # Load USD file
-path = r"warp_demo_mesh.usda"
+path = r"displayColor.usda"
 viewer = USDViewer(title="USD Viewer", size=(800, 800))
 viewer.load_usd(path)
 viewer.show()
