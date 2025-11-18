@@ -2,7 +2,7 @@
 
 ## Omniverse
 
-Omniverse python library is not the appropiate tool for visualization in Python. It serves for OpenUSD modification and scripting for Omniverse GUI.
+Omniverse python library is not the appropriate tool for visualization in Python. It serves for OpenUSD modification and scripting for Omniverse GUI.
 
 ## OpenUSD Python library
 
@@ -15,14 +15,22 @@ Also, there seems to be compatibility issues with some of the files, not 100% co
 Since Synopsys uses mainly Vulkan internally, we can integrate Datoviz, which is a VTK equivalent of vulkan, although much less mature.
 It is well maintained.
 
+
+VisPy is "similar" to visualization-tool somehow in the backend arch:
+https://vispy.org/roadmap.html#opengl-vulkan-and-webgpu
+
 Lines of work:
  - VTK - Datoviz converter.
  - Integrate Datoviz in viz interface.
 
 
+Explore graphics service protocol: https://rougier.github.io/gsp-matplotlib/index.html
+
 ## VTKHDF format
 
-Still in development, not fully compatible with UnstructuredGrid. A (vtkxml to vtkhdf)[https://gitlab.kitware.com/keu-public/vtkhdf/vtkhdf-scripts/-/tree/main/vtkxml-to-vtkhdf] converter exists, not integrated in PyVista
+Still in development, not fully compatible with UnstructuredGrid. A (vtkxml to vtkhdf)[https://gitlab.kitware.com/keu-public/vtkhdf/vtkhdf-scripts/-/tree/main/vtkxml-to-vtkhdf] ~~converter exists~~ doesn't work, not integrated in PyVista
 
 Lines of work:
 - Ask to integrate this tool into PyVista or be published in a different repo.
+
+https://gitlab.kitware.com/keu-public/vtkhdf/vtkhdf-scripts/-/tree/main/tutorial
