@@ -11,7 +11,7 @@ from pxr import Gf, Usd, UsdGeom
 import vtk
 
 
-class VTKConverter:
+class _VTKConverter:
     """Convert VTK files to USD format for visualization."""
 
     @staticmethod
@@ -36,7 +36,7 @@ class VTKConverter:
             raise FileNotFoundError(f"VTK file not found: {vtk_file_path}")
 
         # Read VTK file
-        reader = VTKConverter._get_vtk_reader(vtk_file_path)
+        reader = _VTKConverter._get_vtk_reader(vtk_file_path)
         reader.SetFileName(str(vtk_file_path))
         reader.Update()
 
@@ -60,7 +60,7 @@ class VTKConverter:
 
         # Convert VTK polydata to USD mesh with unique name based on file
         mesh_name = vtk_file_path.stem  # Use filename without extension
-        VTKConverter._convert_polydata_to_usd_mesh(polydata, stage, mesh_name)
+        _VTKConverter._convert_polydata_to_usd_mesh(polydata, stage, mesh_name)
 
         return stage
 
