@@ -15,7 +15,7 @@ class _VTKConverter:
     """Convert VTK files to USD format for visualization."""
 
     @staticmethod
-    def convert_vtk_to_usd(vtk_file_path: Union[str, Path], stage: Usd.Stage) -> Usd.Stage:
+    def _convert_vtk_to_usd(vtk_file_path: Union[str, Path], stage: Usd.Stage) -> Usd.Stage:
         """Convert a VTK file to a USD stage.
 
         Parameters
@@ -65,8 +65,14 @@ class _VTKConverter:
         return stage
 
     @staticmethod
-    def _get_vtk_reader(file_path: Path):
-        """Get appropriate VTK reader based on file extension."""
+    def _get_vtk_reader(file_path: Path) -> vtk.vtkAlgorithm:
+        """Get appropriate VTK reader based on file extension.
+
+        Parameters
+        ----------
+        file_path : Path
+            The path to the VTK file.
+        """
         extension = file_path.suffix.lower()
 
         if extension == ".vtk":
@@ -87,8 +93,18 @@ class _VTKConverter:
             raise ValueError(f"Unsupported VTK file format: {extension}")
 
     @staticmethod
-    def _convert_polydata_to_usd_mesh(polydata, stage: Usd.Stage, mesh_name: str = "VTKMesh"):
-        """Convert VTK polydata to USD mesh geometry."""
+    def _convert_polydata_to_usd_mesh(polydata, stage: Usd.Stage, mesh_name: str = "VTKMesh") -> None:
+        """Convert VTK polydata to USD mesh geometry.
+
+        Parameters
+        ----------
+        polydata : vtk.vtkPolyData
+            The VTK polydata to convert.
+        stage : Usd.Stage
+            The USD stage to add the mesh to.
+        mesh_name : str, optional
+            The name of the mesh in USD, by default "VTKMesh".
+        """
         # Create a mesh primitive in USD with unique name
         mesh_path = f"/{mesh_name}"
         mesh_prim = UsdGeom.Mesh.Define(stage, mesh_path)
@@ -172,7 +188,7 @@ class _VTKConverter:
         if file_extension in [".vtk", ".vtp", ".vtu", ".vts", ".obj", ".ply", ".stl"]:
             try:
                 # Convert VTK data directly into the provided stage
-                self.convert_vtk_to_usd(resolved_path, stage)
+                self._convert_vtk_to_usd(resolved_path, stage)
                 return stage
             except Exception as e:
                 print(f"Failed to convert VTK file {resolved_path}: {e}")
