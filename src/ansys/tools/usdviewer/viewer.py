@@ -24,7 +24,7 @@ from pxr import Usd, UsdUtils
 from pxr.Usdviewq.stageView import StageView
 from PySide6 import QtCore, QtWidgets
 
-from .asset_resolver import AssetResolver
+from ansys.tools.usdviewer.vtk_converter import VTKConverter
 
 
 class Widget(QtWidgets.QWidget):
@@ -79,7 +79,7 @@ class USDViewer:
         self._size = size
 
         # Initialize asset resolver
-        self._asset_resolver = AssetResolver()
+        self._asset_resolver = VTKConverter()
         self._vtk_paths = []
 
     def _load_vtk_assets(self, stage: Usd.Stage) -> None:

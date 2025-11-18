@@ -11,7 +11,7 @@ from pxr import Gf, Usd, UsdGeom
 import vtk
 
 
-class VTKToUSDConverter:
+class VTKConverter:
     """Convert VTK files to USD format for visualization."""
 
     @staticmethod
@@ -36,7 +36,7 @@ class VTKToUSDConverter:
             raise FileNotFoundError(f"VTK file not found: {vtk_file_path}")
 
         # Read VTK file
-        reader = VTKToUSDConverter._get_vtk_reader(vtk_file_path)
+        reader = VTKConverter._get_vtk_reader(vtk_file_path)
         reader.SetFileName(str(vtk_file_path))
         reader.Update()
 
@@ -60,7 +60,7 @@ class VTKToUSDConverter:
 
         # Convert VTK polydata to USD mesh with unique name based on file
         mesh_name = vtk_file_path.stem  # Use filename without extension
-        VTKToUSDConverter._convert_polydata_to_usd_mesh(polydata, stage, mesh_name)
+        VTKConverter._convert_polydata_to_usd_mesh(polydata, stage, mesh_name)
 
         return stage
 
@@ -142,53 +142,6 @@ class VTKToUSDConverter:
 
                 mesh_prim.CreateDisplayColorAttr().Set(colors)
 
-
-class AssetResolver:
-    """Asset resolver for handling USD asset paths and various file formats."""
-
-    def __init__(self):
-        """Initialize the asset resolver."""
-        self.search_paths = []
-        self.vtk_converter = VTKToUSDConverter()
-
-    def add_search_path(self, path: Union[str, Path]) -> None:
-        """Add a search path for asset resolution.
-
-        Parameters
-        ----------
-        path : Union[str, Path]
-            Path to add to the search paths.
-        """
-        path = Path(path).resolve()
-        if path.exists() and path not in self.search_paths:
-            self.search_paths.append(path)
-
-    def resolve_asset(self, asset_path: str) -> Optional[Path]:
-        """Resolve an asset path to a concrete file path.
-
-        Parameters
-        ----------
-        asset_path : str
-            The asset path to resolve.
-
-        Returns
-        -------
-        Optional[Path]
-            The resolved file path, or None if not found.
-        """
-        # First try direct path
-        direct_path = Path(asset_path)
-        if direct_path.exists():
-            return direct_path.resolve()
-
-        # Try relative to search paths
-        for search_path in self.search_paths:
-            candidate = search_path / asset_path
-            if candidate.exists():
-                return candidate.resolve()
-
-        return None
-
     def load_asset(self, asset_path: str, stage: Usd.Stage) -> Optional[Usd.Stage]:
         """Load a VTK asset into the provided stage.
 
@@ -204,7 +157,11 @@ class AssetResolver:
         Optional[Usd.Stage]
             The stage with the loaded asset, or None if loading failed.
         """
-        resolved_path = self.resolve_asset(asset_path)
+        resolved_path = None
+        direct_path = Path(asset_path)
+        if direct_path.exists():
+            resolved_path = direct_path.resolve()
+
         if not resolved_path:
             print(f"Asset not found: {asset_path}")
             return None
@@ -215,7 +172,7 @@ class AssetResolver:
         if file_extension in [".vtk", ".vtp", ".vtu", ".vts", ".obj", ".ply", ".stl"]:
             try:
                 # Convert VTK data directly into the provided stage
-                self.vtk_converter.convert_vtk_to_usd(resolved_path, stage)
+                self.convert_vtk_to_usd(resolved_path, stage)
                 return stage
             except Exception as e:
                 print(f"Failed to convert VTK file {resolved_path}: {e}")
