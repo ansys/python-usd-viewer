@@ -20,10 +20,11 @@
 
 import sys
 
-import numpy as np
-from pxr import Gf, Sdf, Usd, UsdUtils
+from pxr import Usd, UsdUtils
 from pxr.Usdviewq.stageView import StageView
 from PySide6 import QtCore, QtWidgets
+
+from ansys.tools.usdviewer._vtk_converter import _VTKConverter
 
 
 class Widget(QtWidgets.QWidget):
@@ -77,6 +78,26 @@ class USDViewer:
         self._title = title
         self._size = size
 
+        # Initialize asset resolver
+        self._asset_resolver = _VTKConverter()
+        self._vtk_paths = []
+
+    def _load_vtk_assets(self, stage: Usd.Stage) -> None:
+        """Load VTK assets referenced in the USD stage.
+
+        Parameters
+        ----------
+        stage : Usd.Stage
+            The USD stage to load VTK assets for.
+        """
+        for vtk_path in self._vtk_paths:
+            print(f"Loading VTK asset: {vtk_path}")
+            vtk_stage = self._asset_resolver.load_asset(vtk_path, stage)
+            if vtk_stage:
+                print(f"VTK asset loaded: {vtk_path}")
+            else:
+                print(f"Failed to load VTK asset: {vtk_path}")
+
     def plot(self, stage: Usd.Stage) -> None:
         """Plot the given USD stage in the viewer window.
 
@@ -86,6 +107,7 @@ class USDViewer:
             The USD stage to display.
 
         """
+        self._load_vtk_assets(stage)
         self.window = Widget(stage)
         self.window.setWindowTitle(self._title)
         self.window.resize(QtCore.QSize(*self._size))
@@ -98,6 +120,29 @@ class USDViewer:
         self.window.show()
         self._app.exec()
 
+    def _extract_vtk_paths(self, stage: Usd.Stage) -> list[str]:
+        """Extract VTK paths from the given USD stage.
+
+        Parameters
+        ----------
+        stage : Usd.Stage
+            The USD stage to extract VTK paths from.
+
+        Returns
+        -------
+        list[str]
+            A list of VTK paths.
+        """
+        vtk_paths = []
+        for prim in stage.Traverse():
+            attr = prim.GetAttribute("Asset")
+            if attr:
+                value = attr.Get()
+                if value and value.path.endswith(".vtk"):
+                    vtk_paths.append(value.path)
+                    print(f"Found VTK asset: {value.path}")
+        return vtk_paths
+
     def load_usd(self, path: str) -> Usd.Stage:
         """Load a USD stage from the given file path.
 
@@ -108,14 +153,38 @@ class USDViewer:
         """
         with Usd.StageCacheContext(UsdUtils.StageCache.Get()):
             stage = Usd.Stage.Open(path)
-
         if stage:
             print(f"Stage loaded: {stage.GetRootLayer().GetDisplayName()}")
+            self._vtk_paths = self._extract_vtk_paths(stage)
         else:
             print("Failed to load stage!")
             sys.exit(1)
 
         # plot the stage
         self.plot(stage)
+        return stage
 
+    def load_asset(self, asset_path: str) -> Usd.Stage:
+        """Load any supported asset (USD, VTK, etc.) as a USD stage.
 
+        Parameters
+        ----------
+        asset_path : str
+            Path to the asset file. Can be USD, VTK, OBJ, PLY, STL, etc.
+
+        Returns
+        -------
+        Usd.Stage
+            The loaded USD stage.
+        """
+        stage = self._asset_resolver.load_asset_as_usd(asset_path)
+
+        if stage:
+            print(f"Asset loaded: {asset_path}")
+            # plot the stage
+            self.plot(stage)
+        else:
+            print(f"Failed to load asset: {asset_path}")
+            sys.exit(1)
+
+        return stage

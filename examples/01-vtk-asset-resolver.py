@@ -20,18 +20,18 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 """
-.. _ref_plain_usd_view:
+.. _ref_vtk_example:
 
-=============================
-Plain usage of the USD Viewer
-=============================
+=======================================
+Viewing a mixed USD file with VTK asset
+=======================================
 
-This example shows the plain usage of the USD Viewer.
+This example shows how to view a USD file that contains a VTK asset.
 """
 from ansys.tools.usdviewer import USDViewer
 
 # Load USD file
-path = r"display_color.usda"
+path = r"display_color_vtk.usda"
 viewer = USDViewer(title="USD Viewer", size=(800, 800))
 viewer.load_usd(path)
 viewer.show()
