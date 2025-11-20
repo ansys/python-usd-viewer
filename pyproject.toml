@@ -27,7 +27,7 @@ classifiers = [
 dependencies = [
   "numpy",
   "pyside6",
-  "vtk",
+  "vtk>=9.0",
 ]
 
 [dependency-groups]
