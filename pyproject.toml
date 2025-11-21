@@ -30,6 +30,8 @@ dependencies = [
   "vtk>=9.0",
 ]
 
+scripts.usd-setup = "ansys.tools.usdviewer.autosetup:main"
+
 [dependency-groups]
 tests = [
   "pytest==8.4.2",

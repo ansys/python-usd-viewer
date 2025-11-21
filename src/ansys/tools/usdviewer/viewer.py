@@ -20,8 +20,13 @@
 
 import sys
 
-from pxr import Usd, UsdUtils
-from pxr.Usdviewq.stageView import StageView
+try:
+    from pxr import Usd, UsdUtils
+    from pxr.Usdviewq.stageView import StageView
+except ImportError:
+    print("Error: Unable to import USD modules. Please setup OpenUSD by running `usd-setup`.")
+    sys.exit(1)
+
 from PySide6 import QtCore, QtWidgets
 
 from ansys.tools.usdviewer._vtk_converter import _VTKConverter
