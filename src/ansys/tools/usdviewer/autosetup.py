@@ -70,39 +70,12 @@ def clone_openusd() -> str:
 
         print(f"✓ OpenUSD repository cloned to {openusd_path}")
         return openusd_path
-    except subprocess.CalledProcessError as e:
-        # If shallow clone fails, try without it but skip problematic files
-        print("Shallow clone failed, trying alternative approach...")
-        if Path(openusd_path).exists():
-            shutil.rmtree(openusd_path)
 
-        try:
-            # Configure git to skip files with long paths
-            subprocess.run(
-                ["git", "config", "--global", "core.precomposeUnicode", "false"], check=True, capture_output=True
-            )
-
-            subprocess.run(
-                [
-                    "git",
-                    "clone",
-                    "--recursive",
-                    "--config",
-                    "core.longpaths=true",
-                    "https://github.com/PixarAnimationStudios/OpenUSD.git",
-                    str(openusd_path),
-                ],
-                check=True,
-            )
-
-            print(f"✓ OpenUSD repository cloned to {openusd_path}")
-            return openusd_path
-
-        except subprocess.CalledProcessError:
-            raise RuntimeError(
-                f"Failed to clone OpenUSD repository. This may be due to Windows path length limitations. "
-                f"Try enabling long path support in Windows or running from a shorter directory path: {e}"
-            )
+    except subprocess.CalledProcessError:
+        raise RuntimeError(
+            "Failed to clone OpenUSD repository. This may be due to Windows path length limitations. "
+            "Try enabling long path support in Windows or running from a shorter directory path"
+        )
 
 
 def build_and_install_openusd(install_path: Path = None, force_rebuild: bool = False) -> Path:
@@ -147,18 +120,6 @@ def build_and_install_openusd(install_path: Path = None, force_rebuild: bool = F
         print("INSTALLATION COMPLETE!")
         print("=" * 60)
         print(f"OpenUSD has been installed to: {install_path}")
-        print("\nTo use OpenUSD in your Python environment, add this to your PYTHONPATH:")
-
-        if platform.system() == "Windows":
-            python_path = install_path / "lib" / "python"
-            print(f"set PYTHONPATH={python_path};%PYTHONPATH%")
-        else:
-            python_path = install_path / "lib" / "python"
-            print(f"export PYTHONPATH={python_path}:$PYTHONPATH")
-
-        print("\nOr activate your virtual environment and add the path programmatically.")
-        print("\nNote: The source repository will be cleaned up after installation unless --keep-repo is specified.")
-
         return install_path
 
     except subprocess.CalledProcessError as e:
