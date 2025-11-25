@@ -26,6 +26,7 @@ classifiers = [
 ]
 dependencies = [
   "numpy",
+  "pyopengl", # OpenUSD build dep
   "pyside6",
   "vtk>=9.0",
 ]

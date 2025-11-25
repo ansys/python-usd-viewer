@@ -166,12 +166,39 @@ def main():
 
         # Build and install OpenUSD
         build_and_install_openusd(args.force_rebuild)
-
-        # Clean up the cloned repository unless user wants to keep it
-        if not args.keep_repo:
-            cleanup_openusd_repo(openusd_path)
+        cleanup_openusd_repo(openusd_path)
 
         print("\n✅ Setup completed successfully!")
+
+        # Add USD to Python path automatically if in a Linux virtual environment
+        if platform.system() == "Linux":
+            venv_path = os.environ.get("VIRTUAL_ENV")
+            if venv_path:
+                try:
+                    # Get current working directory and construct USD lib path
+                    usd_lib_path = Path.cwd() / "usd_install" / "lib" / "python"
+
+                    # Find the site-packages directory in the virtual environment
+                    venv_path = Path(venv_path)
+                    lib_dir = venv_path / "lib"
+                    python_dirs = list(lib_dir.glob("python*"))
+
+                    if python_dirs:
+                        site_packages = python_dirs[0] / "site-packages"
+
+                        if site_packages.exists():
+                            pth_file = site_packages / "usd.pth"
+                            pth_file.write_text(str(usd_lib_path) + "\n")
+                            print(f"✓ Added USD to Python path via {pth_file}")
+                        else:
+                            print("⚠️  Could not find site-packages directory in virtual environment")
+                    else:
+                        print("⚠️  Could not find Python version directory in virtual environment")
+
+                except Exception as e:
+                    print(f"⚠️  Warning: Could not automatically add USD to Python path: {e}")
+                    usd_path = Path.cwd() / "usd_install" / "lib" / "python"
+                    print(f"   You may need to manually add {usd_path} to your PYTHONPATH")
 
     except Exception as e:
         print(f"\n❌ Setup failed: {e}")
