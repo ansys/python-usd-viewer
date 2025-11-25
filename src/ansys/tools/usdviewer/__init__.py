@@ -21,4 +21,9 @@
 # SOFTWARE.
 """USD Viewer main module."""
 
-from ansys.tools.usdviewer.viewer import USDViewer as USDViewer
+def __getattr__(name):
+    """Lazy import to avoid USD dependency during package import."""
+    if name == "USDViewer":
+        from ansys.tools.usdviewer.viewer import USDViewer
+        return USDViewer
+    raise AttributeError(f"module '{__name__}' has no attribute '{name}'")
