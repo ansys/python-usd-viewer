@@ -12,7 +12,7 @@ Also, there seems to be compatibility issues with some of the files, not 100% co
 
 ## Datoviz and Vulkan
 
-Since Synopsys uses mainly Vulkan internally, we can integrate Datoviz, which is a VTK equivalent of vulkan, although much less mature.
+Since Synopsis uses mainly Vulkan internally, we can integrate Datoviz, which is a VTK equivalent of vulkan, although much less mature.
 It is well maintained.
 
 
