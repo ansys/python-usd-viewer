@@ -23,7 +23,7 @@ class _VTKConverter:
     """Convert VTK files to USD format for visualization."""
 
     @staticmethod
-    def _convert_vtk_to_usd(vtk_file_path: Union[str, Path], stage: Usd.Stage) -> Usd.Stage:
+    def _convert_vtk_to_usd(vtk_file_path: Union[str, Path], stage: "Usd.Stage") -> "Usd.Stage":
         """Convert a VTK file to a USD stage.
 
         Parameters
@@ -101,7 +101,7 @@ class _VTKConverter:
             raise ValueError(f"Unsupported VTK file format: {extension}")
 
     @staticmethod
-    def _convert_polydata_to_usd_mesh(polydata, stage: Usd.Stage, mesh_name: str = "VTKMesh") -> None:
+    def _convert_polydata_to_usd_mesh(polydata, stage: "Usd.Stage", mesh_name: str = "VTKMesh") -> None:
         """Convert VTK polydata to USD mesh geometry.
 
         Parameters
@@ -166,7 +166,7 @@ class _VTKConverter:
 
                 mesh_prim.CreateDisplayColorAttr().Set(colors)
 
-    def load_asset(self, asset_path: str, stage: Usd.Stage) -> Optional[Usd.Stage]:
+    def load_asset(self, asset_path: str, stage: "Usd.Stage") -> Optional["Usd.Stage"]:
         """Load a VTK asset into the provided stage.
 
         Parameters
