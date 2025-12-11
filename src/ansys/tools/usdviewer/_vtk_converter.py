@@ -6,8 +6,16 @@
 
 from pathlib import Path
 from typing import Optional, Union
+import warnings
 
-from pxr import Gf, Usd, UsdGeom
+try:
+    from pxr import Gf, Usd, UsdGeom
+except ImportError:
+    warnings.warn(
+        "The 'pxr' module is required to use the USDViewer. "
+        "Please install the 'usd-core' package. "
+        "Refer to the documentation for installation instructions."
+    )
 import vtk
 
 

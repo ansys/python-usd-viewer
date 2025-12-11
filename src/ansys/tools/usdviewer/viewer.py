@@ -19,9 +19,17 @@
 """USDViewer main module."""
 
 import sys
+import warnings
 
-from pxr import Usd, UsdUtils
-from pxr.Usdviewq.stageView import StageView
+try:
+    from pxr import Usd, UsdUtils
+    from pxr.Usdviewq.stageView import StageView
+except ImportError:
+    warnings.warn(
+        "The 'pxr' module is required to use the USDViewer. "
+        "Please install the 'usd-core' package. "
+        "Refer to the documentation for installation instructions."
+    )
 from PySide6 import QtCore, QtWidgets
 
 from ansys.tools.usdviewer._vtk_converter import _VTKConverter
