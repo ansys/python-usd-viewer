@@ -30,7 +30,11 @@ except ImportError:
         "Please install the 'usd-core' package. "
         "Refer to the documentation for installation instructions."
     )
-from PySide6 import QtCore, QtWidgets
+
+try:
+    from PySide6 import QtCore, QtWidgets
+except ImportError:
+    warnings.warn("The 'PySide6' module is not available in this environment. ")
 
 from ansys.tools.usdviewer._vtk_converter import _VTKConverter
 
