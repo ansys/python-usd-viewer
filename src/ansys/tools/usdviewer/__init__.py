@@ -23,6 +23,4 @@
 
 import importlib.metadata as importlib_metadata
 
-from ansys.tools.usdviewer.viewer import USDViewer as USDViewer
-
 __version__ = importlib_metadata.version("ansys-tools-usdviewer")
