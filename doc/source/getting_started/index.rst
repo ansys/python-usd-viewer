@@ -24,13 +24,13 @@ This section guides you through installing the Python USD viewer in user mode st
 
 2.- Activate the environment.
 
-In linux:
+In Linux:
 
 .. code-block:: bash
 
     source .venv/bin/activate
 
-In windows:
+In Windows:
 
 .. code-block:: bash
 
@@ -42,7 +42,7 @@ In windows:
 
     pip install .
 
-4.- Clone the OpenUSD repo.
+4.- Clone the OpenUSD repository.
 
 .. code-block:: bash
 

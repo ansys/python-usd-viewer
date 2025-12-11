@@ -10,7 +10,7 @@ your own code.
 Default usage
 -------------
 
-This example demonstrates how to load and display a USD file using the USDViewer.
+This example demonstrates how to load and display a USD file using the USD Viewer.
 
 .. code-block:: python
 
