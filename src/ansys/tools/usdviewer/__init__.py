@@ -22,6 +22,12 @@
 """USD Viewer main module."""
 
 import importlib.metadata as importlib_metadata
+import os
+
+# Configure Qt to use offscreen platform when DISPLAY is not available
+# This prevents EGL/OpenGL library errors in headless environments (CI/CD)
+if not os.environ.get("DISPLAY") and os.environ.get("QT_QPA_PLATFORM") is None:
+    os.environ["QT_QPA_PLATFORM"] = "offscreen"
 
 from ansys.tools.usdviewer.viewer import USDViewer as USDViewer
 
