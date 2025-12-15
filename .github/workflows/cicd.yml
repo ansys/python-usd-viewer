@@ -9,6 +9,10 @@ on:
     branches:
       - main
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 env:
   PACKAGE_NAME: ansys-tools-usdviewer
   MAIN_PYTHON_VERSION: 3.13
@@ -136,8 +140,8 @@ jobs:
     runs-on: ubuntu-latest
     environment: release
     permissions:
-      id-token: write
-      contents: write
+      id-token: write # needed for pypi publish action
+      contents: write # needed for release action
     steps:
       - name: Download artifacts
         uses: actions/download-artifact@018cc2cf5baa6db3ef3c5f8a56943fffe632ef53 # v6.0.0
@@ -178,8 +182,8 @@ jobs:
     needs: [build-library]
     if: github.event_name == 'pull_request'
     permissions:
-      contents: write
-      pull-requests: write
+      contents: write # needed for automerge action
+      pull-requests: write # needed for automerge action
     steps:
       - name: Automerge PRs
         uses: ansys/actions/hk-automerge-prs@21c9de9bee9692173780696d4a39964f20b9cfa3 # v10.1.5
