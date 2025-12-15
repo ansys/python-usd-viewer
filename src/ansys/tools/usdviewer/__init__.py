@@ -21,4 +21,6 @@
 # SOFTWARE.
 """USD Viewer main module."""
 
-from ansys.tools.usdviewer.viewer import USDViewer as USDViewer
+import importlib.metadata as importlib_metadata
+
+__version__ = importlib_metadata.version("ansys-tools-usdviewer")
