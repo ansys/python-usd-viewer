@@ -37,7 +37,7 @@ optional-dependencies.doc = [
   "sphinx-gallery==0.20.0",
 ]
 optional-dependencies.tests = [
-  "pytest==9.0.1",
+  "pytest==9.0.2",
 ]
 
 [tool.hatch.build.targets.wheel]
