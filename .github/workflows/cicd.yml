@@ -68,6 +68,7 @@ jobs:
           token: ${{ secrets.PYANSYS_CI_BOT_TOKEN }}
           dev-mode: true
           upload-reports: true
+          hide-log: false
 
   code-style:
     name: Code style
