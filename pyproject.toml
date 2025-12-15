@@ -30,13 +30,14 @@ dependencies = [
   "vtk>=9.0",
 ]
 
-[dependency-groups]
-tests = [
-  "pytest==9.0.1",
+optional-dependencies.doc = [
+  "ansys-sphinx-theme[autoapi]==1.6.4",
+  "sphinx-click==6.2.0",
+  "sphinx-copybutton==0.5.2",
+  "sphinx-gallery==0.20.0",
 ]
-
-doc = [
-  "ansys-sphinx-theme[autoapi]==1.6.3",
+optional-dependencies.tests = [
+  "pytest==9.0.1",
 ]
 
 [tool.hatch.build.targets.wheel]
