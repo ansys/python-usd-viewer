@@ -9,6 +9,10 @@ on:
     branches:
       - main
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 env:
   PACKAGE_NAME: ansys-tools-usdviewer
   MAIN_PYTHON_VERSION: 3.13
@@ -43,15 +47,27 @@ jobs:
   #         bot-email: ${{ secrets.PYANSYS_CI_BOT_EMAIL }}
 
   vulnerabilities:
-    name: Check library vulnerabilities
+    name: Vulnerabilities
     runs-on: ubuntu-latest
     steps:
-      - uses: ansys/actions/check-vulnerabilities@41f86da4c9ead510db9135e428e33df9cc6f92e1 # v10.2.3
+      - name: PyAnsys Vulnerability check (on main)
+        if: github.ref == 'refs/heads/main'
+        uses: ansys/actions/check-vulnerabilities@41f86da4c9ead510db9135e428e33df9cc6f92e1 # v10.2.3
         with:
           python-version: ${{ env.MAIN_PYTHON_VERSION }}
-          token: ${{ secrets.PYANSYS_CI_BOT_TOKEN }}
           python-package-name: ${{ env.PACKAGE_NAME }}
-          dev-mode: ${{ github.ref != 'refs/heads/main' }}
+          token: ${{ secrets.PYANSYS_CI_BOT_TOKEN }}
+          upload-reports: true
+
+      - name: PyAnsys Vulnerability check (on dev mode)
+        if: github.ref != 'refs/heads/main'
+        uses: ansys/actions/check-vulnerabilities@41f86da4c9ead510db9135e428e33df9cc6f92e1 # v10.2.3
+        with:
+          python-version: ${{ env.MAIN_PYTHON_VERSION }}
+          python-package-name: ${{ env.PACKAGE_NAME }}
+          token: ${{ secrets.PYANSYS_CI_BOT_TOKEN }}
+          dev-mode: true
+          upload-reports: true
           hide-log: false
 
   code-style:
@@ -136,8 +152,8 @@ jobs:
     runs-on: ubuntu-latest
     environment: release
     permissions:
-      id-token: write
-      contents: write
+      id-token: write # needed for pypi publish action
+      contents: write # needed for release action
     steps:
       - name: Download artifacts
         uses: actions/download-artifact@018cc2cf5baa6db3ef3c5f8a56943fffe632ef53 # v6.0.0
@@ -178,8 +194,8 @@ jobs:
     needs: [build-library]
     if: github.event_name == 'pull_request'
     permissions:
-      contents: write
-      pull-requests: write
+      contents: write # needed for automerge action
+      pull-requests: write # needed for automerge action
     steps:
       - name: Automerge PRs
         uses: ansys/actions/hk-automerge-prs@41f86da4c9ead510db9135e428e33df9cc6f92e1 # v10.2.3
