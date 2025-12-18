@@ -19,15 +19,22 @@
 """USDViewer main module."""
 
 import sys
+import warnings
 
 try:
     from pxr import Usd, UsdUtils
     from pxr.Usdviewq.stageView import StageView
 except ImportError:
-    print("Error: Unable to import USD modules. Please setup OpenUSD by running `usd-setup`.")
-    sys.exit(1)
+    warnings.warn(
+        "The 'pxr' module is required to use the USDViewer. "
+        "Please install the 'usd-core' package. "
+        "Refer to the documentation for installation instructions."
+    )
 
-from PySide6 import QtCore, QtWidgets
+try:
+    from PySide6 import QtCore, QtWidgets
+except ImportError:
+    warnings.warn("The 'PySide6' module is not available in this environment. ")
 
 from ansys.tools.usdviewer._vtk_converter import _VTKConverter
 
@@ -87,7 +94,7 @@ class USDViewer:
         self._asset_resolver = _VTKConverter()
         self._vtk_paths = []
 
-    def _load_vtk_assets(self, stage: Usd.Stage) -> None:
+    def _load_vtk_assets(self, stage: "Usd.Stage") -> None:
         """Load VTK assets referenced in the USD stage.
 
         Parameters
@@ -103,7 +110,7 @@ class USDViewer:
             else:
                 print(f"Failed to load VTK asset: {vtk_path}")
 
-    def plot(self, stage: Usd.Stage) -> None:
+    def plot(self, stage: "Usd.Stage") -> None:
         """Plot the given USD stage in the viewer window.
 
         Parameters
@@ -125,7 +132,7 @@ class USDViewer:
         self.window.show()
         self._app.exec()
 
-    def _extract_vtk_paths(self, stage: Usd.Stage) -> list[str]:
+    def _extract_vtk_paths(self, stage: "Usd.Stage") -> list[str]:
         """Extract VTK paths from the given USD stage.
 
         Parameters
@@ -148,7 +155,7 @@ class USDViewer:
                     print(f"Found VTK asset: {value.path}")
         return vtk_paths
 
-    def load_usd(self, path: str) -> Usd.Stage:
+    def load_usd(self, path: str) -> "Usd.Stage":
         """Load a USD stage from the given file path.
 
         Parameters
@@ -169,7 +176,7 @@ class USDViewer:
         self.plot(stage)
         return stage
 
-    def load_asset(self, asset_path: str) -> Usd.Stage:
+    def load_asset(self, asset_path: str) -> "Usd.Stage":
         """Load any supported asset (USD, VTK, etc.) as a USD stage.
 
         Parameters

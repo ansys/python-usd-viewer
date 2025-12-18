@@ -31,16 +31,16 @@ dependencies = [
   "vtk>=9.0",
 ]
 
+optional-dependencies.doc = [
+  "ansys-sphinx-theme[autoapi]==1.6.4",
+  "sphinx-click==6.2.0",
+  "sphinx-copybutton==0.5.2",
+  "sphinx-gallery==0.20.0",
+]
+optional-dependencies.tests = [
+  "pytest==9.0.2",
+]
 scripts.usd-setup = "ansys.tools.usdviewer.autosetup:main"
-
-[dependency-groups]
-tests = [
-  "pytest==9.0.1",
-]
-
-doc = [
-  "ansys-sphinx-theme[autoapi]==1.6.3",
-]
 
 [tool.hatch.build.targets.wheel]
 packages = [ "src/ansys" ]
