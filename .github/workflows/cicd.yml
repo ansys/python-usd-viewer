@@ -111,7 +111,7 @@ jobs:
           library-name: ${{ env.PACKAGE_NAME }}
           operating-system: ${{ matrix.os }}
           python-version: ${{ matrix.python }}
-          whitelist-license-check: 'PySide6'
+          whitelist-license-check: 'PySide6, PySide6_Addons, PySide6_Essentials, shiboken6'
 
   doc-build:
     name: "Building library documentation"
