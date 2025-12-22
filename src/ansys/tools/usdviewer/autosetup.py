@@ -33,6 +33,8 @@ import platform
 import shutil
 import subprocess
 import sys
+import textwrap
+import warnings
 
 
 def clone_openusd() -> str:
@@ -78,6 +80,208 @@ def clone_openusd() -> str:
         )
 
 
+def check_build_dependencies():
+    """Check if required build dependencies are available.
+
+    Raises
+    ------
+    RuntimeError
+        If required build dependencies are not found.
+    """
+    system = platform.system()
+
+    if system == "Windows":
+        # Check for Visual Studio or Visual Studio Build Tools
+        # Try to find vswhere.exe which is installed with VS2017+
+        vswhere_paths = [
+            r"C:\Program Files (x86)\Microsoft Visual Studio\Installer\vswhere.exe",
+            r"C:\Program Files\Microsoft Visual Studio\Installer\vswhere.exe",
+        ]
+
+        vs_found = False
+        for vswhere_path in vswhere_paths:
+            if Path(vswhere_path).exists():
+                try:
+                    result = subprocess.run(
+                        [vswhere_path, "-latest", "-property", "installationPath"],
+                        capture_output=True,
+                        text=True,
+                        check=True,
+                    )
+                    if result.stdout.strip():
+                        vs_found = True
+                        break
+                except subprocess.CalledProcessError:
+                    continue
+
+        if not vs_found:
+            error_msg = textwrap.dedent("""
+                ❌ WARNING: C++ compiler not found
+
+                If Microsoft Visual Studio is already installed, ensure that the executables
+                are available in your system PATH.
+
+                OpenUSD requires a C++ compiler to build. On Windows, you need to install
+                Microsoft Visual Studio or Visual Studio Build Tools.
+
+                Please install one of the following:
+
+                1. Visual Studio 2019 or later (Community Edition is free):
+                   https://visualstudio.microsoft.com/downloads/
+
+                   During installation, make sure to select:
+                   - "Desktop development with C++"
+
+                2. Visual Studio Build Tools (lighter installation):
+                   https://visualstudio.microsoft.com/downloads/#build-tools-for-visual-studio-2022
+
+                   During installation, select:
+                   - "Desktop development with C++"
+
+                After installation, restart your terminal and run this script again.
+
+                For more information, see:
+                https://github.com/PixarAnimationStudios/OpenUSD#getting-and-building-the-code
+            """)
+            warnings.warn(error_msg)
+            raise RuntimeError(error_msg)
+        else:
+            print("✓ Visual Studio C++ compiler found")
+
+    elif system == "Linux":
+        # Check for gcc or g++
+        try:
+            subprocess.run(["g++", "--version"], capture_output=True, check=True)
+            print("✓ g++ compiler found")
+        except (subprocess.CalledProcessError, FileNotFoundError):
+            error_msg = textwrap.dedent("""
+                ❌ ERROR: C++ compiler not found
+
+                OpenUSD requires a C++ compiler to build. On Linux, you need gcc/g++.
+
+                Please install using your package manager:
+
+                Ubuntu/Debian:
+                  sudo apt-get install build-essential
+
+                Fedora/RHEL/CentOS:
+                  sudo yum groupinstall "Development Tools"
+
+                After installation, run this script again.
+            """)
+            raise RuntimeError(error_msg)
+
+    elif system == "Darwin":  # macOS
+        # Check for clang (Xcode command line tools)
+        try:
+            subprocess.run(["clang++", "--version"], capture_output=True, check=True)
+            print("✓ clang++ compiler found")
+        except (subprocess.CalledProcessError, FileNotFoundError):
+            error_msg = textwrap.dedent("""
+                ❌ ERROR: C++ compiler not found
+
+                OpenUSD requires a C++ compiler to build. On macOS, you need Xcode Command Line Tools.
+
+                Please install by running:
+                  xcode-select --install
+
+                After installation, run this script again.
+            """)
+            raise RuntimeError(error_msg)
+
+    # Check for CMake
+    try:
+        result = subprocess.run(["cmake", "--version"], capture_output=True, check=True, text=True)
+        cmake_version = result.stdout.split("\n")[0]
+        print(f"✓ CMake found: {cmake_version}")
+    except (subprocess.CalledProcessError, FileNotFoundError):
+        error_msg = textwrap.dedent("""
+            ❌ ERROR: CMake not found
+
+            OpenUSD requires CMake to build.
+
+            Please install CMake from: https://cmake.org/download/
+
+            Or use a package manager:
+            - Windows: choco install cmake (requires Chocolatey)
+            - macOS: brew install cmake (requires Homebrew)
+            - Linux: sudo apt-get install cmake (Ubuntu/Debian)
+
+            After installation, run this script again.
+        """)
+        raise RuntimeError(error_msg)
+
+
+def get_vs_environment() -> dict:
+    """Get Visual Studio environment variables on Windows.
+
+    Returns
+    -------
+    dict
+        Environment variables with Visual Studio paths added.
+    """
+    if platform.system() != "Windows":
+        return os.environ.copy()
+
+    # Find Visual Studio installation
+    vswhere_paths = [
+        r"C:\Program Files (x86)\Microsoft Visual Studio\Installer\vswhere.exe",
+        r"C:\Program Files\Microsoft Visual Studio\Installer\vswhere.exe",
+    ]
+
+    vs_path = None
+    for vswhere_path in vswhere_paths:
+        if Path(vswhere_path).exists():
+            try:
+                result = subprocess.run(
+                    [vswhere_path, "-latest", "-property", "installationPath"],
+                    capture_output=True,
+                    text=True,
+                    check=True,
+                )
+                vs_path = result.stdout.strip()
+                if vs_path:
+                    break
+            except subprocess.CalledProcessError:
+                continue
+
+    if not vs_path:
+        return os.environ.copy()
+
+    # Find vcvarsall.bat
+    vcvarsall = Path(vs_path) / "VC" / "Auxiliary" / "Build" / "vcvarsall.bat"
+    if not vcvarsall.exists():
+        return os.environ.copy()
+
+    # Run vcvarsall.bat and capture the environment
+    # We use a batch script to set up VS environment and echo it
+    try:
+        import tempfile
+
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".bat", delete=False) as f:
+            f.write("@echo off\n")
+            f.write(f'call "{vcvarsall}" x64 > nul\n')
+            f.write("set\n")
+            temp_bat = f.name
+
+        result = subprocess.run(["cmd", "/c", temp_bat], capture_output=True, text=True, check=True)
+
+        # Parse the environment variables
+        env = os.environ.copy()
+        for line in result.stdout.splitlines():
+            if "=" in line:
+                key, _, value = line.partition("=")
+                env[key] = value
+
+        Path(temp_bat).unlink()
+        print("✓ Visual Studio environment configured")
+        return env
+
+    except Exception as e:
+        print(f"⚠️  Warning: Could not set up Visual Studio environment: {e}")
+        return os.environ.copy()
+
+
 def build_and_install_openusd(install_path: Path = None, force_rebuild: bool = False) -> Path:
     """Build and install OpenUSD using the build script."""
     # Create build directory
@@ -91,6 +295,14 @@ def build_and_install_openusd(install_path: Path = None, force_rebuild: bool = F
 
     print("Building and installing OpenUSD... This may take a while (30+ minutes)")
 
+    # Install optional dependencies for schema generation tools
+    try:
+        print("Installing optional Python dependencies (Jinja2)...")
+        subprocess.run([sys.executable, "-m", "pip", "install", "jinja2"], capture_output=True, check=True)
+        print("✓ Jinja2 installed (enables usdGenSchema tools)")
+    except subprocess.CalledProcessError:
+        print("⚠️  Warning: Could not install Jinja2. Schema generation tools will be omitted.")
+
     # Clean previous builds if they exist or if forcing rebuild
     if install_path.exists():
         shutil.rmtree(install_path)
@@ -101,8 +313,11 @@ def build_and_install_openusd(install_path: Path = None, force_rebuild: bool = F
     build_script = Path("OpenUSD") / "build_scripts" / "build_usd.py"
 
     try:
+        # Get Visual Studio environment on Windows
+        env = get_vs_environment()
+
         cmd = [
-            "python",
+            sys.executable,  # Use the current Python interpreter
             str(build_script),
             str(install_path),
             "--build-variant",
@@ -111,7 +326,11 @@ def build_and_install_openusd(install_path: Path = None, force_rebuild: bool = F
             "--no-examples",  # Skip examples to speed up build
             "--no-tutorials",  # Skip tutorials to speed up build
         ]
-        os.system(" ".join(cmd))
+
+        print(f"Running: {' '.join(cmd)}")
+
+        # Run the build with Visual Studio environment
+        subprocess.run(cmd, env=env, check=True)
 
         print("✓ OpenUSD built and installed successfully")
 
@@ -161,11 +380,17 @@ def main():
     print("=" * 60)
 
     try:
+        # Check build dependencies first
+        print("\n📋 Checking build dependencies...")
+        check_build_dependencies()
+
         # Clone OpenUSD
+        print("\n📦 Setting up OpenUSD repository...")
         openusd_path = clone_openusd()
 
         # Build and install OpenUSD
-        build_and_install_openusd(args.force_rebuild)
+        print("\n🔨 Building OpenUSD...")
+        build_and_install_openusd(force_rebuild=args.force_rebuild)
         cleanup_openusd_repo(openusd_path)
 
         print("\n✅ Setup completed successfully!")

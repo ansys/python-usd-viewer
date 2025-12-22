@@ -28,7 +28,7 @@ Viewing a mixed USD file with VTK asset
 
 This example shows how to view a USD file that contains a VTK asset.
 """
-from ansys.tools.usdviewer import USDViewer
+from ansys.tools.usdviewer.viewer import USDViewer
 
 # Load USD file
 path = r"display_color_vtk.usda"

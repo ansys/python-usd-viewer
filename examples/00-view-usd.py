@@ -28,7 +28,7 @@ Plain usage of the USD Viewer
 
 This example shows the plain usage of the USD Viewer.
 """
-from ansys.tools.usdviewer import USDViewer
+from ansys.tools.usdviewer.viewer import USDViewer
 
 # Load USD file
 path = r"display_color.usda"
