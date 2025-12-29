@@ -186,27 +186,28 @@ class _VTKConverter:
         Optional[Usd.Stage]
             The stage with the loaded asset, or None if loading failed.
         """
-        resolved_path = None
-        direct_path = Path(asset_path)
-        if direct_path.exists():
-            resolved_path = direct_path.resolve()
-
-        if not resolved_path:
-            print(f"Asset not found: {asset_path}")
+        # Resolve and validate the asset path
+        asset_file = Path(asset_path)
+        if not asset_file.exists():
+            warnings.warn(f"Asset not found: {asset_path}")
             return None
 
+        resolved_path = asset_file.resolve()
         file_extension = resolved_path.suffix.lower()
 
-        # Handle VTK and other 3D formats
-        if file_extension in [".vtk", ".vtp", ".vtu", ".vts", ".obj", ".ply", ".stl"]:
-            try:
-                # Convert VTK data directly into the provided stage
-                self._convert_vtk_to_usd(resolved_path, stage)
-                return stage
-            except Exception as e:
-                print(f"Failed to convert VTK file {resolved_path}: {e}")
-                return None
+        # Check if file format is supported
+        supported_formats = [".vtk", ".vtp", ".vtu", ".vts", ".obj", ".ply", ".stl"]
+        if file_extension not in supported_formats:
+            warnings.warn(f"Unsupported file format: {file_extension}")
+            return None
 
-        else:
-            print(f"Unsupported file format: {file_extension}")
+        # Convert VTK data directly into the provided stage
+        try:
+            self._convert_vtk_to_usd(resolved_path, stage)
+            return stage
+        except (FileNotFoundError, ValueError) as e:
+            warnings.warn(f"Failed to convert VTK file {resolved_path}: {e}")
+            return None
+        except Exception as e:
+            warnings.warn(f"Unexpected error converting {resolved_path}: {e}")
             return None
