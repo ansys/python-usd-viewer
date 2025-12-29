@@ -4,7 +4,7 @@
 This library allows to visualize VTK-based 3D models (meshes, point clouds, etc.) within the USD viewer,
 even though USD and VTK are different 3D formats. The converter acts as a bridge between the 2 ecosystems.
 
-## How does the convertion work?
+## How does the conversion work?
 the `_VTKConverter` class handles the VTK assets by:
 1. Reading the VTK file using the appropriate VTK reader
 2. Converting the VTK geometry data to polydata(surface representation) or at least extract the surface
