@@ -61,10 +61,15 @@ class _VTKConverter:
             polydata = geometry_filter.GetOutput()
         else:
             # Try to extract surface from other data types
-            geometry_filter = vtk.vtkGeometryFilter()
-            geometry_filter.SetInputData(data)
-            geometry_filter.Update()
-            polydata = geometry_filter.GetOutput()
+            try:
+                geometry_filter = vtk.vtkGeometryFilter()
+                geometry_filter.SetInputData(data)
+                geometry_filter.Update()
+                polydata = geometry_filter.GetOutput()
+            except Exception as e:
+                raise ValueError(
+                    f"Unable to convert VTK data type {type(data).__name__} to polydata: {e}"
+                )
 
         # Convert VTK polydata to USD mesh with unique name based on file
         mesh_name = vtk_file_path.stem  # Use filename without extension
