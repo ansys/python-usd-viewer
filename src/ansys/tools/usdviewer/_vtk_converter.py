@@ -67,9 +67,7 @@ class _VTKConverter:
                 geometry_filter.Update()
                 polydata = geometry_filter.GetOutput()
             except Exception as e:
-                raise ValueError(
-                    f"Unable to convert VTK data type {type(data).__name__} to polydata: {e}"
-                )
+                raise ValueError(f"Unable to convert VTK data type {type(data).__name__} to polydata: {e}")
 
         # Convert VTK polydata to USD mesh with unique name based on file
         mesh_name = vtk_file_path.stem  # Use filename without extension
