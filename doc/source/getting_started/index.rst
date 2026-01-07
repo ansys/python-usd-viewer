@@ -8,8 +8,8 @@ Prerequisites
 -------------
 
 A C++ compiler is required to build USD from source. Please ensure you have one of the following installed:
-- Windows: Visual Studio
-- Linux: GCC
+- Windows: visual Studio
+- Linux: gcc
 
 Installation
 ------------

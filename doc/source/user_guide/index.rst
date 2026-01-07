@@ -35,6 +35,6 @@ To use the auto installer, run the following command in your terminal:
 
     usd-setup [--force-reinstall]
 
-This command will download the latest version of OpenUSD, build it, and install it in the current directory
+This command downloads the latest version of OpenUSD, builds it, and installs it in the current directory
  under `usd_install/`.
-The optional `--force-reinstall` flag can be used to force a reinstallation of OpenUSD, if it is already installed.
+The optional `--force-reinstall` flag can be used to force a reinstall of OpenUSD, if it is already installed.
