@@ -26,6 +26,7 @@ classifiers = [
 ]
 dependencies = [
   "numpy",
+  "pyopengl", # OpenUSD build dep
   "pyside6",
   "vtk>=9.0",
 ]
@@ -39,6 +40,7 @@ optional-dependencies.doc = [
 optional-dependencies.tests = [
   "pytest==9.0.2",
 ]
+scripts.usd-setup = "ansys.tools.usdviewer.autosetup:main"
 
 [tool.hatch.build.targets.wheel]
 packages = [ "src/ansys" ]

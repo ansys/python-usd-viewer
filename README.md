@@ -36,16 +36,12 @@ python -m venv .venv
 pip install .
 ```
 
-4.- Clone the OpenUSD repo.
+4.- Use the auto installer to setup OpenUSD or follow the instructions in the OpenUSD repository
 ```bash
-git clone https://github.com/PixarAnimationStudios/OpenUSD.git
-
+usd-setup
 ```
 
-4.- Build OpenUSD from binaries.
-```bash
-python OpenUSD/build_scripts/build_usd.py /path/to/my_usd_install_dir
-```
+
 
 
 

@@ -1,7 +1,7 @@
 Python USD viewer |version|
 ===========================
 
-The Python USD viewer is a lightweight application for viewing and inspecting
+The Python USD viewer is a lightweight app for viewing and inspecting
 Universal Scene Description (USD) files. It provides a simple interface to load,
 navigate, and visualize USD scenes, making it easier for developers and artists
 to work with complex 3D assets.
