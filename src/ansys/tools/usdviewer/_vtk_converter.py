@@ -1,4 +1,4 @@
-# Copyright (C) 2025 ANSYS, Inc. and/or its affiliates.
+# Copyright (C) 2025 - 2026 ANSYS, Inc. and/or its affiliates.
 # SPDX-License-Identifier: MIT
 #
 
@@ -61,10 +61,13 @@ class _VTKConverter:
             polydata = geometry_filter.GetOutput()
         else:
             # Try to extract surface from other data types
-            geometry_filter = vtk.vtkGeometryFilter()
-            geometry_filter.SetInputData(data)
-            geometry_filter.Update()
-            polydata = geometry_filter.GetOutput()
+            try:
+                geometry_filter = vtk.vtkGeometryFilter()
+                geometry_filter.SetInputData(data)
+                geometry_filter.Update()
+                polydata = geometry_filter.GetOutput()
+            except Exception as e:
+                raise ValueError(f"Unable to convert VTK data type {type(data).__name__} to polydata: {e}")
 
         # Convert VTK polydata to USD mesh with unique name based on file
         mesh_name = vtk_file_path.stem  # Use filename without extension
@@ -181,27 +184,28 @@ class _VTKConverter:
         Optional[Usd.Stage]
             The stage with the loaded asset, or None if loading failed.
         """
-        resolved_path = None
-        direct_path = Path(asset_path)
-        if direct_path.exists():
-            resolved_path = direct_path.resolve()
-
-        if not resolved_path:
-            print(f"Asset not found: {asset_path}")
+        # Resolve and validate the asset path
+        asset_file = Path(asset_path)
+        if not asset_file.exists():
+            warnings.warn(f"Asset not found: {asset_path}")
             return None
 
+        resolved_path = asset_file.resolve()
         file_extension = resolved_path.suffix.lower()
 
-        # Handle VTK and other 3D formats
-        if file_extension in [".vtk", ".vtp", ".vtu", ".vts", ".obj", ".ply", ".stl"]:
-            try:
-                # Convert VTK data directly into the provided stage
-                self._convert_vtk_to_usd(resolved_path, stage)
-                return stage
-            except Exception as e:
-                print(f"Failed to convert VTK file {resolved_path}: {e}")
-                return None
+        # Check if file format is supported
+        supported_formats = [".vtk", ".vtp", ".vtu", ".vts", ".obj", ".ply", ".stl"]
+        if file_extension not in supported_formats:
+            warnings.warn(f"Unsupported file format: {file_extension}")
+            return None
 
-        else:
-            print(f"Unsupported file format: {file_extension}")
+        # Convert VTK data directly into the provided stage
+        try:
+            self._convert_vtk_to_usd(resolved_path, stage)
+            return stage
+        except (FileNotFoundError, ValueError) as e:
+            warnings.warn(f"Failed to convert VTK file {resolved_path}: {e}")
+            return None
+        except Exception as e:
+            warnings.warn(f"Unexpected error converting {resolved_path}: {e}")
             return None
