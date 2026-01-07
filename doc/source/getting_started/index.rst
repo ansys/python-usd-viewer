@@ -42,17 +42,11 @@ In Windows:
 
     pip install .
 
-4.- Clone the OpenUSD repository.
+
+4.- Run the installation program to set up OpenUSD.
 
 .. code-block:: bash
 
-    git clone https://github.com/PixarAnimationStudios/OpenUSD.git
-
-5.- Build OpenUSD from binaries.
-
-.. code-block:: bash
-
-    python OpenUSD/build_scripts/build_usd.py /path/to/my_usd_install_dir
-
+    usd-setup
 
 After completing these steps, you should have the Python USD viewer installed and ready to use.
