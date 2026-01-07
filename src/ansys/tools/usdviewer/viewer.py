@@ -1,4 +1,4 @@
-# Copyright (C) 2025 ANSYS, Inc. and/or its affiliates.
+# Copyright (C) 2025 - 2026 ANSYS, Inc. and/or its affiliates.
 # SPDX-FileCopyrightText: 2019 Roy Nieterau
 
 # Permission is hereby granted, free of charge, to any person obtaining a copy
