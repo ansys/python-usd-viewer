@@ -31,10 +31,11 @@ This script automates the process of downloading, building, and installing OpenU
 users to get started with the viewer.
 
 To use the auto installer, run the following command in your terminal:
+
 .. code-block:: bash
 
     usd-setup [--force-reinstall]
 
 This command downloads the latest version of OpenUSD, builds it, and installs it in the current directory
- under `usd_install/`.
+under `usd_install/`.
 The optional `--force-reinstall` flag can be used to force a reinstall of OpenUSD, if it is already installed.
