@@ -131,7 +131,7 @@ class VTKConverter:
             The VTK polydata to convert.
         stage : Usd.Stage
             The USD stage to add the mesh to.
-        mesh_name : str, optionalº
+        mesh_name : str, optional
             The name of the mesh in USD, by default "VTKMesh".
         """
         if stage is None:

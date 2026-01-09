@@ -39,6 +39,9 @@ optional-dependencies.doc = [
 ]
 optional-dependencies.tests = [
   "pytest==9.0.2",
+  "pytest-cov==7.0.0",
+  "pytest-pyvista==0.3.2",
+  "pyvista==0.46.4",
 ]
 scripts.usd-setup = "ansys.tools.usdviewer.autosetup:main"
 
@@ -71,7 +74,12 @@ lint.isort.known-first-party = [ "ansys" ]
 lint.pydocstyle.convention = "numpy"
 
 [tool.pytest.ini_options]
-addopts = "-ra --cov=ansys.tools.common --cov-report html:.cov/html --cov-report xml:.cov/xml --cov-report term --capture=sys -vv"
+addopts = "-ra --cov=ansys.tools.usdviewer --cov-report html:.cov/html --cov-report xml:.cov/xml --cov-report term --capture=sys -vv --image_cache_dir tests/image_cache --add_missing_images"
+testpaths = [ "tests" ]
+norecursedirs = [ "usd_install", "OpenUSD", ".venv", "venv", "build", "dist", "*.egg" ]
+python_files = [ "test_*.py" ]
+python_classes = [ "Test*" ]
+python_functions = [ "test_*" ]
 
 [tool.towncrier]
 package = "ansys.tools.common"
