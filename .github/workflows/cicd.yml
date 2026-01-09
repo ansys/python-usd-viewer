@@ -108,6 +108,10 @@ jobs:
             libxcursor-dev \
             libxi-dev \
             libxinerama-dev \
+            libxt-dev \
+            libxmu-dev \
+            libxpm-dev \
+            libxaw7-dev \
             python3-dev \
             nasm
 
