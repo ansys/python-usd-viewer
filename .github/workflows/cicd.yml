@@ -93,6 +93,24 @@ jobs:
         with:
           python-version: ${{ env.MAIN_PYTHON_VERSION }}
 
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            build-essential \
+            cmake \
+            libboost-all-dev \
+            libglew-dev \
+            libglu1-mesa-dev \
+            libtbb-dev \
+            libx11-dev \
+            libxrandr-dev \
+            libxcursor-dev \
+            libxi-dev \
+            libxinerama-dev \
+            python3-dev \
+            nasm
+
       - name: Get OpenUSD version
         id: openusd-version
         run: |
@@ -117,8 +135,8 @@ jobs:
           path: |
             usd_install
             OpenUSD
-          key: ${{ runner.os }}-openusd-${{ steps.openusd-version.outputs.version
-            }}-python-${{ env.MAIN_PYTHON_VERSION }}
+          key: ${{ runner.os }}-openusd-${{ steps.openusd-version.outputs.version}}-python-${{
+            env.MAIN_PYTHON_VERSION }}
           restore-keys: |
             ${{ runner.os }}-openusd-${{ steps.openusd-version.outputs.version }}-
 
@@ -127,15 +145,42 @@ jobs:
           python -m pip install --upgrade pip
           pip install .
 
+      - name: Set up build environment variables
+        run: |
+          echo "CMAKE_BUILD_PARALLEL_LEVEL=$(($(nproc) / 2))" >> $GITHUB_ENV
+          echo "MAKEFLAGS=-j$(($(nproc) / 2))" >> $GITHUB_ENV
+
       - name: Run usd-setup command
         if: steps.cache-openusd.outputs.cache-hit != 'true'
-        run: usd-setup
+        timeout-minutes: 90
+        run: |
+          echo "Building OpenUSD from source (this may take 60-90 minutes)..."
+          usd-setup 2>&1 | tee usd-setup.log || (echo "::error::OpenUSD build failed. Check the logs above for details." && cat usd-setup.log && exit 1)
+
+      - name: Upload build logs on failure
+        if: failure() && steps.cache-openusd.outputs.cache-hit != 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: usd-setup-logs
+          path: |
+            usd-setup.log
+            OpenUSD/build/**/*.log
+          if-no-files-found: ignore
 
       - name: Verify OpenUSD installation
         run: |
           if [ -d "usd_install" ]; then
             echo "✓ OpenUSD installation found"
             ls -la usd_install
+            # Check for critical files
+            if [ -d "usd_install/lib" ]; then
+              echo "✓ Libraries directory exists"
+              ls -la usd_install/lib | head -20
+            fi
+            if [ -d "usd_install/bin" ]; then
+              echo "✓ Binaries directory exists"
+              ls -la usd_install/bin | head -20
+            fi
           else
             echo "✗ OpenUSD installation not found"
             exit 1
