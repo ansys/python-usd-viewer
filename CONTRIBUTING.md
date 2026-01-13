@@ -3,27 +3,27 @@
 Overall guidance on contributing to a PyAnsys library appears in the
 [Contributing] topic in the *PyAnsys developer's guide*. Ensure that you
 are thoroughly familiar with this guide before attempting to contribute to
-ansys-tools.
+ansys-tools-usdviewer.
 
-The following contribution information is specific to *Ansys Tools*.
+The following contribution information is specific to *Python OpenUSD viewer*.
 
 [Contributing]: https://dev.docs.pyansys.com/how-to/contributing.html
 
 ## Clone the repository
 
-To clone and install the latest *Ansys Tools* release in development mode, run
+To clone and install the latest *Python OpenUSD viewer* release in development mode, run
 these commands:
 
 ```bash
-git clone https://github.com/ansys/ansys-tools-usdviewer/
-cd ansys-tools
+git clone https://github.com/ansys-internal/python-usd-viewer/
+cd ansys-tools-usdviewer
 python -m pip install --upgrade pip
 pip install -e .
 ```
 
 ## Adhere to code style
 
-*Ansys Tools* follows the PEP8 standard as outlined in PEP 8 in the PyAnsys Developer’s Guide and implements style checking using pre-commit.
+*Python OpenUSD viewer* follows the PEP8 standard as outlined in PEP 8 in the PyAnsys Developer’s Guide and implements style checking using pre-commit.
 
 To ensure your code meets minimum code styling standards, run these commands:
 
