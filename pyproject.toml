@@ -31,16 +31,28 @@ dependencies = [
   "vtk>=9.0",
 ]
 
-optional-dependencies.doc = [
+scripts.usd-setup = "ansys.tools.usdviewer.autosetup:main"
+
+[dependency-groups]
+
+# NOTE: The `dependency-groups` section is used to define groups of dependencies
+# only available when a developer clones the repository and installs the package
+# for local development.
+dev = [
+  "pre-commit==4.5.1",
+  { include-group = "doc" },
+  { include-group = "tests" },
+]
+
+doc = [
   "ansys-sphinx-theme[autoapi]==1.6.4",
   "sphinx-click==6.2.0",
   "sphinx-copybutton==0.5.2",
   "sphinx-gallery==0.20.0",
 ]
-optional-dependencies.tests = [
+tests = [
   "pytest==9.0.2",
 ]
-scripts.usd-setup = "ansys.tools.usdviewer.autosetup:main"
 
 [tool.hatch.build.targets.wheel]
 packages = [ "src/ansys" ]
