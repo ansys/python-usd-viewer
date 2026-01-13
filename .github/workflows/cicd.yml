@@ -82,7 +82,6 @@ jobs:
     name: Tests
     runs-on: ubuntu-latest
     needs: code-style
-    timeout-minutes: 180
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -160,7 +159,7 @@ jobs:
         timeout-minutes: 90
         run: |
           echo "Building OpenUSD from source (this may take 60-90 minutes)..."
-          usd-setup 2>&1 | tee usd-setup.log || (echo "::error::OpenUSD build failed. Check the logs above for details." && cat usd-setup.log && exit 1)
+          usd-setup
 
       - name: Upload build logs on failure
         if: failure() && steps.cache-openusd.outputs.cache-hit != 'true'
@@ -246,6 +245,8 @@ jobs:
     steps:
       - name: "Run Ansys documentation building action"
         uses: ansys/actions/doc-build@v10.2.3
+        with:
+          group-dependencies-name: "doc"
 
   build-library:
     name: Build library
