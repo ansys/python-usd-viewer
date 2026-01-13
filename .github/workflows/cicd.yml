@@ -121,7 +121,7 @@ jobs:
       - name: "Run Ansys documentation building action"
         uses: ansys/actions/doc-build@v10.2.3
         with:
-          group-dependencies-name: "doc"
+          dependencies: "doc"
 
   build-library:
     name: Build library
