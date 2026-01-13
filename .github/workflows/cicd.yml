@@ -122,6 +122,7 @@ jobs:
         uses: ansys/actions/doc-build@v10.2.3
         with:
           group-dependencies-name: "doc"
+          optional-dependencies-name: ""
 
   build-library:
     name: Build library
