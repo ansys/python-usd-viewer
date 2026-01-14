@@ -19,11 +19,37 @@ except ImportError:
 import vtk
 
 
-class _VTKConverter:
+class VTKConverter:
     """Convert VTK files to USD format for visualization."""
 
     @staticmethod
-    def _convert_vtk_to_usd(vtk_file_path: Union[str, Path], stage: "Usd.Stage") -> "Usd.Stage":
+    def convert_vtk_file_to_usd(vtk_file_path: Union[str, Path], stage: "Usd.Stage" = None) -> None:
+        """Convert a VTK file to a USD file.
+
+        Parameters
+        ----------
+        vtk_file_path : Union[str, Path]
+            Path to the VTK file to convert.
+        stage : Usd.Stage
+            The stage to add the converted USD data to.
+        """
+        vtk_file_path = Path(vtk_file_path)
+        mesh_name = vtk_file_path.stem  # Use filename without extension
+
+        if not vtk_file_path.exists():
+            raise FileNotFoundError(f"VTK file not found: {vtk_file_path}")
+
+        # Read VTK file
+        reader = VTKConverter.get_vtk_reader(vtk_file_path)
+        reader.SetFileName(str(vtk_file_path))
+        reader.Update()
+
+        return VTKConverter.convert_vtk_to_usd(reader.GetOutput(), stage, mesh_name)
+
+    @staticmethod
+    def convert_vtk_to_usd(
+        data: "vtk.vtkDataSet", stage: "Usd.Stage" = None, mesh_name: str = "VTKMesh"
+    ) -> "Usd.Stage":
         """Convert a VTK file to a USD stage.
 
         Parameters
@@ -38,17 +64,8 @@ class _VTKConverter:
         Usd.Stage
             The stage containing the VTK data.
         """
-        vtk_file_path = Path(vtk_file_path)
-
-        if not vtk_file_path.exists():
-            raise FileNotFoundError(f"VTK file not found: {vtk_file_path}")
-
-        # Read VTK file
-        reader = _VTKConverter._get_vtk_reader(vtk_file_path)
-        reader.SetFileName(str(vtk_file_path))
-        reader.Update()
-
-        data = reader.GetOutput()
+        if stage is None:
+            stage = Usd.Stage.CreateNew("temp.usda")
 
         # Convert to polydata if necessary
         if isinstance(data, vtk.vtkPolyData):
@@ -70,13 +87,12 @@ class _VTKConverter:
                 raise ValueError(f"Unable to convert VTK data type {type(data).__name__} to polydata: {e}")
 
         # Convert VTK polydata to USD mesh with unique name based on file
-        mesh_name = vtk_file_path.stem  # Use filename without extension
-        _VTKConverter._convert_polydata_to_usd_mesh(polydata, stage, mesh_name)
+        VTKConverter.convert_polydata_to_usd_mesh(polydata, stage, mesh_name)
 
         return stage
 
     @staticmethod
-    def _get_vtk_reader(file_path: Path) -> vtk.vtkAlgorithm:
+    def get_vtk_reader(file_path: Path) -> vtk.vtkAlgorithm:
         """Get appropriate VTK reader based on file extension.
 
         Parameters
@@ -104,7 +120,9 @@ class _VTKConverter:
             raise ValueError(f"Unsupported VTK file format: {extension}")
 
     @staticmethod
-    def _convert_polydata_to_usd_mesh(polydata, stage: "Usd.Stage", mesh_name: str = "VTKMesh") -> None:
+    def convert_polydata_to_usd_mesh(
+        polydata: vtk.vtkPolyData, stage: "Usd.Stage" = None, mesh_name: str = "VTKMesh"
+    ) -> None:
         """Convert VTK polydata to USD mesh geometry.
 
         Parameters
@@ -116,6 +134,9 @@ class _VTKConverter:
         mesh_name : str, optional
             The name of the mesh in USD, by default "VTKMesh".
         """
+        if stage is None:
+            stage = Usd.Stage.CreateNew("temp.usda")
+
         # Create a mesh primitive in USD with unique name
         mesh_path = f"/{mesh_name}"
         mesh_prim = UsdGeom.Mesh.Define(stage, mesh_path)
@@ -169,6 +190,89 @@ class _VTKConverter:
 
                 mesh_prim.CreateDisplayColorAttr().Set(colors)
 
+    @staticmethod
+    def convert_usd_to_vtk(stage: "Usd.Stage", mesh_path: Optional[str] = None) -> Optional[vtk.vtkPolyData]:
+        """Convert a USD mesh to VTK polydata.
+
+        Parameters
+        ----------
+        stage : Usd.Stage
+            The USD stage containing the mesh.
+        mesh_path : str, optional
+            The path to the mesh in USD. If None, finds the first mesh in the stage.
+
+        Returns
+        -------
+        Optional[vtk.vtkPolyData]
+            The converted VTK polydata, or None if conversion failed.
+        """
+        # If no mesh path is provided, find the first mesh in the stage
+        if mesh_path is None:
+            for prim in stage.Traverse():
+                if prim.IsA(UsdGeom.Mesh):
+                    mesh_path = str(prim.GetPath())
+                    break
+
+            if mesh_path is None:
+                warnings.warn("No mesh found in the USD stage")
+                return None
+
+        mesh_prim = stage.GetPrimAtPath(mesh_path)
+        if not mesh_prim or not mesh_prim.IsA(UsdGeom.Mesh):
+            warnings.warn(f"Mesh not found or invalid: {mesh_path}")
+            return None
+
+        mesh = UsdGeom.Mesh(mesh_prim)
+
+        # Create a new VTK polydata object
+        polydata = vtk.vtkPolyData()
+
+        # Convert points
+        points_attr = mesh.GetPointsAttr()
+        if points_attr:
+            points = points_attr.Get()
+            if points:
+                vtk_points = vtk.vtkPoints()
+                for point in points:
+                    vtk_points.InsertNextPoint(point[0], point[1], point[2])
+                polydata.SetPoints(vtk_points)
+
+        # Convert faces
+        face_vertex_indices_attr = mesh.GetFaceVertexIndicesAttr()
+        face_vertex_counts_attr = mesh.GetFaceVertexCountsAttr()
+
+        if face_vertex_indices_attr and face_vertex_counts_attr:
+            face_vertex_indices = face_vertex_indices_attr.Get()
+            face_vertex_counts = face_vertex_counts_attr.Get()
+
+            if face_vertex_indices and face_vertex_counts:
+                vtk_faces = vtk.vtkCellArray()
+                start = 0
+                for count in face_vertex_counts:
+                    vtk_faces.InsertNextCell(count, face_vertex_indices[start : start + count])
+                    start += count
+                polydata.SetPolys(vtk_faces)
+
+        # Convert colors
+        display_color_attr = mesh.GetDisplayColorAttr()
+        if display_color_attr:
+            colors = display_color_attr.Get()
+            if colors:
+                vtk_colors = vtk.vtkUnsignedCharArray()
+                vtk_colors.SetNumberOfComponents(3)
+                vtk_colors.SetName("Colors")
+
+                for color in colors:
+                    # USD colors are typically in 0-1 range, convert to 0-255 for VTK
+                    r = int(color[0] * 255) if color[0] <= 1.0 else int(color[0])
+                    g = int(color[1] * 255) if color[1] <= 1.0 else int(color[1])
+                    b = int(color[2] * 255) if color[2] <= 1.0 else int(color[2])
+                    vtk_colors.InsertNextTuple3(r, g, b)
+
+                polydata.GetPointData().SetScalars(vtk_colors)
+
+        return polydata
+
     def load_asset(self, asset_path: str, stage: "Usd.Stage") -> Optional["Usd.Stage"]:
         """Load a VTK asset into the provided stage.
 
@@ -201,7 +305,7 @@ class _VTKConverter:
 
         # Convert VTK data directly into the provided stage
         try:
-            self._convert_vtk_to_usd(resolved_path, stage)
+            self.convert_vtk_to_usd(resolved_path, stage)
             return stage
         except (FileNotFoundError, ValueError) as e:
             warnings.warn(f"Failed to convert VTK file {resolved_path}: {e}")

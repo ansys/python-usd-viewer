@@ -36,7 +36,7 @@ try:
 except ImportError:
     warnings.warn("The 'PySide6' module is not available in this environment. ")
 
-from ansys.tools.usdviewer._vtk_converter import _VTKConverter
+from ansys.tools.usdviewer.vtk_converter import VTKConverter
 
 
 class Widget(QtWidgets.QWidget):
@@ -91,7 +91,7 @@ class USDViewer:
         self._size = size
 
         # Initialize asset resolver
-        self._asset_resolver = _VTKConverter()
+        self._asset_resolver = VTKConverter()
         self._vtk_paths = []
 
     def _load_vtk_assets(self, stage: "Usd.Stage") -> None:

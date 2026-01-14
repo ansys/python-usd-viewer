@@ -183,3 +183,4 @@ not_a_dir
 *usd_build/
 *OpenUSD/
 *install_dir/
+examples/sphere.usda
