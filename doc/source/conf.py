@@ -10,11 +10,11 @@ from ansys_sphinx_theme import (
 from ansys.tools.usdviewer import __version__
 
 # Project information
-project = "python-usd-viewer"
+project = "ansys-tools-usdviewer"
 copyright = f"(c) {datetime.now().year} ANSYS, Inc. All rights reserved"
 author = "ANSYS, Inc."
 release = version = __version__
-cname = os.getenv("DOCUMENTATION_CNAME", default="python-usd-viewer.tools.docs.pyansys.com")
+cname = os.getenv("DOCUMENTATION_CNAME", default="usdviewer.tools.docs.pyansys.com")
 switcher_version = get_version_match(__version__)
 
 # Select desired logo, theme, and declare the html title
@@ -25,7 +25,7 @@ html_baseurl = f"https://{cname}/version/stable"
 
 # specify the location of your github repo
 html_context = {
-    "github_user": "ansys",
+    "github_user": "ansys-internal",
     "github_repo": "python-usd-viewer",
     "github_version": "main",
     "doc_path": "doc/source",
@@ -53,7 +53,7 @@ html_theme_options = {
         },
         {
             "name": "Download documentation in PDF",
-            "url": f"https://{cname}/version/{switcher_version}/_static/assets/download/python-usd-viewer.pdf",  # noqa: E501
+            "url": f"https://{cname}/version/{switcher_version}/_static/assets/download/ansys-tools-usdviewer.pdf",  # noqa: E501
             "icon": "fa fa-file-pdf fa-fw",
         },
     ],
@@ -85,7 +85,7 @@ sphinx_gallery_conf = {
     # directory where function granular galleries are stored
     "backreferences_dir": None,
     # Modules for which function level galleries are created.  In
-    "doc_module": "ansys-tools-visualization-interface",
+    "doc_module": "ansys-tools-usdviewer",
     "ignore_pattern": "flycheck*",
     "thumbnail_size": (350, 350),
     "remove_config_comments": True,

@@ -31,19 +31,31 @@ dependencies = [
   "vtk>=9.0",
 ]
 
-optional-dependencies.doc = [
+scripts.usd-setup = "ansys.tools.usdviewer.autosetup:main"
+
+[dependency-groups]
+
+# NOTE: The `dependency-groups` section is used to define groups of dependencies
+# only available when a developer clones the repository and installs the package
+# for local development.
+dev = [
+  "pre-commit==4.5.1",
+  { include-group = "doc" },
+  { include-group = "tests" },
+]
+
+doc = [
   "ansys-sphinx-theme[autoapi]==1.6.4",
   "sphinx-click==6.2.0",
   "sphinx-copybutton==0.5.2",
   "sphinx-gallery==0.20.0",
 ]
-optional-dependencies.tests = [
+tests = [
   "pytest==9.0.2",
   "pytest-cov==7.0.0",
   "pytest-pyvista==0.3.2",
   "pyvista==0.46.4",
 ]
-scripts.usd-setup = "ansys.tools.usdviewer.autosetup:main"
 
 [tool.hatch.build.targets.wheel]
 packages = [ "src/ansys" ]
@@ -82,13 +94,13 @@ python_classes = [ "Test*" ]
 python_functions = [ "test_*" ]
 
 [tool.towncrier]
-package = "ansys.tools.common"
+package = "ansys.tools.usdviewer"
 directory = "doc/source/changelog"
 filename = "doc/source/changelog.rst"
 start_string = ".. towncrier release notes start\n"
 template = "doc/changelog/template"
-title_format = "`{version} <https://github.com/ansys/ansys-tools-usdviewer/releases/tag/v{version}>`_ - {project_date}"
-issue_format = "`#{issue} <https://github.com/ansys/ansys-tools-usdviewer/pull/{issue}>`_"
+title_format = "`{version} <https://github.com/ansys-internal/python-usd-viewer/releases/tag/v{version}>`_ - {project_date}"
+issue_format = "`#{issue} <https://github.com/ansys-internal/python-usd-viewer/pull/{issue}>`_"
 
 [[tool.towncrier.type]]
 directory = "added"

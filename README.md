@@ -11,39 +11,34 @@ the `_VTKConverter` class handles the VTK assets by:
 3. Translating the VTK polydata to a USD mesh
 4. Embedding it into a USD stage for visualization
 
-
 ## Installation steps:
 Prerequisites: Have C++ compiler (Visual Studio in Windows, should be available by default in Linux)
 
-1.- Create a new Python environment for this repository.
+1. Create a new Python environment for this repository.
 ```bash
 python -m venv .venv
-
 ```
-2.- Activate the environment:
-    linux
-    ```bash
-        source .venv/bin/activate
-    ```
+2. Activate the environment:
 
-    windows
-    ```bash
-        .venv/Scripts/activate
-    ```
+```bash
+# On Linux or macOS
+source .venv/bin/activate
+```
 
-3.- Install the project:
+```bash
+# On Windows
+.venv/Scripts/activate
+```
+
+3. Install the project:
 ```bash
 pip install .
 ```
 
-4.- Use the auto installer to setup OpenUSD or follow the instructions in the OpenUSD repository
+4. Use the auto installer to setup OpenUSD or follow the instructions in the OpenUSD repository
 ```bash
 usd-setup
 ```
-
-
-
-
 
 ## Usage
 
