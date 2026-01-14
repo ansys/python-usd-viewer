@@ -25,7 +25,7 @@ html_baseurl = f"https://{cname}/version/stable"
 
 # specify the location of your github repo
 html_context = {
-    "github_user": "ansys-internal",
+    "github_user": "ansys",
     "github_repo": "python-usd-viewer",
     "github_version": "main",
     "doc_path": "doc/source",
@@ -37,7 +37,7 @@ html_theme_options = {
         "version_match": switcher_version,
     },
     "check_switcher": False,
-    "github_url": "https://github.com/ansys-internal/python-usd-viewer",
+    "github_url": "https://github.com/ansys/python-usd-viewer",
     "show_prev_next": False,
     "show_breadcrumbs": True,
     "collapse_navigation": True,
@@ -48,7 +48,7 @@ html_theme_options = {
     "icon_links": [
         {
             "name": "Support",
-            "url": "https://github.com/ansys-internal/python-usd-viewer/discussions",
+            "url": "https://github.com/ansys/python-usd-viewer/discussions",
             "icon": "fa fa-comment fa-fw",
         },
         {

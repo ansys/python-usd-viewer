@@ -15,7 +15,7 @@ To clone and install the latest *Python OpenUSD viewer* release in development m
 these commands:
 
 ```bash
-git clone https://github.com/ansys-internal/python-usd-viewer/
+git clone https://github.com/ansys/python-usd-viewer/
 cd ansys-tools-usdviewer
 python -m pip install --upgrade pip
 pip install -e .
