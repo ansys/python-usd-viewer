@@ -8,12 +8,6 @@ repos:
           - "-formatter"
           - "max_line_length=80,retain_line_breaks=true,retain_line_breaks_single=true"
 
-  - repo: https://github.com/tox-dev/pyproject-fmt
-    rev: v2.8.0
-    hooks:
-      - id: pyproject-fmt
-        args: [--keep-full-version]
-
   - repo: https://github.com/adamchainz/blacken-docs
     rev: 1.19.1
     hooks:
