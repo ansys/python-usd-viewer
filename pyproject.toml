@@ -23,12 +23,15 @@ classifiers = [
   "Programming Language :: Python :: 3.13",
   "Programming Language :: Python :: 3.14",
   "Topic :: Scientific/Engineering :: Information Analysis",
+  "Topic :: Multimedia :: Graphics :: 3D Rendering",
+  "Topic :: Multimedia :: Graphics :: Viewers",
 ]
+# TODO: Discuss about the removal of `pyopengl` as a dependency and addition of `usd-core`
 dependencies = [
   "numpy",
-  "pyopengl", # OpenUSD build dep
   "pyside6",
   "vtk>=9.0",
+  "usd-core",
 ]
 
 scripts.usd-setup = "ansys.tools.usdviewer.autosetup:main"
@@ -43,7 +46,6 @@ dev = [
   { include-group = "doc" },
   { include-group = "tests" },
 ]
-
 doc = [
   "ansys-sphinx-theme[autoapi]==1.6.4",
   "sphinx-click==6.2.0",
@@ -77,6 +79,7 @@ lint.select = [
   "I",   # isort, see https://beta.ruff.rs/docs/rules/#isort-i
   "N",   # pep8-naming, see https://beta.ruff.rs/docs/rules/#pep8-naming-n
   "PTH", # flake8-use-pathlib, https://beta.ruff.rs/docs/rules/#flake8-use-pathlib-pth
+  "TD",  # flake8-todos, https://docs.astral.sh/ruff/rules/#flake8-todos-td
 ]
 lint.ignore = [  ]
 lint.isort.combine-as-imports = true
