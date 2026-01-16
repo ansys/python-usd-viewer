@@ -8,14 +8,7 @@ from pathlib import Path
 from typing import Optional, Union
 import warnings
 
-try:
-    from pxr import Gf, Usd, UsdGeom
-except ImportError:
-    warnings.warn(
-        "The 'pxr' module is required to use the USDViewer. "
-        "Please install the 'usd-core' package. "
-        "Refer to the documentation for installation instructions."
-    )
+from pxr import Gf, Usd, UsdGeom
 import vtk
 
 
@@ -102,22 +95,23 @@ class VTKConverter:
         """
         extension = file_path.suffix.lower()
 
-        if extension == ".vtk":
-            return vtk.vtkPolyDataReader()
-        elif extension == ".vtp":
-            return vtk.vtkXMLPolyDataReader()
-        elif extension == ".vtu":
-            return vtk.vtkXMLUnstructuredGridReader()
-        elif extension == ".vts":
-            return vtk.vtkXMLStructuredGridReader()
-        elif extension == ".obj":
-            return vtk.vtkOBJReader()
-        elif extension == ".ply":
-            return vtk.vtkPLYReader()
-        elif extension == ".stl":
-            return vtk.vtkSTLReader()
-        else:
-            raise ValueError(f"Unsupported VTK file format: {extension}")
+        match extension:
+            case ".vtk":
+                return vtk.vtkPolyDataReader()
+            case ".vtp":
+                return vtk.vtkXMLPolyDataReader()
+            case ".vtu":
+                return vtk.vtkXMLUnstructuredGridReader()
+            case ".vts":
+                return vtk.vtkXMLStructuredGridReader()
+            case ".obj":
+                return vtk.vtkOBJReader()
+            case ".ply":
+                return vtk.vtkPLYReader()
+            case ".stl":
+                return vtk.vtkSTLReader()
+            case _:
+                raise ValueError(f"Unsupported VTK file format: {extension}")
 
     @staticmethod
     def convert_polydata_to_usd_mesh(
