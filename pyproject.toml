@@ -28,10 +28,10 @@ classifiers = [
 ]
 # TODO: Discuss about the removal of `pyopengl` as a dependency and addition of `usd-core`
 dependencies = [
-  "numpy",
-  "pyside6",
+  "numpy>=2.4.0",
+  "pyopengl>=3.1.10", # OpenUSD build dep
+  "pyside6>=6.10.0",
   "vtk>=9.0",
-  "usd-core",
 ]
 
 scripts.usd-setup = "ansys.tools.usdviewer.autosetup:main"
