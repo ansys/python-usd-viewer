@@ -60,13 +60,6 @@ html_theme_options = {
     "ansys_sphinx_theme_autoapi": {
         "project": project,
     },
-    # TODO: Add cheatsheet configuration (if ever required)
-    # "cheatsheet": {
-    #     "file": "cheatsheet/cheat_sheet.qmd",
-    #     "pages": ["index", "getting_started/index", "user_guide/index"],
-    #     "title": "Python USD Viewer cheat sheet",
-    #     "version": __version__,
-    # },
 }
 
 # Sphinx extensions
