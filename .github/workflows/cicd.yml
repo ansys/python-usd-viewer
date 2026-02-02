@@ -51,7 +51,7 @@ jobs:
     name: Check the name of the PR
     runs-on: ubuntu-latest
     permissions:
-      pull-requests: read
+      pull-requests: read # Required for check-pr-title action
     steps:
       - name: Check commit name
         uses: ansys/actions/check-pr-title@41f86da4c9ead510db9135e428e33df9cc6f92e1 # v10.2.3
