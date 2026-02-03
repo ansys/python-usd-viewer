@@ -31,7 +31,7 @@ import os
 from pathlib import Path
 import platform
 import shutil
-import subprocess
+import subprocess  # nosec B404 - subprocess is required for build automation with trusted system tools
 import sys
 import textwrap
 import warnings
@@ -56,19 +56,19 @@ def clone_openusd() -> str:
     # Enable long path support on Windows
     if platform.system() == "Windows":
         try:
-            subprocess.run(["git", "config", "--global", "core.longpaths", "true"], check=True, capture_output=True)
+            subprocess.run(["git", "config", "--global", "core.longpaths", "true"], check=True, capture_output=True)  # nosec B603, B607
         except subprocess.CalledProcessError:
             print("Warning: Could not enable git long paths support")
 
     try:
         # Clone with shallow depth first to avoid some long path issues
-        subprocess.run(
+        subprocess.run(  # nosec B603, B607
             ["git", "clone", "--depth", "1", "https://github.com/PixarAnimationStudios/OpenUSD.git", str(openusd_path)],
             check=True,
         )
 
         # Then fetch submodules
-        subprocess.run(["git", "submodule", "update", "--init", "--recursive"], cwd=openusd_path, check=True)
+        subprocess.run(["git", "submodule", "update", "--init", "--recursive"], cwd=openusd_path, check=True)  # nosec B603, B607
 
         print(f"✓ OpenUSD repository cloned to {openusd_path}")
         return openusd_path
@@ -103,7 +103,7 @@ def check_build_dependencies():
         for vswhere_path in vswhere_paths:
             if Path(vswhere_path).exists():
                 try:
-                    result = subprocess.run(
+                    result = subprocess.run(  # nosec B603
                         [vswhere_path, "-latest", "-property", "installationPath"],
                         capture_output=True,
                         text=True,
@@ -192,7 +192,7 @@ def check_build_dependencies():
     elif system == "Linux":
         # Check for gcc or g++
         try:
-            subprocess.run(["g++", "--version"], capture_output=True, check=True)
+            subprocess.run(["g++", "--version"], capture_output=True, check=True)  # nosec B603, B607
             print("✓ g++ compiler found")
         except (subprocess.CalledProcessError, FileNotFoundError):
             error_msg = textwrap.dedent("""
@@ -215,7 +215,7 @@ def check_build_dependencies():
     elif system == "Darwin":  # macOS
         # Check for clang (Xcode command line tools)
         try:
-            subprocess.run(["clang++", "--version"], capture_output=True, check=True)
+            subprocess.run(["clang++", "--version"], capture_output=True, check=True)  # nosec B603, B607
             print("✓ clang++ compiler found")
         except (subprocess.CalledProcessError, FileNotFoundError):
             error_msg = textwrap.dedent("""
@@ -232,7 +232,7 @@ def check_build_dependencies():
 
     # Check for CMake
     try:
-        result = subprocess.run(["cmake", "--version"], capture_output=True, check=True, text=True)
+        result = subprocess.run(["cmake", "--version"], capture_output=True, check=True, text=True)  # nosec B603, B607
         cmake_version = result.stdout.split("\n")[0]
         print(f"✓ CMake found: {cmake_version}")
     except (subprocess.CalledProcessError, FileNotFoundError):
@@ -274,7 +274,7 @@ def get_vs_environment() -> dict:
     for vswhere_path in vswhere_paths:
         if Path(vswhere_path).exists():
             try:
-                result = subprocess.run(
+                result = subprocess.run(  # nosec B603
                     [vswhere_path, "-latest", "-property", "installationPath"],
                     capture_output=True,
                     text=True,
@@ -305,7 +305,7 @@ def get_vs_environment() -> dict:
             f.write("set\n")
             temp_bat = f.name
 
-        result = subprocess.run(["cmd", "/c", temp_bat], capture_output=True, text=True, check=True)
+        result = subprocess.run(["cmd", "/c", temp_bat], capture_output=True, text=True, check=True)  # nosec B603, B607
 
         # Parse the environment variables
         env = os.environ.copy()
@@ -339,7 +339,7 @@ def build_and_install_openusd(install_path: Path = None, force_rebuild: bool = F
     # Install optional dependencies for schema generation tools
     try:
         print("Installing optional Python dependencies (Jinja2)...")
-        subprocess.run([sys.executable, "-m", "pip", "install", "jinja2"], capture_output=True, check=True)
+        subprocess.run([sys.executable, "-m", "pip", "install", "jinja2"], capture_output=True, check=True)  # nosec B603
         print("✓ Jinja2 installed (enables usdGenSchema tools)")
     except subprocess.CalledProcessError:
         print("⚠️  Warning: Could not install Jinja2. Schema generation tools will be omitted.")
@@ -371,7 +371,7 @@ def build_and_install_openusd(install_path: Path = None, force_rebuild: bool = F
         print(f"Running: {' '.join(cmd)}")
 
         # Run the build with Visual Studio environment
-        subprocess.run(cmd, env=env, check=True)
+        subprocess.run(cmd, env=env, check=True)  # nosec B603
 
         print("✓ OpenUSD built and installed successfully")
 
