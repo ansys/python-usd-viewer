@@ -26,7 +26,6 @@ classifiers = [
   "Topic :: Multimedia :: Graphics :: 3D Rendering",
   "Topic :: Multimedia :: Graphics :: Viewers",
 ]
-# TODO: Discuss about the removal of `pyopengl` as a dependency and addition of `usd-core`
 dependencies = [
   "numpy",
   "pyopengl", # OpenUSD build dep
