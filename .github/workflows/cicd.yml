@@ -150,6 +150,8 @@ jobs:
     if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     needs: [build-library]
+    permissions:
+      contents: write # Needed to update files on the gh-pages branch
     steps:
       - name: Deploy the latest documentation
         uses: ansys/actions/doc-deploy-dev@41f86da4c9ead510db9135e428e33df9cc6f92e1 # v10.2.3
