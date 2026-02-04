@@ -21,20 +21,21 @@
 import sys
 import warnings
 
+from PySide6 import QtCore, QtWidgets
+
 try:
     from pxr import Usd, UsdUtils
     from pxr.Usdviewq.stageView import StageView
 except ImportError:
     warnings.warn(
-        "The 'pxr' module is required to use the USDViewer. "
-        "Please install the 'usd-core' package. "
-        "Refer to the documentation for installation instructions."
+        "The 'pxr' module from OpenUSD is required to use the USDViewer. "
+        "Please install OpenUSD with the usdview component. "
+        "Note: The basic 'usd-core' package does not include usdview. "
+        "See installation instructions at: "
+        "https://github.com/ansys/python-usd-viewer or "
+        "https://github.com/PixarAnimationStudios/OpenUSD#getting-and-building-the-code"
     )
 
-try:
-    from PySide6 import QtCore, QtWidgets
-except ImportError:
-    warnings.warn("The 'PySide6' module is not available in this environment. ")
 
 from ansys.tools.usdviewer.vtk_converter import VTKConverter
 

@@ -16,7 +16,7 @@ these commands:
 
 ```bash
 git clone https://github.com/ansys/python-usd-viewer/
-cd ansys-tools-usdviewer
+cd python-usd-viewer
 python -m pip install --upgrade pip
 pip install -e .
 ```

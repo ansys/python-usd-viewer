@@ -68,7 +68,6 @@ extensions = [
     "sphinx_copybutton",
     "sphinx_design",
     "sphinx_jinja",
-    # "sphinx_gallery.gen_gallery",
     "ansys_sphinx_theme.extension.autoapi",
 ]
 

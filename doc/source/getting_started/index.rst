@@ -16,13 +16,13 @@ Installation
 
 This section guides you through installing the Python USD viewer in user mode step-by-step.
 
-1.- Create a Python virtual environment:
+1. Create a Python virtual environment:
 
 .. code-block:: bash
 
     python -m venv .venv
 
-2.- Activate the environment.
+2. Activate the environment.
 
 In Linux:
 
@@ -36,14 +36,14 @@ In Windows:
 
     .venv/Scripts/activate
 
-3.- Install the project:
+3. Install the project:
 
 .. code-block:: bash
 
     pip install .
 
 
-4.- Run the installation program to set up OpenUSD.
+4. Run the installation program to set up OpenUSD.
 
 .. code-block:: bash
 

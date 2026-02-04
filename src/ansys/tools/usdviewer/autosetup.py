@@ -99,6 +99,7 @@ def check_build_dependencies():
         ]
 
         vs_found = False
+        vs_path = None
         for vswhere_path in vswhere_paths:
             if Path(vswhere_path).exists():
                 try:
@@ -108,8 +109,44 @@ def check_build_dependencies():
                         text=True,
                         check=True,
                     )
-                    if result.stdout.strip():
+                    vs_path = result.stdout.strip()
+                    print(f"Found Visual Studio installation at: {vs_path}")
+                    if vs_path:
                         vs_found = True
+
+                        # Check Visual Studio version
+                        version_result = subprocess.run(
+                            [vswhere_path, "-latest", "-property", "catalog_productLineVersion"],
+                            capture_output=True,
+                            text=True,
+                            check=True,
+                        )
+                        vs_version = version_result.stdout.strip()
+                        print(f"Detected Visual Studio version: {vs_version}")
+
+                        # Check if VS 2026 (version 18) or later
+                        if vs_version and int(vs_version) == 18:
+                            warning_msg = textwrap.dedent(f"""
+                                ⚠️  WARNING: Visual Studio {vs_version} detected
+
+                                OpenUSD's build_usd.py script does NOT yet support Visual Studio 2026 (version 18).
+                                The build system currently only supports up to Visual Studio 2022 (version 17).
+
+                                You have two options:
+
+                                1. Install Visual Studio 2022 Build Tools in parallel:
+                                   https://visualstudio.microsoft.com/downloads/#build-tools-for-visual-studio-2022
+
+                                   During installation, select "Desktop development with C++"
+
+                                2. Wait for OpenUSD to add support for Visual Studio 2026
+                                   (Monitor: https://github.com/PixarAnimationStudios/OpenUSD/issues/3968)
+
+                                The build will likely FAIL with the current Visual Studio version.
+                            """)
+                            print(warning_msg)
+                            warnings.warn(warning_msg)
+
                         break
                 except subprocess.CalledProcessError:
                     continue
@@ -123,6 +160,10 @@ def check_build_dependencies():
 
                 OpenUSD requires a C++ compiler to build. On Windows, you need to install
                 Microsoft Visual Studio or Visual Studio Build Tools.
+
+                ⚠️ IMPORTANT: Visual Studio 2026 (version 18) is NOT yet supported!
+                OpenUSD's build_usd.py only supports up to Visual Studio 2022 (version 17).
+                Wait for OpenUSD to add support for Visual Studio 2026.
 
                 Please install one of the following:
 
