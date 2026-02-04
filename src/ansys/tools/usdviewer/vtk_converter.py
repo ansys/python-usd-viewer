@@ -8,7 +8,18 @@ from pathlib import Path
 from typing import Optional, Union
 import warnings
 
-from pxr import Gf, Usd, UsdGeom
+try:
+    from pxr import Gf, Usd, UsdGeom
+except ImportError:
+    warnings.warn(
+        "The 'pxr' module from OpenUSD is required to use the USDViewer. "
+        "Please install OpenUSD with the usdview component. "
+        "Note: The basic 'usd-core' package does not include usdview. "
+        "See installation instructions at: "
+        "https://github.com/ansys/python-usd-viewer or "
+        "https://github.com/PixarAnimationStudios/OpenUSD#getting-and-building-the-code"
+    )
+
 import vtk
 
 
