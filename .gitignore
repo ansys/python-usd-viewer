@@ -176,6 +176,8 @@ cython_debug/
 ._build
 
 doc/source/api
+doc/source/examples
+*sg_execution_times.rst
 .cov
 not_a_dir
 
