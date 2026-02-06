@@ -33,9 +33,18 @@ to work with complex 3D assets.
 
         Explore the API reference for the Python USD Viewer.
 
+    .. grid-item-card:: Examples :material-regular:`play_circle`
+        :padding: 2 2 2 2
+        :link: examples/index
+        :link-type: doc
+
+        Browse examples demonstrating how to use the Python USD Viewer
+        with various file formats and features.
+
 .. toctree::
     :hidden:
 
     getting_started/index
     user_guide/index
     api/index
+    examples/index

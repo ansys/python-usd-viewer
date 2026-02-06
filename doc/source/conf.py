@@ -68,6 +68,7 @@ extensions = [
     "sphinx_copybutton",
     "sphinx_design",
     "sphinx_jinja",
+    "sphinx_gallery.gen_gallery",
     "ansys_sphinx_theme.extension.autoapi",
 ]
 
@@ -89,4 +90,5 @@ sphinx_gallery_conf = {
     "thumbnail_size": (350, 350),
     "remove_config_comments": True,
     "show_signature": False,
+    "plot_gallery": False,
 }

@@ -20,7 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 """
-.. _ref_vtk_example:
+.. _ref_convert_vtk_usd_example:
 
 ==============================
 Converting VTK to USD and back
