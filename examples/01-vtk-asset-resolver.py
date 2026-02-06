@@ -20,7 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 """
-.. _ref_vtk_example:
+.. _ref_vtk_asset_resolver_example:
 
 =======================================
 Viewing a mixed USD file with VTK asset
