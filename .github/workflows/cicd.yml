@@ -16,7 +16,7 @@ concurrency:
 env:
   PACKAGE_NAME: ansys-tools-usdviewer
   MAIN_PYTHON_VERSION: 3.13
-  DOCUMENTATION_CNAME: tools.docs.pyansys.com
+  DOCUMENTATION_CNAME: usd-viewer.docs.pyansys.com
 
 permissions:
   contents: read
