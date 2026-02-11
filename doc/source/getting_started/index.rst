@@ -22,7 +22,7 @@ Prerequisites
 Other Requirements
 ~~~~~~~~~~~~~~~~~~
 
-- :term:`CMake` 3.14 or later.
+- CMake 3.14 or later.
 - Git (for cloning OpenUSD repository)
 
 Installation
@@ -69,7 +69,7 @@ In Windows:
    If this happens, please ensure that Visual Studio executables are available in your system's PATH environment variable.
    You can do this by adding the path to the Visual Studio installation directory
    (for example, ``C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.44\bin\Hostx64\x64``,
-    ``C:\Program Files\Microsoft Visual Studio\2022\Community\Common7\IDE``,
-    ``C:\Program Files\Microsoft Visual Studio\2022\Community\Common7\Tools``) to your PATH.
+   ``C:\Program Files\Microsoft Visual Studio\2022\Community\Common7\IDE``,
+   ``C:\Program Files\Microsoft Visual Studio\2022\Community\Common7\Tools``) to your PATH.
 
 After completing these steps, you should have the Python USD viewer installed and ready to use.
