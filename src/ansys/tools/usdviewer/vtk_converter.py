@@ -10,7 +10,7 @@ import warnings
 
 try:
     from pxr import Gf, Usd, UsdGeom
-except ImportError:
+except ImportError:  # pragma: no cover
     warnings.warn(
         "The 'pxr' module from OpenUSD is required to use the USDViewer. "
         "Please install OpenUSD with the usdview component. "
