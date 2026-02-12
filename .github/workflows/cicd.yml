@@ -197,7 +197,7 @@ jobs:
     name: Deploy stable docs
     if: github.event_name == 'push' && contains(github.ref, 'refs/tags')
     runs-on: ubuntu-latest
-    needs: release
+    needs: [release, doc-build]
     steps:
       - uses: ansys/actions/doc-deploy-stable@36cd86710c966963f4dcec56a9670171618cf76a # v10.2.4
         with:
