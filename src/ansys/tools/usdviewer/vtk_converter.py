@@ -310,7 +310,7 @@ class VTKConverter:
 
         # Convert VTK data directly into the provided stage
         try:
-            self.convert_vtk_to_usd(resolved_path, stage)
+            self.convert_vtk_file_to_usd(str(resolved_path), stage)
             return stage
         except (FileNotFoundError, ValueError) as e:
             warnings.warn(f"Failed to convert VTK file {resolved_path}: {e}")
