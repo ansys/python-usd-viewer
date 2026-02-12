@@ -10,7 +10,7 @@ import warnings
 
 try:
     from pxr import Gf, Usd, UsdGeom
-except ImportError:
+except ImportError:  # pragma: no cover
     warnings.warn(
         "The 'pxr' module from OpenUSD is required to use the USDViewer. "
         "Please install OpenUSD with the usdview component. "
@@ -310,7 +310,7 @@ class VTKConverter:
 
         # Convert VTK data directly into the provided stage
         try:
-            self.convert_vtk_to_usd(resolved_path, stage)
+            self.convert_vtk_file_to_usd(str(resolved_path), stage)
             return stage
         except (FileNotFoundError, ValueError) as e:
             warnings.warn(f"Failed to convert VTK file {resolved_path}: {e}")
