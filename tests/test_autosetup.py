@@ -34,8 +34,7 @@ def test_clone_openusd_already_exists(tmp_path):
     with patch("ansys.tools.usdviewer.autosetup.Path") as mock_path:
         mock_path.return_value.exists.return_value = True
 
-        with patch("builtins.print"):
-            result = autosetup.clone_openusd()
+        result = autosetup.clone_openusd()
 
         assert result == "OpenUSD"
 
@@ -49,8 +48,7 @@ def test_clone_openusd_success(tmp_path):
             with patch("ansys.tools.usdviewer.autosetup.subprocess.run") as mock_run:
                 mock_run.return_value = Mock(returncode=0)
 
-                with patch("builtins.print"):
-                    result = autosetup.clone_openusd()
+                result = autosetup.clone_openusd()
 
                 assert result == "OpenUSD"
                 assert mock_run.call_count >= 2
@@ -87,8 +85,7 @@ def test_check_build_dependencies_windows_vs_found():
                     Mock(stdout="cmake version 3.28.0", returncode=0),
                 ]
 
-                with patch("builtins.print"):
-                    autosetup.check_build_dependencies()
+                autosetup.check_build_dependencies()
 
 
 def test_check_build_dependencies_windows_vs_2026():
@@ -106,10 +103,9 @@ def test_check_build_dependencies_windows_vs_2026():
                     Mock(stdout="cmake version 3.28.0", returncode=0),
                 ]
 
-                with patch("builtins.print"):
-                    with patch("warnings.warn") as mock_warn:
-                        autosetup.check_build_dependencies()
-                        mock_warn.assert_called()
+                with patch("warnings.warn") as mock_warn:
+                    autosetup.check_build_dependencies()
+                    mock_warn.assert_called()
 
 
 def test_check_build_dependencies_windows_no_vs():
@@ -135,8 +131,7 @@ def test_check_build_dependencies_linux_gcc_found():
                 Mock(returncode=0, stdout="cmake version 3.28.0\n"),
             ]
 
-            with patch("builtins.print"):
-                autosetup.check_build_dependencies()
+            autosetup.check_build_dependencies()
 
 
 def test_check_build_dependencies_linux_no_gcc():
@@ -161,8 +156,7 @@ def test_check_build_dependencies_macos_clang_found():
                 Mock(returncode=0, stdout="cmake version 3.28.0\n"),
             ]
 
-            with patch("builtins.print"):
-                autosetup.check_build_dependencies()
+            autosetup.check_build_dependencies()
 
 
 def test_check_build_dependencies_macos_no_clang():
@@ -189,9 +183,8 @@ def test_check_build_dependencies_no_cmake():
                 subprocess.CalledProcessError(1, "cmake"),
             ]
 
-            with patch("builtins.print"):
-                with pytest.raises(RuntimeError, match="CMake not found"):
-                    autosetup.check_build_dependencies()
+            with pytest.raises(RuntimeError, match="CMake not found"):
+                autosetup.check_build_dependencies()
 
 
 def test_get_vs_environment_non_windows():
@@ -263,9 +256,8 @@ def test_get_vs_environment_windows_success(tmp_path):
 
                     mock_path_class.side_effect = path_side_effect
 
-                    with patch("builtins.print"):
-                        env = autosetup.get_vs_environment()
-                        assert "PATH" in env
+                    env = autosetup.get_vs_environment()
+                    assert "PATH" in env
 
 
 def test_get_vs_environment_windows_exception():
@@ -277,11 +269,10 @@ def test_get_vs_environment_windows_exception():
             mock_path.exists.return_value = False
             mock_path_class.return_value = mock_path
 
-            with patch("builtins.print"):
-                with patch.dict(os.environ, {"TEST_VAR": "test_value"}):
-                    # When no VS is found, should return a copy of os.environ
-                    env = autosetup.get_vs_environment()
-                    assert env["TEST_VAR"] == "test_value"
+            with patch.dict(os.environ, {"TEST_VAR": "test_value"}):
+                # When no VS is found, should return a copy of os.environ
+                env = autosetup.get_vs_environment()
+                assert env["TEST_VAR"] == "test_value"
 
 
 def test_build_and_install_openusd_already_exists(tmp_path):
@@ -289,8 +280,7 @@ def test_build_and_install_openusd_already_exists(tmp_path):
     install_path = tmp_path / "usd_install"
     (install_path / "lib").mkdir(parents=True)
 
-    with patch("builtins.print"):
-        result = autosetup.build_and_install_openusd(install_path=install_path, force_rebuild=False)
+    result = autosetup.build_and_install_openusd(install_path=install_path, force_rebuild=False)
 
     assert result == install_path
 
@@ -306,10 +296,9 @@ def test_build_and_install_openusd_success(tmp_path):
             mock_env.return_value = os.environ.copy()
 
             with patch("ansys.tools.usdviewer.autosetup.shutil.rmtree"):
-                with patch("builtins.print"):
-                    result = autosetup.build_and_install_openusd(install_path=install_path, force_rebuild=True)
+                result = autosetup.build_and_install_openusd(install_path=install_path, force_rebuild=True)
 
-                    assert result == install_path
+                assert result == install_path
 
 
 def test_build_and_install_openusd_jinja_install_fails(tmp_path):
@@ -328,9 +317,8 @@ def test_build_and_install_openusd_jinja_install_fails(tmp_path):
         with patch("ansys.tools.usdviewer.autosetup.get_vs_environment") as mock_env:
             mock_env.return_value = os.environ.copy()
 
-            with patch("builtins.print"):
-                result = autosetup.build_and_install_openusd(install_path=install_path, force_rebuild=True)
-                assert result == install_path
+            result = autosetup.build_and_install_openusd(install_path=install_path, force_rebuild=True)
+            assert result == install_path
 
 
 def test_build_and_install_openusd_build_failure(tmp_path):
@@ -349,9 +337,8 @@ def test_build_and_install_openusd_build_failure(tmp_path):
         with patch("ansys.tools.usdviewer.autosetup.get_vs_environment") as mock_env:
             mock_env.return_value = os.environ.copy()
 
-            with patch("builtins.print"):
-                with pytest.raises(RuntimeError, match="Failed to build OpenUSD"):
-                    autosetup.build_and_install_openusd(install_path=install_path, force_rebuild=True)
+            with pytest.raises(RuntimeError, match="Failed to build OpenUSD"):
+                autosetup.build_and_install_openusd(install_path=install_path, force_rebuild=True)
 
 
 def test_cleanup_openusd_repo_success():
@@ -362,9 +349,8 @@ def test_cleanup_openusd_repo_success():
         mock_path_class.return_value = mock_path
 
         with patch("ansys.tools.usdviewer.autosetup.shutil.rmtree") as mock_rmtree:
-            with patch("builtins.print"):
-                autosetup.cleanup_openusd_repo("OpenUSD")
-                mock_rmtree.assert_called_once()
+            autosetup.cleanup_openusd_repo("OpenUSD")
+            mock_rmtree.assert_called_once()
 
 
 def test_cleanup_openusd_repo_not_exists():
@@ -390,8 +376,7 @@ def test_cleanup_openusd_repo_failure():
         with patch("ansys.tools.usdviewer.autosetup.shutil.rmtree") as mock_rmtree:
             mock_rmtree.side_effect = Exception("Permission denied")
 
-            with patch("builtins.print"):
-                autosetup.cleanup_openusd_repo("OpenUSD")
+            autosetup.cleanup_openusd_repo("OpenUSD")
 
 
 def test_parse_arguments_no_args():
@@ -418,14 +403,13 @@ def test_main_success():
                 with patch("ansys.tools.usdviewer.autosetup.build_and_install_openusd") as mock_build:
                     with patch("ansys.tools.usdviewer.autosetup.cleanup_openusd_repo") as mock_cleanup:
                         with patch("ansys.tools.usdviewer.autosetup.platform.system", return_value="Windows"):
-                            with patch("builtins.print"):
-                                autosetup.main()
+                            autosetup.main()
 
-                                # Verify the correct sequence of operations
-                                mock_check.assert_called_once()
-                                mock_clone.assert_called_once()
-                                mock_build.assert_called_once()
-                                mock_cleanup.assert_called_once_with("OpenUSD")
+                            # Verify the correct sequence of operations
+                            mock_check.assert_called_once()
+                            mock_clone.assert_called_once()
+                            mock_build.assert_called_once()
+                            mock_cleanup.assert_called_once_with("OpenUSD")
 
 
 def test_main_linux_venv():
@@ -449,14 +433,13 @@ def test_main_linux_venv():
                                     mock_pth_file = Mock()
                                     mock_path_class.return_value = mock_pth_file
 
-                                    with patch("builtins.print"):
-                                        autosetup.main()
+                                    autosetup.main()
 
-                                        # Verify the setup sequence was executed
-                                        mock_check.assert_called_once()
-                                        mock_clone.assert_called_once()
-                                        mock_build.assert_called_once()
-                                        mock_cleanup.assert_called_once_with("OpenUSD")
+                                    # Verify the setup sequence was executed
+                                    mock_check.assert_called_once()
+                                    mock_clone.assert_called_once()
+                                    mock_build.assert_called_once()
+                                    mock_cleanup.assert_called_once_with("OpenUSD")
 
 
 def test_main_failure():
@@ -500,14 +483,13 @@ def test_main_linux_venv_no_site_packages():
                                     mock_path.__truediv__ = Mock(return_value=mock_lib_dir)
                                     mock_path_class.return_value = mock_path
 
-                                    with patch("builtins.print"):
-                                        autosetup.main()
+                                    autosetup.main()
 
-                                        # Verify setup completed even without site-packages
-                                        mock_check.assert_called_once()
-                                        mock_clone.assert_called_once()
-                                        mock_build.assert_called_once()
-                                        mock_cleanup.assert_called_once_with("OpenUSD")
+                                    # Verify setup completed even without site-packages
+                                    mock_check.assert_called_once()
+                                    mock_clone.assert_called_once()
+                                    mock_build.assert_called_once()
+                                    mock_cleanup.assert_called_once_with("OpenUSD")
 
 
 def test_main_linux_venv_exception():
