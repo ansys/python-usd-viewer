@@ -11,13 +11,12 @@ license = "MIT"
 license-files = [ "LICENSE" ]
 maintainers = [ { name = "ANSYS, Inc.", email = "pyansys.core@ansys.com" } ]
 authors = [ { name = "ANSYS, Inc.", email = "pyansys.core@ansys.com" } ]
-requires-python = ">=3.10,<4"
+requires-python = ">=3.11,<4"
 classifiers = [
   "Development Status :: 4 - Beta",
   "Intended Audience :: Science/Research",
   "Operating System :: OS Independent",
   "Programming Language :: Python :: 3 :: Only",
-  "Programming Language :: Python :: 3.10",
   "Programming Language :: Python :: 3.11",
   "Programming Language :: Python :: 3.12",
   "Programming Language :: Python :: 3.13",
@@ -34,6 +33,11 @@ dependencies = [
 ]
 
 scripts.usd-setup = "ansys.tools.usdviewer.autosetup:main"
+
+[project.optional-dependencies]
+tests = [
+    "ansys-tools-usdviewer",
+]
 
 [dependency-groups]
 

@@ -321,3 +321,50 @@ def test_convert_usd_to_vtk_with_255_colors():
     assert abs(color0[0] - 128) < 1, "Red component should be ~128"
     assert abs(color0[1] - 64) < 1, "Green component should be ~64"
     assert abs(color1[0] - 200) < 1, "Red component should be ~200"
+
+
+def test_convert_polydata_to_usd_with_no_stage():
+    """Test converting polydata to USD without providing a stage."""
+    converter = VTKConverter()
+    mesh = pyvista.Sphere()
+
+    # Convert with a stage (no stage=None creates temp.usda)
+    stage = Usd.Stage.CreateInMemory()
+    converter.convert_polydata_to_usd_mesh(mesh, stage, mesh_name="TestMesh")
+
+    assert stage is not None
+    mesh_prim = stage.GetPrimAtPath("/TestMesh")
+    assert mesh_prim.IsValid()
+
+
+def test_convert_usd_to_vtk_no_mesh_warning():
+    """Test convert_usd_to_vtk with no mesh in stage."""
+    converter = VTKConverter()
+    stage = Usd.Stage.CreateInMemory()
+
+    # Create a stage with no mesh
+    import warnings
+
+    with warnings.catch_warnings(record=True) as w:
+        warnings.simplefilter("always")
+        result = converter.convert_usd_to_vtk(stage, mesh_path=None)
+
+        assert result is None
+        assert len(w) == 1
+        assert "No mesh found" in str(w[0].message)
+
+
+def test_convert_usd_to_vtk_invalid_mesh_path():
+    """Test convert_usd_to_vtk with invalid mesh path."""
+    converter = VTKConverter()
+    stage = Usd.Stage.CreateInMemory()
+
+    import warnings
+
+    with warnings.catch_warnings(record=True) as w:
+        warnings.simplefilter("always")
+        result = converter.convert_usd_to_vtk(stage, mesh_path="/NonExistentMesh")
+
+        assert result is None
+        assert len(w) == 1
+        assert "Mesh not found or invalid" in str(w[0].message)
