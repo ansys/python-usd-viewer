@@ -28,11 +28,15 @@ from unittest.mock import MagicMock
 import pytest
 import pyvista
 
-# Mock pxr module BEFORE test collection if it's not available
-# This needs to run before any test module tries to import pxr
+# Check if real pxr is available
+PXR_AVAILABLE = True
 try:
     import pxr  # noqa: F401
 except ImportError:
+    PXR_AVAILABLE = False
+
+# Mock pxr module BEFORE test collection if it's not available
+if not PXR_AVAILABLE:
     # Create a comprehensive mock for the pxr module and its submodules
     mock_pxr = MagicMock()
 
@@ -101,3 +105,7 @@ def configure_pyvista():
     pyvista.set_plot_theme("document")
 
     return pyvista
+
+
+# Mark for skipping tests that require real OpenUSD
+requires_openusd = pytest.mark.skipif(not PXR_AVAILABLE, reason="Test requires real OpenUSD library (not just mocks)")
