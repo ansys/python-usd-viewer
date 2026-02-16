@@ -289,8 +289,7 @@ def test_get_vs_environment_windows_exception():
 def test_build_and_install_openusd_already_exists(tmp_path):
     """Test build_and_install_openusd when installation already exists."""
     install_path = tmp_path / "usd_install"
-    install_path.mkdir()
-    (install_path / "lib").mkdir()
+    (install_path / "lib").mkdir(parents=True)
 
     with patch("builtins.print"):
         result = autosetup.build_and_install_openusd(install_path=install_path, force_rebuild=False)
