@@ -223,7 +223,7 @@ def test_get_vs_environment_windows_success(tmp_path):
             temp_bat = tmp_path / "test.bat"
             temp_bat.write_text("")  # Create the file
 
-            with patch("ansys.tools.usdviewer.autosetup.tempfile.NamedTemporaryFile") as mock_temp:
+            with patch("tempfile.NamedTemporaryFile") as mock_temp:
                 # Configure mock to return our temp file path
                 mock_file = Mock()
                 mock_file.name = str(temp_bat)
@@ -457,7 +457,7 @@ def test_main_failure():
                 # Verify it exits with error code 1
                 assert exc_info.value.code == 1
                 # Verify error message was printed
-                mock_print.assert_any_call("Error: Test error")
+                mock_print.assert_any_call("\n❌ Setup failed: Test error")
 
 
 def test_main_linux_venv_no_site_packages():
@@ -516,6 +516,6 @@ def test_main_linux_venv_exception():
                                         mock_cleanup.assert_called_once_with("OpenUSD")
                                         # Verify warning about venv setup failure was printed
                                         assert any(
-                                            "virtual environment" in str(call).lower() or "venv" in str(call).lower()
+                                            "Warning: Could not automatically add USD to Python path" in str(call)
                                             for call in mock_print.call_args_list
                                         )
