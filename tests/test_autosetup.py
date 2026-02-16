@@ -215,7 +215,7 @@ def test_get_vs_environment_windows_no_vswhere():
                 assert env["TEST_VAR"] == "test_value"
 
 
-def test_get_vs_environment_windows_success():
+def test_get_vs_environment_windows_success(tmp_path):
     """Test get_vs_environment on Windows with VS environment setup."""
     with patch("ansys.tools.usdviewer.autosetup.platform.system", return_value="Windows"):
         # We need to carefully mock Path to return actual string when divided
@@ -226,12 +226,14 @@ def test_get_vs_environment_windows_success():
                 Mock(stdout="PATH=C:\\VS\\bin\nINCLUDE=C:\\VS\\include", returncode=0),
             ]
 
-            # Mock tempfile
-            import tempfile as temp_module
+            # Create a real temporary batch file using tmp_path
+            temp_bat = tmp_path / "test.bat"
+            temp_bat.write_text("")  # Create the file
 
-            with patch.object(temp_module, "NamedTemporaryFile") as mock_temp:
+            with patch("ansys.tools.usdviewer.autosetup.tempfile.NamedTemporaryFile") as mock_temp:
+                # Configure mock to return our temp file path
                 mock_file = Mock()
-                mock_file.name = "test.bat"
+                mock_file.name = str(temp_bat)
                 mock_file.__enter__ = Mock(return_value=mock_file)
                 mock_file.__exit__ = Mock(return_value=False)
                 mock_temp.return_value = mock_file
@@ -242,11 +244,12 @@ def test_get_vs_environment_windows_success():
                         mock_p = Mock()
                         if "vswhere" in str(path_str):
                             mock_p.exists.return_value = True
-                        elif "vcvarsall" in str(path_str) or path_str == "test.bat":
+                        elif "vcvarsall" in str(path_str) or str(path_str) == str(temp_bat):
                             mock_p.exists.return_value = True
                             mock_p.unlink = Mock()
                         else:
                             mock_p.exists.return_value = False
+
                             # Support path division for vcvarsall construction
                             # Create a mock that always returns a path with exists=True when divided
                             def create_chainable_path(*args, **kwargs):
@@ -254,7 +257,7 @@ def test_get_vs_environment_windows_success():
                                 chained_mock.exists.return_value = True
                                 chained_mock.__truediv__ = Mock(side_effect=create_chainable_path)
                                 return chained_mock
-                            
+
                             mock_p.__truediv__ = Mock(side_effect=create_chainable_path)
                         return mock_p
 
@@ -410,13 +413,19 @@ def test_main_success():
     with patch("ansys.tools.usdviewer.autosetup.parse_arguments") as mock_args:
         mock_args.return_value = Mock(force_rebuild=False)
 
-        with patch("ansys.tools.usdviewer.autosetup.check_build_dependencies"):
-            with patch("ansys.tools.usdviewer.autosetup.clone_openusd", return_value="OpenUSD"):
-                with patch("ansys.tools.usdviewer.autosetup.build_and_install_openusd"):
-                    with patch("ansys.tools.usdviewer.autosetup.cleanup_openusd_repo"):
+        with patch("ansys.tools.usdviewer.autosetup.check_build_dependencies") as mock_check:
+            with patch("ansys.tools.usdviewer.autosetup.clone_openusd", return_value="OpenUSD") as mock_clone:
+                with patch("ansys.tools.usdviewer.autosetup.build_and_install_openusd") as mock_build:
+                    with patch("ansys.tools.usdviewer.autosetup.cleanup_openusd_repo") as mock_cleanup:
                         with patch("ansys.tools.usdviewer.autosetup.platform.system", return_value="Windows"):
                             with patch("builtins.print"):
                                 autosetup.main()
+
+                                # Verify the correct sequence of operations
+                                mock_check.assert_called_once()
+                                mock_clone.assert_called_once()
+                                mock_build.assert_called_once()
+                                mock_cleanup.assert_called_once_with("OpenUSD")
 
 
 def test_main_linux_venv():
@@ -424,10 +433,10 @@ def test_main_linux_venv():
     with patch("ansys.tools.usdviewer.autosetup.parse_arguments") as mock_args:
         mock_args.return_value = Mock(force_rebuild=False)
 
-        with patch("ansys.tools.usdviewer.autosetup.check_build_dependencies"):
-            with patch("ansys.tools.usdviewer.autosetup.clone_openusd", return_value="OpenUSD"):
-                with patch("ansys.tools.usdviewer.autosetup.build_and_install_openusd"):
-                    with patch("ansys.tools.usdviewer.autosetup.cleanup_openusd_repo"):
+        with patch("ansys.tools.usdviewer.autosetup.check_build_dependencies") as mock_check:
+            with patch("ansys.tools.usdviewer.autosetup.clone_openusd", return_value="OpenUSD") as mock_clone:
+                with patch("ansys.tools.usdviewer.autosetup.build_and_install_openusd") as mock_build:
+                    with patch("ansys.tools.usdviewer.autosetup.cleanup_openusd_repo") as mock_cleanup:
                         with patch("ansys.tools.usdviewer.autosetup.platform.system", return_value="Linux"):
                             with patch.dict(os.environ, {"VIRTUAL_ENV": "/path/to/venv"}):
                                 with patch("ansys.tools.usdviewer.autosetup.Path") as mock_path_class:
@@ -443,6 +452,12 @@ def test_main_linux_venv():
                                     with patch("builtins.print"):
                                         autosetup.main()
 
+                                        # Verify the setup sequence was executed
+                                        mock_check.assert_called_once()
+                                        mock_clone.assert_called_once()
+                                        mock_build.assert_called_once()
+                                        mock_cleanup.assert_called_once_with("OpenUSD")
+
 
 def test_main_failure():
     """Test main function with failure."""
@@ -452,9 +467,14 @@ def test_main_failure():
         with patch("ansys.tools.usdviewer.autosetup.check_build_dependencies") as mock_check:
             mock_check.side_effect = RuntimeError("Test error")
 
-            with patch("builtins.print"):
-                with pytest.raises(SystemExit):
+            with patch("builtins.print") as mock_print:
+                with pytest.raises(SystemExit) as exc_info:
                     autosetup.main()
+
+                # Verify it exits with error code 1
+                assert exc_info.value.code == 1
+                # Verify error message was printed
+                mock_print.assert_any_call("Error: Test error")
 
 
 def test_main_linux_venv_no_site_packages():
@@ -462,10 +482,10 @@ def test_main_linux_venv_no_site_packages():
     with patch("ansys.tools.usdviewer.autosetup.parse_arguments") as mock_args:
         mock_args.return_value = Mock(force_rebuild=False)
 
-        with patch("ansys.tools.usdviewer.autosetup.check_build_dependencies"):
-            with patch("ansys.tools.usdviewer.autosetup.clone_openusd", return_value="OpenUSD"):
-                with patch("ansys.tools.usdviewer.autosetup.build_and_install_openusd"):
-                    with patch("ansys.tools.usdviewer.autosetup.cleanup_openusd_repo"):
+        with patch("ansys.tools.usdviewer.autosetup.check_build_dependencies") as mock_check:
+            with patch("ansys.tools.usdviewer.autosetup.clone_openusd", return_value="OpenUSD") as mock_clone:
+                with patch("ansys.tools.usdviewer.autosetup.build_and_install_openusd") as mock_build:
+                    with patch("ansys.tools.usdviewer.autosetup.cleanup_openusd_repo") as mock_cleanup:
                         with patch("ansys.tools.usdviewer.autosetup.platform.system", return_value="Linux"):
                             with patch.dict(os.environ, {"VIRTUAL_ENV": "/path/to/venv"}):
                                 with patch("ansys.tools.usdviewer.autosetup.Path") as mock_path_class:
@@ -483,20 +503,37 @@ def test_main_linux_venv_no_site_packages():
                                     with patch("builtins.print"):
                                         autosetup.main()
 
+                                        # Verify setup completed even without site-packages
+                                        mock_check.assert_called_once()
+                                        mock_clone.assert_called_once()
+                                        mock_build.assert_called_once()
+                                        mock_cleanup.assert_called_once_with("OpenUSD")
+
 
 def test_main_linux_venv_exception():
     """Test main on Linux with venv setup exception."""
     with patch("ansys.tools.usdviewer.autosetup.parse_arguments") as mock_args:
         mock_args.return_value = Mock(force_rebuild=False)
 
-        with patch("ansys.tools.usdviewer.autosetup.check_build_dependencies"):
-            with patch("ansys.tools.usdviewer.autosetup.clone_openusd", return_value="OpenUSD"):
-                with patch("ansys.tools.usdviewer.autosetup.build_and_install_openusd"):
-                    with patch("ansys.tools.usdviewer.autosetup.cleanup_openusd_repo"):
+        with patch("ansys.tools.usdviewer.autosetup.check_build_dependencies") as mock_check:
+            with patch("ansys.tools.usdviewer.autosetup.clone_openusd", return_value="OpenUSD") as mock_clone:
+                with patch("ansys.tools.usdviewer.autosetup.build_and_install_openusd") as mock_build:
+                    with patch("ansys.tools.usdviewer.autosetup.cleanup_openusd_repo") as mock_cleanup:
                         with patch("ansys.tools.usdviewer.autosetup.platform.system", return_value="Linux"):
                             with patch.dict(os.environ, {"VIRTUAL_ENV": "/path/to/venv"}):
                                 with patch("ansys.tools.usdviewer.autosetup.Path") as mock_path_class:
                                     mock_path_class.side_effect = Exception("Test exception")
 
-                                    with patch("builtins.print"):
+                                    with patch("builtins.print") as mock_print:
                                         autosetup.main()
+
+                                        # Verify the main setup still completed despite venv exception
+                                        mock_check.assert_called_once()
+                                        mock_clone.assert_called_once()
+                                        mock_build.assert_called_once()
+                                        mock_cleanup.assert_called_once_with("OpenUSD")
+                                        # Verify warning about venv setup failure was printed
+                                        assert any(
+                                            "virtual environment" in str(call).lower() or "venv" in str(call).lower()
+                                            for call in mock_print.call_args_list
+                                        )
