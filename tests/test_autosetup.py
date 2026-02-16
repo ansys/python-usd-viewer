@@ -248,19 +248,14 @@ def test_get_vs_environment_windows_success():
                         else:
                             mock_p.exists.return_value = False
                             # Support path division for vcvarsall construction
-                            mock_p.__truediv__ = Mock(
-                                side_effect=lambda x: Mock(
-                                    __truediv__=Mock(
-                                        side_effect=lambda y: Mock(
-                                            __truediv__=Mock(
-                                                side_effect=lambda z: Mock(
-                                                    __truediv__=Mock(return_value=Mock(exists=Mock(return_value=True)))
-                                                )
-                                            )
-                                        )
-                                    )
-                                )
-                            )
+                            # Create a mock that always returns a path with exists=True when divided
+                            def create_chainable_path(*args, **kwargs):
+                                chained_mock = Mock()
+                                chained_mock.exists.return_value = True
+                                chained_mock.__truediv__ = Mock(side_effect=create_chainable_path)
+                                return chained_mock
+                            
+                            mock_p.__truediv__ = Mock(side_effect=create_chainable_path)
                         return mock_p
 
                     mock_path_class.side_effect = path_side_effect
