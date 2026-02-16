@@ -34,11 +34,6 @@ dependencies = [
 
 scripts.usd-setup = "ansys.tools.usdviewer.autosetup:main"
 
-[project.optional-dependencies]
-tests = [
-    "ansys-tools-usdviewer",
-]
-
 [dependency-groups]
 
 # NOTE: The `dependency-groups` section is used to define groups of dependencies
