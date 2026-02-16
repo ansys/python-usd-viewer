@@ -145,6 +145,7 @@ jobs:
         uses: ansys/actions/tests-pytest@36cd86710c966963f4dcec56a9670171618cf76a # v10.2.4
         with:
           python-version: ${{ env.MAIN_PYTHON_VERSION }}
+          group-dependencies-name: 'tests'
 
   build-library:
     name: Build library
