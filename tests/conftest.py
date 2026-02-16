@@ -28,30 +28,28 @@ from unittest.mock import MagicMock
 import pytest
 import pyvista
 
+# Mock pxr module BEFORE test collection if it's not available
+# This needs to run before any test module tries to import pxr
+try:
+    import pxr  # noqa: F401
+except ImportError:
+    # Create a comprehensive mock for the pxr module and its submodules
+    mock_pxr = MagicMock()
 
-@pytest.fixture(scope="session", autouse=True)
-def mock_pxr_if_not_available():
-    """Mock the pxr module if it's not available (e.g., in CI without OpenUSD installed)."""
-    try:
-        import pxr  # noqa: F401
-    except ImportError:
-        # Create a comprehensive mock for the pxr module and its submodules
-        mock_pxr = MagicMock()
+    # Mock commonly used pxr submodules
+    sys.modules["pxr"] = mock_pxr
+    sys.modules["pxr.Usd"] = MagicMock()
+    sys.modules["pxr.UsdGeom"] = MagicMock()
+    sys.modules["pxr.Gf"] = MagicMock()
+    sys.modules["pxr.Sdf"] = MagicMock()
+    sys.modules["pxr.Vt"] = MagicMock()
 
-        # Mock commonly used pxr submodules
-        sys.modules["pxr"] = mock_pxr
-        sys.modules["pxr.Usd"] = MagicMock()
-        sys.modules["pxr.UsdGeom"] = MagicMock()
-        sys.modules["pxr.Gf"] = MagicMock()
-        sys.modules["pxr.Sdf"] = MagicMock()
-        sys.modules["pxr.Vt"] = MagicMock()
-
-        # Set up the mock to return these submodules when accessed
-        mock_pxr.Usd = sys.modules["pxr.Usd"]
-        mock_pxr.UsdGeom = sys.modules["pxr.UsdGeom"]
-        mock_pxr.Gf = sys.modules["pxr.Gf"]
-        mock_pxr.Sdf = sys.modules["pxr.Sdf"]
-        mock_pxr.Vt = sys.modules["pxr.Vt"]
+    # Set up the mock to return these submodules when accessed
+    mock_pxr.Usd = sys.modules["pxr.Usd"]
+    mock_pxr.UsdGeom = sys.modules["pxr.UsdGeom"]
+    mock_pxr.Gf = sys.modules["pxr.Gf"]
+    mock_pxr.Sdf = sys.modules["pxr.Sdf"]
+    mock_pxr.Vt = sys.modules["pxr.Vt"]
 
 
 @pytest.fixture(scope="session", autouse=True)
