@@ -43,6 +43,9 @@ except ImportError:
     sys.modules["pxr.Gf"] = MagicMock()
     sys.modules["pxr.Sdf"] = MagicMock()
     sys.modules["pxr.Vt"] = MagicMock()
+    sys.modules["pxr.UsdUtils"] = MagicMock()
+    sys.modules["pxr.Usdviewq"] = MagicMock()
+    sys.modules["pxr.Usdviewq.stageView"] = MagicMock()
 
     # Set up the mock to return these submodules when accessed
     mock_pxr.Usd = sys.modules["pxr.Usd"]
@@ -50,6 +53,12 @@ except ImportError:
     mock_pxr.Gf = sys.modules["pxr.Gf"]
     mock_pxr.Sdf = sys.modules["pxr.Sdf"]
     mock_pxr.Vt = sys.modules["pxr.Vt"]
+    mock_pxr.UsdUtils = sys.modules["pxr.UsdUtils"]
+    mock_pxr.Usdviewq = sys.modules["pxr.Usdviewq"]
+
+    # Set up StageView mock
+    sys.modules["pxr.Usdviewq"].stageView = sys.modules["pxr.Usdviewq.stageView"]
+    sys.modules["pxr.Usdviewq.stageView"].StageView = MagicMock()
 
 
 # Mock PySide6 if it fails to import (e.g., missing EGL libraries in CI)
