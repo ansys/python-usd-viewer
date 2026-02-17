@@ -75,11 +75,12 @@ def test_conversion(tmp_path, sphere_vtk_path, verify_image_cache):
     plotter.show()
 
 
-def test_conversion_failure_with_non_existing_vtk_file(tmp_path):
+@pytest.mark.parametrize("error_match", ["VTK file not found"])
+def test_conversion_failure_with_non_existing_vtk_file(tmp_path, error_match):
     """Test conversion failure when VTK file does not exist."""
     dummy_vtk_path = tmp_path / "dummy.vtk"
 
-    with pytest.raises(FileNotFoundError, match="VTK file not found"):
+    with pytest.raises(FileNotFoundError, match=error_match):
         VTKConverter.convert_vtk_file_to_usd(str(dummy_vtk_path))
 
 
@@ -122,12 +123,12 @@ def test_convert_other_vtk_data_types_to_usd():
     assert stage is not None, "Stage creation failed"
 
 
-def test_convert_invalid_vtk_data_raises_error():
+@pytest.mark.parametrize("error_match", ["Unable to convert VTK data type"])
+def test_convert_invalid_vtk_data_raises_error(error_match):
     """Test that converting invalid VTK data raises ValueError."""
     mock_data = Mock(spec=vtk.vtkDataSet)
 
-    # This should catch the exception and raise ValueError
-    with pytest.raises(ValueError, match="Unable to convert VTK data type"):
+    with pytest.raises(ValueError, match=error_match):
         VTKConverter.convert_vtk_to_usd(mock_data, mesh_name="Invalid")
 
 
@@ -152,9 +153,10 @@ def test_get_vtk_reader_supported_formats(extension, expected_reader_class):
     )
 
 
-def test_get_vtk_reader_unsupported_format():
+@pytest.mark.parametrize("error_match", ["Unsupported VTK file format: .xyz"])
+def test_get_vtk_reader_unsupported_format(error_match):
     """Test get_vtk_reader raises ValueError for unsupported formats."""
-    with pytest.raises(ValueError, match="Unsupported VTK file format: .xyz"):
+    with pytest.raises(ValueError, match=error_match):
         VTKConverter.get_vtk_reader(Path("test.xyz"))
 
 

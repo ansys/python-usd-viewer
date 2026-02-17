@@ -57,61 +57,61 @@ def test_stage():
     return stage
 
 
-def test_widget_initialization(mock_stage_view):
+@patch("ansys.tools.usdviewer.viewer.QtWidgets.QVBoxLayout")
+@patch("ansys.tools.usdviewer.viewer.QtWidgets.QWidget.__init__", return_value=None)
+def test_widget_initialization(mock_widget_init, mock_layout, mock_stage_view):
     """Test Widget initialization without a stage."""
     # When QtWidgets is mocked, we can't patch __init__, so just skip this complex test
     if not PXR_AVAILABLE:
         pytest.skip("Widget initialization test requires real Qt (mocked Qt doesn't support __init__ patching)")
 
-    with patch("ansys.tools.usdviewer.viewer.QtWidgets.QWidget.__init__", return_value=None):
-        with patch("ansys.tools.usdviewer.viewer.QtWidgets.QVBoxLayout"):
-            widget = Widget()
-            assert hasattr(widget, "model")
-            assert hasattr(widget, "view")
+    widget = Widget()
+    assert hasattr(widget, "model")
+    assert hasattr(widget, "view")
 
 
-def test_widget_initialization_with_stage(mock_stage_view, test_stage):
+@patch.object(Widget, "setStage")
+@patch("ansys.tools.usdviewer.viewer.QtWidgets.QVBoxLayout")
+@patch("ansys.tools.usdviewer.viewer.QtWidgets.QWidget.__init__", return_value=None)
+def test_widget_initialization_with_stage(mock_widget_init, mock_layout, mock_set_stage, mock_stage_view, test_stage):
     """Test Widget initialization with a stage."""
     # When QtWidgets is mocked, we can't patch __init__, so just skip this complex test
     if not PXR_AVAILABLE:
         pytest.skip("Widget initialization test requires real Qt (mocked Qt doesn't support __init__ patching)")
 
-    with patch("ansys.tools.usdviewer.viewer.QtWidgets.QWidget.__init__", return_value=None):
-        with patch("ansys.tools.usdviewer.viewer.QtWidgets.QVBoxLayout"):
-            with patch.object(Widget, "setStage") as mock_set_stage:
-                Widget(stage=test_stage)
-                mock_set_stage.assert_called_once_with(test_stage)
+    Widget(stage=test_stage)
+    mock_set_stage.assert_called_once_with(test_stage)
 
 
-def test_widget_set_stage(mock_stage_view, test_stage):
+@patch("ansys.tools.usdviewer.viewer.QtWidgets.QVBoxLayout")
+@patch("ansys.tools.usdviewer.viewer.QtWidgets.QWidget.__init__", return_value=None)
+def test_widget_set_stage(mock_widget_init, mock_layout, mock_stage_view, test_stage):
     """Test Widget setStage method."""
     # When QtWidgets is mocked, we can't patch __init__, so just skip this complex test
     if not PXR_AVAILABLE:
         pytest.skip("Widget initialization test requires real Qt (mocked Qt doesn't support __init__ patching)")
 
-    with patch("ansys.tools.usdviewer.viewer.QtWidgets.QWidget.__init__", return_value=None):
-        with patch("ansys.tools.usdviewer.viewer.QtWidgets.QVBoxLayout"):
-            widget = Widget()
-            widget.model = Mock()
-            widget.setStage(test_stage)
-            assert widget.model.stage == test_stage
+    widget = Widget()
+    widget.model = Mock()
+    widget.setStage(test_stage)
+    assert widget.model.stage == test_stage
 
 
-def test_widget_close_event(mock_stage_view):
+@patch("ansys.tools.usdviewer.viewer.QtWidgets.QVBoxLayout")
+@patch("ansys.tools.usdviewer.viewer.QtWidgets.QWidget.__init__", return_value=None)
+def test_widget_close_event(mock_widget_init, mock_layout, mock_stage_view):
     """Test Widget closeEvent."""
     # When QtWidgets is mocked, we can't patch __init__, so just skip this complex test
     if not PXR_AVAILABLE:
         pytest.skip("Widget initialization test requires real Qt (mocked Qt doesn't support __init__ patching)")
 
-    with patch("ansys.tools.usdviewer.viewer.QtWidgets.QWidget.__init__", return_value=None):
-        with patch("ansys.tools.usdviewer.viewer.QtWidgets.QVBoxLayout"):
-            widget = Widget()
-            widget.view = Mock()
-            widget.view.closeRenderer = Mock()
+    widget = Widget()
+    widget.view = Mock()
+    widget.view.closeRenderer = Mock()
 
-            event = Mock()
-            widget.closeEvent(event)
-            widget.view.closeRenderer.assert_called_once()
+    event = Mock()
+    widget.closeEvent(event)
+    widget.view.closeRenderer.assert_called_once()
 
 
 def test_usd_viewer_initialization(mock_qt_application):
@@ -180,9 +180,8 @@ def test_usd_viewer_load_vtk_assets(mock_qt_application, test_stage):
     viewer._vtk_paths = ["test1.vtk", "test2.vtk"]
     viewer._asset_resolver.load_asset = Mock(return_value=test_stage)
 
-    with patch("builtins.print"):
-        viewer._load_vtk_assets(test_stage)
-        assert viewer._asset_resolver.load_asset.call_count == 2
+    viewer._load_vtk_assets(test_stage)
+    assert viewer._asset_resolver.load_asset.call_count == 2
 
 
 def test_usd_viewer_load_vtk_assets_failure(mock_qt_application, test_stage):
@@ -191,90 +190,86 @@ def test_usd_viewer_load_vtk_assets_failure(mock_qt_application, test_stage):
     viewer._vtk_paths = ["test1.vtk"]
     viewer._asset_resolver.load_asset = Mock(return_value=None)
 
-    with patch("builtins.print"):
-        viewer._load_vtk_assets(test_stage)
-        viewer._asset_resolver.load_asset.assert_called_once()
+    viewer._load_vtk_assets(test_stage)
+    viewer._asset_resolver.load_asset.assert_called_once()
 
 
-def test_usd_viewer_plot(mock_qt_application, mock_stage_view, test_stage):
+@patch("ansys.tools.usdviewer.viewer.Widget")
+def test_usd_viewer_plot(mock_widget_class, mock_qt_application, mock_stage_view, test_stage):
     """Test plotting a USD stage."""
-    with patch("ansys.tools.usdviewer.viewer.Widget") as mock_widget_class:
-        mock_widget = Mock()
-        mock_widget_class.return_value = mock_widget
+    mock_widget = Mock()
+    mock_widget_class.return_value = mock_widget
 
-        viewer = USDViewer(title="Test Viewer", size=(800, 600))
-        viewer._vtk_paths = []
+    viewer = USDViewer(title="Test Viewer", size=(800, 600))
+    viewer._vtk_paths = []
 
-        viewer.plot(test_stage)
+    viewer.plot(test_stage)
 
-        mock_widget_class.assert_called_once_with(test_stage)
-        mock_widget.setWindowTitle.assert_called_once_with("Test Viewer")
-        mock_widget.resize.assert_called_once()
+    mock_widget_class.assert_called_once_with(test_stage)
+    mock_widget.setWindowTitle.assert_called_once_with("Test Viewer")
+    mock_widget.resize.assert_called_once()
 
 
-def test_usd_viewer_show(mock_qt_application, mock_stage_view, test_stage):
+@patch("ansys.tools.usdviewer.viewer.Widget")
+def test_usd_viewer_show(mock_widget_class, mock_qt_application, mock_stage_view, test_stage):
     """Test showing the viewer window."""
-    with patch("ansys.tools.usdviewer.viewer.Widget") as mock_widget_class:
-        mock_widget = Mock()
-        mock_widget_class.return_value = mock_widget
+    mock_widget = Mock()
+    mock_widget_class.return_value = mock_widget
 
-        viewer = USDViewer()
-        viewer._vtk_paths = []
-        viewer.plot(test_stage)
+    viewer = USDViewer()
+    viewer._vtk_paths = []
+    viewer.plot(test_stage)
 
-        viewer.show()
+    viewer.show()
 
-        mock_widget.show.assert_called_once()
-        viewer._app.exec.assert_called_once()
+    mock_widget.show.assert_called_once()
+    viewer._app.exec.assert_called_once()
 
 
-def test_usd_viewer_load_usd(mock_qt_application, mock_stage_view, tmp_path):
+@patch("ansys.tools.usdviewer.viewer.Widget")
+def test_usd_viewer_load_usd(mock_widget_class, mock_qt_application, mock_stage_view, tmp_path):
     """Test loading a USD file."""
+    mock_widget = Mock()
+    mock_widget_class.return_value = mock_widget
+
     # Create a temporary USD file
     usd_file = tmp_path / "test.usda"
     stage = Usd.Stage.CreateNew(str(usd_file))
     UsdGeom.Xform.Define(stage, "/TestPrim")
     stage.Save()
 
-    with patch("ansys.tools.usdviewer.viewer.Widget") as mock_widget_class:
-        mock_widget = Mock()
-        mock_widget_class.return_value = mock_widget
+    viewer = USDViewer()
 
-        viewer = USDViewer()
+    loaded_stage = viewer.load_usd(str(usd_file))
 
-        with patch("builtins.print"):
-            loaded_stage = viewer.load_usd(str(usd_file))
-
-        assert loaded_stage is not None
-        mock_widget_class.assert_called_once()
+    assert loaded_stage is not None
+    mock_widget_class.assert_called_once()
 
 
-def test_usd_viewer_load_usd_failure(mock_qt_application):
+@patch("ansys.tools.usdviewer.viewer.Usd.Stage.Open", return_value=None)
+def test_usd_viewer_load_usd_failure(mock_stage_open, mock_qt_application):
     """Test loading an invalid USD file."""
     viewer = USDViewer()
 
-    with patch("ansys.tools.usdviewer.viewer.Usd.Stage.Open", return_value=None):
-        with patch("builtins.print"):
-            with pytest.raises(SystemExit):
-                viewer.load_usd("nonexistent.usda")
+    with pytest.raises(SystemExit):
+        viewer.load_usd("nonexistent.usda")
 
 
-def test_usd_viewer_load_asset(mock_qt_application, mock_stage_view, tmp_path):
+@patch("ansys.tools.usdviewer.viewer.Widget")
+def test_usd_viewer_load_asset(mock_widget_class, mock_qt_application, mock_stage_view, tmp_path):
     """Test loading an asset."""
-    with patch("ansys.tools.usdviewer.viewer.Widget") as mock_widget_class:
-        mock_widget = Mock()
-        mock_widget_class.return_value = mock_widget
+    mock_widget = Mock()
+    mock_widget_class.return_value = mock_widget
 
-        viewer = USDViewer()
-        mock_stage = Mock()
-        viewer._asset_resolver.load_asset_as_usd = Mock(return_value=mock_stage)
+    viewer = USDViewer()
+    mock_stage = Mock()
+    viewer._asset_resolver.load_asset_as_usd = Mock(return_value=mock_stage)
 
-        with patch("builtins.print"):
-            loaded_stage = viewer.load_asset("test.vtk")
+    loaded_stage = viewer.load_asset("test.vtk")
 
-        assert loaded_stage == mock_stage
-        viewer._asset_resolver.load_asset_as_usd.assert_called_once_with("test.vtk")
-        mock_widget_class.assert_called_once()
+    assert loaded_stage == mock_stage
+    viewer._asset_resolver.load_asset_as_usd.assert_called_once_with("test.vtk")
+    mock_widget_class.assert_called_once()
 
 
 def test_usd_viewer_load_asset_failure(mock_qt_application):
@@ -282,6 +277,5 @@ def test_usd_viewer_load_asset_failure(mock_qt_application):
     viewer = USDViewer()
     viewer._asset_resolver.load_asset_as_usd = Mock(return_value=None)
 
-    with patch("builtins.print"):
-        with pytest.raises(SystemExit):
-            viewer.load_asset("nonexistent.vtk")
+    with pytest.raises(SystemExit):
+        viewer.load_asset("nonexistent.vtk")
