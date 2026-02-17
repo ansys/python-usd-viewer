@@ -53,18 +53,17 @@ def test_clone_openusd_success(mock_path, mock_system, mock_run, tmp_path):
     assert mock_run.call_count >= 2
 
 
-@pytest.mark.parametrize("error_match", ["Failed to clone OpenUSD"])
 @patch("ansys.tools.usdviewer.autosetup.subprocess.run")
 @patch("ansys.tools.usdviewer.autosetup.platform.system", return_value="Linux")
 @patch("ansys.tools.usdviewer.autosetup.Path")
-def test_clone_openusd_failure(mock_path, mock_system, mock_run, error_match):
+def test_clone_openusd_failure(mock_path, mock_system, mock_run):
     """Test clone_openusd when cloning fails."""
     import subprocess
 
     mock_path.return_value.exists.return_value = False
     mock_run.side_effect = subprocess.CalledProcessError(1, "git")
 
-    with pytest.raises(RuntimeError, match=error_match):
+    with pytest.raises(RuntimeError, match="Failed to clone OpenUSD"):
         autosetup.clone_openusd()
 
 
@@ -107,17 +106,16 @@ def test_check_build_dependencies_windows_vs_2026(mock_system, mock_path, mock_r
     mock_warn.assert_called()
 
 
-@pytest.mark.parametrize("error_match", ["C\\+\\+ compiler not found"])
 @patch("warnings.warn")
 @patch("ansys.tools.usdviewer.autosetup.Path")
 @patch("ansys.tools.usdviewer.autosetup.platform.system", return_value="Windows")
-def test_check_build_dependencies_windows_no_vs(mock_system, mock_path, mock_warn, error_match):
+def test_check_build_dependencies_windows_no_vs(mock_system, mock_path, mock_warn):
     """Test check_build_dependencies on Windows without Visual Studio."""
     mock_path_instance = Mock()
     mock_path_instance.exists.return_value = False
     mock_path.return_value = mock_path_instance
 
-    with pytest.raises(RuntimeError, match=error_match):
+    with pytest.raises(RuntimeError, match="C\\+\\+ compiler not found"):
         autosetup.check_build_dependencies()
 
 
@@ -134,16 +132,15 @@ def test_check_build_dependencies_linux_gcc_found(mock_system, mock_run):
     autosetup.check_build_dependencies()
 
 
-@pytest.mark.parametrize("error_match", ["C\\+\\+ compiler not found"])
 @patch("ansys.tools.usdviewer.autosetup.subprocess.run")
 @patch("ansys.tools.usdviewer.autosetup.platform.system", return_value="Linux")
-def test_check_build_dependencies_linux_no_gcc(mock_system, mock_run, error_match):
+def test_check_build_dependencies_linux_no_gcc(mock_system, mock_run):
     """Test check_build_dependencies on Linux without gcc."""
     import subprocess
 
     mock_run.side_effect = subprocess.CalledProcessError(1, "g++")
 
-    with pytest.raises(RuntimeError, match=error_match):
+    with pytest.raises(RuntimeError, match="C\\+\\+ compiler not found"):
         autosetup.check_build_dependencies()
 
 
@@ -160,23 +157,21 @@ def test_check_build_dependencies_macos_clang_found(mock_system, mock_run):
     autosetup.check_build_dependencies()
 
 
-@pytest.mark.parametrize("error_match", ["C\\+\\+ compiler not found"])
 @patch("ansys.tools.usdviewer.autosetup.subprocess.run")
 @patch("ansys.tools.usdviewer.autosetup.platform.system", return_value="Darwin")
-def test_check_build_dependencies_macos_no_clang(mock_system, mock_run, error_match):
+def test_check_build_dependencies_macos_no_clang(mock_system, mock_run):
     """Test check_build_dependencies on macOS without clang."""
     import subprocess
 
     mock_run.side_effect = subprocess.CalledProcessError(1, "clang++")
 
-    with pytest.raises(RuntimeError, match=error_match):
+    with pytest.raises(RuntimeError, match="C\\+\\+ compiler not found"):
         autosetup.check_build_dependencies()
 
 
-@pytest.mark.parametrize("error_match", ["CMake not found"])
 @patch("ansys.tools.usdviewer.autosetup.subprocess.run")
 @patch("ansys.tools.usdviewer.autosetup.platform.system", return_value="Linux")
-def test_check_build_dependencies_no_cmake(mock_system, mock_run, error_match):
+def test_check_build_dependencies_no_cmake(mock_system, mock_run):
     """Test check_build_dependencies without CMake."""
     import subprocess
 
@@ -186,7 +181,7 @@ def test_check_build_dependencies_no_cmake(mock_system, mock_run, error_match):
         subprocess.CalledProcessError(1, "cmake"),
     ]
 
-    with pytest.raises(RuntimeError, match=error_match):
+    with pytest.raises(RuntimeError, match="CMake not found"):
         autosetup.check_build_dependencies()
 
 
@@ -319,10 +314,9 @@ def test_build_and_install_openusd_jinja_install_fails(mock_run, mock_env, tmp_p
     assert result == install_path
 
 
-@pytest.mark.parametrize("error_match", ["Failed to build OpenUSD"])
 @patch("ansys.tools.usdviewer.autosetup.get_vs_environment")
 @patch("ansys.tools.usdviewer.autosetup.subprocess.run")
-def test_build_and_install_openusd_build_failure(mock_run, mock_env, tmp_path, error_match):
+def test_build_and_install_openusd_build_failure(mock_run, mock_env, tmp_path):
     """Test build_and_install_openusd when build fails."""
     import subprocess
 
@@ -335,7 +329,7 @@ def test_build_and_install_openusd_build_failure(mock_run, mock_env, tmp_path, e
     ]
     mock_env.return_value = os.environ.copy()
 
-    with pytest.raises(RuntimeError, match=error_match):
+    with pytest.raises(RuntimeError, match="Failed to build OpenUSD"):
         autosetup.build_and_install_openusd(install_path=install_path, force_rebuild=True)
 
 
