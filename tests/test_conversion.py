@@ -24,6 +24,7 @@
 from pathlib import Path
 from unittest.mock import Mock, patch
 
+from conftest import requires_openusd
 from pxr import Gf, Usd, UsdGeom
 import pytest
 import pyvista
@@ -38,6 +39,7 @@ def sphere_vtk_path():
     return Path(__file__).parent / "sphere.vtk"
 
 
+@requires_openusd
 def test_conversion(tmp_path, sphere_vtk_path, verify_image_cache):
     """Test conversion from VTK to USD and back to VTK.
 
@@ -124,7 +126,6 @@ def test_convert_invalid_vtk_data_raises_error():
     """Test that converting invalid VTK data raises ValueError."""
     mock_data = Mock(spec=vtk.vtkDataSet)
 
-    # This should catch the exception and raise ValueError
     with pytest.raises(ValueError, match="Unable to convert VTK data type"):
         VTKConverter.convert_vtk_to_usd(mock_data, mesh_name="Invalid")
 
@@ -159,7 +160,7 @@ def test_get_vtk_reader_unsupported_format():
 def test_load_asset_non_existing_file(tmp_path):
     """Test load_asset returns None for non-existing files."""
     converter = VTKConverter()
-    mock_stage = Mock(spec=Usd.Stage)
+    mock_stage = Mock()  # Don't use spec=Usd.Stage when Usd is mocked
 
     result = converter.load_asset(str(tmp_path / "dummy.vtk"), mock_stage)
 
@@ -169,7 +170,7 @@ def test_load_asset_non_existing_file(tmp_path):
 def test_load_asset_unsupported_format(tmp_path):
     """Test load_asset returns None for unsupported file formats."""
     converter = VTKConverter()
-    mock_stage = Mock(spec=Usd.Stage)
+    mock_stage = Mock()  # Don't use spec=Usd.Stage when Usd is mocked
     unsupported_file = tmp_path / "dummy.xyz"
     unsupported_file.write_text("dummy content")
 
@@ -214,6 +215,7 @@ def test_load_asset_with_corrupted_file(mock_convert, tmp_path):
     assert result is None, "Should return None for unexpected errors during conversion"
 
 
+@requires_openusd
 def test_convert_polydata_with_rgb_colors():
     """Test conversion of VTK polydata with RGB colors to USD."""
     stage = Usd.Stage.CreateInMemory()
@@ -244,6 +246,7 @@ def test_convert_polydata_with_rgb_colors():
     assert abs(usd_colors[2][2] - 1.0) < 0.01, "Blue component should be ~1.0"
 
 
+@requires_openusd
 def test_convert_polydata_with_rgba_colors():
     """Test conversion of VTK polydata with RGBA colors to USD (alpha ignored)."""
     stage = Usd.Stage.CreateInMemory()
@@ -272,6 +275,7 @@ def test_convert_polydata_with_rgba_colors():
     assert abs(usd_colors[1][1] - 1.0) < 0.01, "Second color green component should be ~1.0"
 
 
+@requires_openusd
 def test_convert_usd_to_vtk_with_normalized_colors():
     """Test conversion from USD to VTK with normalized colors (0-1 range)."""
     # Create USD stage with a triangle and colors in 0-1 range
@@ -301,6 +305,7 @@ def test_convert_usd_to_vtk_with_normalized_colors():
     assert abs(color2[2] - 255) < 1, "Blue component should be ~255"
 
 
+@requires_openusd
 def test_convert_usd_to_vtk_with_255_colors():
     """Test conversion from USD to VTK with colors already in 0-255 range."""
     # Create USD stage with colors in 0-255 range
@@ -321,3 +326,51 @@ def test_convert_usd_to_vtk_with_255_colors():
     assert abs(color0[0] - 128) < 1, "Red component should be ~128"
     assert abs(color0[1] - 64) < 1, "Green component should be ~64"
     assert abs(color1[0] - 200) < 1, "Red component should be ~200"
+
+
+def test_convert_polydata_to_usd_with_no_stage():
+    """Test converting polydata to USD without providing a stage."""
+    converter = VTKConverter()
+    mesh = pyvista.Sphere()
+
+    # Convert with a stage (no stage=None creates temp.usda)
+    stage = Usd.Stage.CreateInMemory()
+    converter.convert_polydata_to_usd_mesh(mesh, stage, mesh_name="TestMesh")
+
+    assert stage is not None
+    mesh_prim = stage.GetPrimAtPath("/TestMesh")
+    assert mesh_prim.IsValid()
+
+
+def test_convert_usd_to_vtk_no_mesh_warning():
+    """Test convert_usd_to_vtk with no mesh in stage."""
+    converter = VTKConverter()
+    stage = Usd.Stage.CreateInMemory()
+
+    # Create a stage with no mesh
+    import warnings
+
+    with warnings.catch_warnings(record=True) as w:
+        warnings.simplefilter("always")
+        result = converter.convert_usd_to_vtk(stage, mesh_path=None)
+
+        assert result is None
+        assert len(w) == 1
+        assert "No mesh found" in str(w[0].message)
+
+
+@requires_openusd
+def test_convert_usd_to_vtk_invalid_mesh_path():
+    """Test convert_usd_to_vtk with invalid mesh path."""
+    converter = VTKConverter()
+    stage = Usd.Stage.CreateInMemory()
+
+    import warnings
+
+    with warnings.catch_warnings(record=True) as w:
+        warnings.simplefilter("always")
+        result = converter.convert_usd_to_vtk(stage, mesh_path="/NonExistentMesh")
+
+        assert result is None
+        assert len(w) == 1
+        assert "Mesh not found or invalid" in str(w[0].message)

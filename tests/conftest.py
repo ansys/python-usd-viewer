@@ -22,8 +22,77 @@
 
 """Pytest configuration and fixtures for USD viewer tests."""
 
+import sys
+from unittest.mock import MagicMock
+
 import pytest
 import pyvista
+
+# Check if real pxr is available
+PXR_AVAILABLE = True
+try:
+    import pxr  # noqa: F401
+except ImportError:
+    PXR_AVAILABLE = False
+
+# Mock pxr module BEFORE test collection if it's not available
+if not PXR_AVAILABLE:
+    # Create a comprehensive mock for the pxr module and its submodules
+    mock_pxr = MagicMock()
+
+    # Mock commonly used pxr submodules
+    sys.modules["pxr"] = mock_pxr
+    sys.modules["pxr.Usd"] = MagicMock()
+    sys.modules["pxr.UsdGeom"] = MagicMock()
+    sys.modules["pxr.Gf"] = MagicMock()
+    sys.modules["pxr.Sdf"] = MagicMock()
+    sys.modules["pxr.Vt"] = MagicMock()
+    sys.modules["pxr.UsdUtils"] = MagicMock()
+    sys.modules["pxr.Usdviewq"] = MagicMock()
+    sys.modules["pxr.Usdviewq.stageView"] = MagicMock()
+
+    # Set up the mock to return these submodules when accessed
+    mock_pxr.Usd = sys.modules["pxr.Usd"]
+    mock_pxr.UsdGeom = sys.modules["pxr.UsdGeom"]
+    mock_pxr.Gf = sys.modules["pxr.Gf"]
+    mock_pxr.Sdf = sys.modules["pxr.Sdf"]
+    mock_pxr.Vt = sys.modules["pxr.Vt"]
+    mock_pxr.UsdUtils = sys.modules["pxr.UsdUtils"]
+    mock_pxr.Usdviewq = sys.modules["pxr.Usdviewq"]
+
+    # Set up StageView mock
+    sys.modules["pxr.Usdviewq"].stageView = sys.modules["pxr.Usdviewq.stageView"]
+    sys.modules["pxr.Usdviewq.stageView"].StageView = MagicMock()
+
+
+# Mock PySide6 if it fails to import (e.g., missing EGL libraries in CI)
+# This needs to run before any test module tries to import viewer module
+try:
+    from PySide6 import QtCore, QtWidgets  # noqa: F401
+except ImportError:
+    # Create comprehensive mocks for PySide6 modules
+    mock_pyside6 = MagicMock()
+    mock_qtcore = MagicMock()
+    mock_qtwidgets = MagicMock()
+    mock_qtgui = MagicMock()
+
+    # Register mocks in sys.modules
+    sys.modules["PySide6"] = mock_pyside6
+    sys.modules["PySide6.QtCore"] = mock_qtcore
+    sys.modules["PySide6.QtWidgets"] = mock_qtwidgets
+    sys.modules["PySide6.QtGui"] = mock_qtgui
+
+    # Set up the mock to return these submodules when accessed
+    mock_pyside6.QtCore = mock_qtcore
+    mock_pyside6.QtWidgets = mock_qtwidgets
+    mock_pyside6.QtGui = mock_qtgui
+
+    # Mock common Qt classes
+    mock_qtwidgets.QApplication = MagicMock()
+    mock_qtwidgets.QWidget = MagicMock()
+    mock_qtwidgets.QVBoxLayout = MagicMock()
+    mock_qtwidgets.QPushButton = MagicMock()
+    mock_qtcore.Qt = MagicMock()
 
 
 @pytest.fixture(scope="session", autouse=True)
@@ -36,3 +105,7 @@ def configure_pyvista():
     pyvista.set_plot_theme("document")
 
     return pyvista
+
+
+# Mark for skipping tests that require real OpenUSD
+requires_openusd = pytest.mark.skipif(not PXR_AVAILABLE, reason="Test requires real OpenUSD library (not just mocks)")
