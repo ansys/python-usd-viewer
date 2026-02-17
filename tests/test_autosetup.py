@@ -439,10 +439,9 @@ def test_main_linux_venv(mock_args, mock_check, mock_clone, mock_build, mock_cle
     mock_cleanup.assert_called_once_with("OpenUSD")
 
 
-@patch("builtins.print")
 @patch("ansys.tools.usdviewer.autosetup.check_build_dependencies")
 @patch("ansys.tools.usdviewer.autosetup.parse_arguments")
-def test_main_failure(mock_args, mock_check, mock_print):
+def test_main_failure(mock_args, mock_check):
     """Test main function with failure."""
     mock_args.return_value = Mock(force_rebuild=False)
     mock_check.side_effect = RuntimeError("Test error")
