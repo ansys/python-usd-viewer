@@ -59,12 +59,12 @@ def test_stage():
 
 @patch("ansys.tools.usdviewer.viewer.QtWidgets.QVBoxLayout")
 @patch("ansys.tools.usdviewer.viewer.QtWidgets.QWidget.__init__", return_value=None)
+@pytest.mark.skipif(
+    not PXR_AVAILABLE,
+    reason="Widget initialization test requires real Qt (mocked Qt doesn't support __init__ patching)",
+)
 def test_widget_initialization(mock_widget_init, mock_layout, mock_stage_view):
     """Test Widget initialization without a stage."""
-    # When QtWidgets is mocked, we can't patch __init__, so just skip this complex test
-    if not PXR_AVAILABLE:
-        pytest.skip("Widget initialization test requires real Qt (mocked Qt doesn't support __init__ patching)")
-
     widget = Widget()
     assert hasattr(widget, "model")
     assert hasattr(widget, "view")
@@ -73,24 +73,24 @@ def test_widget_initialization(mock_widget_init, mock_layout, mock_stage_view):
 @patch.object(Widget, "setStage")
 @patch("ansys.tools.usdviewer.viewer.QtWidgets.QVBoxLayout")
 @patch("ansys.tools.usdviewer.viewer.QtWidgets.QWidget.__init__", return_value=None)
+@pytest.mark.skipif(
+    not PXR_AVAILABLE,
+    reason="Widget initialization test requires real Qt (mocked Qt doesn't support __init__ patching)",
+)
 def test_widget_initialization_with_stage(mock_widget_init, mock_layout, mock_set_stage, mock_stage_view, test_stage):
     """Test Widget initialization with a stage."""
-    # When QtWidgets is mocked, we can't patch __init__, so just skip this complex test
-    if not PXR_AVAILABLE:
-        pytest.skip("Widget initialization test requires real Qt (mocked Qt doesn't support __init__ patching)")
-
     Widget(stage=test_stage)
     mock_set_stage.assert_called_once_with(test_stage)
 
 
 @patch("ansys.tools.usdviewer.viewer.QtWidgets.QVBoxLayout")
 @patch("ansys.tools.usdviewer.viewer.QtWidgets.QWidget.__init__", return_value=None)
+@pytest.mark.skipif(
+    not PXR_AVAILABLE,
+    reason="Widget initialization test requires real Qt (mocked Qt doesn't support __init__ patching)",
+)
 def test_widget_set_stage(mock_widget_init, mock_layout, mock_stage_view, test_stage):
     """Test Widget setStage method."""
-    # When QtWidgets is mocked, we can't patch __init__, so just skip this complex test
-    if not PXR_AVAILABLE:
-        pytest.skip("Widget initialization test requires real Qt (mocked Qt doesn't support __init__ patching)")
-
     widget = Widget()
     widget.model = Mock()
     widget.setStage(test_stage)
@@ -99,12 +99,12 @@ def test_widget_set_stage(mock_widget_init, mock_layout, mock_stage_view, test_s
 
 @patch("ansys.tools.usdviewer.viewer.QtWidgets.QVBoxLayout")
 @patch("ansys.tools.usdviewer.viewer.QtWidgets.QWidget.__init__", return_value=None)
+@pytest.mark.skipif(
+    not PXR_AVAILABLE,
+    reason="Widget initialization test requires real Qt (mocked Qt doesn't support __init__ patching)",
+)
 def test_widget_close_event(mock_widget_init, mock_layout, mock_stage_view):
     """Test Widget closeEvent."""
-    # When QtWidgets is mocked, we can't patch __init__, so just skip this complex test
-    if not PXR_AVAILABLE:
-        pytest.skip("Widget initialization test requires real Qt (mocked Qt doesn't support __init__ patching)")
-
     widget = Widget()
     widget.view = Mock()
     widget.view.closeRenderer = Mock()
