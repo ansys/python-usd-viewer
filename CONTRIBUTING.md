@@ -17,9 +17,8 @@ these commands:
 ```bash
 git clone https://github.com/ansys/python-usd-viewer/
 cd python-usd-viewer
-python -m pip install --upgrade pip
-pip install uv
-uv pip install -e .
+pip install uv  # if uv is not already installed
+uv sync --group dev
 ```
 
 ## Adhere to code style
@@ -44,13 +43,13 @@ pre-commit install
 Prior to running the tests, you must run this command to install the test dependencies:
 
 ```bash
-uv pip install -e .[tests]
+uv sync --group tests
 ```
 
 To run the tests, navigate to the root directory of the repository and run this command:
 
 ```bash
-pytest
+uv run pytest
 ```
 
 
@@ -59,7 +58,7 @@ pytest
 Prior to building the documentation, you must run this command to install the documentation dependencies:
 
 ```bash
-uv pip install -e .[doc]
+uv sync --group doc
 ```
 
 To build the documentation, run the following commands:
@@ -68,10 +67,10 @@ To build the documentation, run the following commands:
 cd doc
 
 # On linux
-make html
+uv run make html
 
 # On windows
-./make.bat html
+uv run ./make.bat html
 ```
 
 The documentation is built in the `docs/_build/html` directory.
