@@ -157,7 +157,7 @@ jobs:
           enable-cache: false
 
       - name: Install python-usd-viewer and tests dependencies
-        run: uv sync --frozen --group tests
+        run: uv sync --group tests
 
       - name: Run tests
         run: uv run pytest tests
