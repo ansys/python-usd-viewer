@@ -154,7 +154,7 @@ jobs:
       - name: Set up uv
         uses: astral-sh/setup-uv@61cb8a9741eeb8a550a1b8544337180c0fc8476b # v7.2.0
         with:
-          enable-cache: true
+          enable-cache: false
 
       - name: Install python-usd-viewer and tests dependencies
         run: uv sync --frozen --group tests

@@ -1,3 +1,4 @@
 (?i)Ansys
 (?i)gcc
 (?i)CMake
+(?i)uv
