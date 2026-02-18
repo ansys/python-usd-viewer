@@ -41,6 +41,8 @@ scripts.usd-setup = "ansys.tools.usdviewer.autosetup:main"
 # for local development.
 dev = [
   "pre-commit==4.5.1",
+  { include-group = "doc" },
+  { include-group = "tests" },
 ]
 doc = [
   "ansys-sphinx-theme[autoapi]==1.7.0",

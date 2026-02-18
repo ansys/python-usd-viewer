@@ -65,15 +65,7 @@ dependencies = [
 
 [package.dev-dependencies]
 dev = [
-    { name = "ansys-sphinx-theme", extra = ["autoapi"] },
     { name = "pre-commit" },
-    { name = "pytest" },
-    { name = "pytest-cov" },
-    { name = "pytest-pyvista" },
-    { name = "pyvista" },
-    { name = "sphinx-click" },
-    { name = "sphinx-copybutton" },
-    { name = "sphinx-gallery" },
 ]
 doc = [
     { name = "ansys-sphinx-theme", extra = ["autoapi"] },
@@ -100,17 +92,7 @@ requires-dist = [
 ]
 
 [package.metadata.requires-dev]
-dev = [
-    { name = "ansys-sphinx-theme", extras = ["autoapi"], specifier = "==1.7.0" },
-    { name = "pre-commit", specifier = "==4.5.1" },
-    { name = "pytest", specifier = "==9.0.2" },
-    { name = "pytest-cov", specifier = "==7.0.0" },
-    { name = "pytest-pyvista", specifier = "==0.3.2" },
-    { name = "pyvista", specifier = "==0.47.0" },
-    { name = "sphinx-click", specifier = "==6.2.0" },
-    { name = "sphinx-copybutton", specifier = "==0.5.2" },
-    { name = "sphinx-gallery", specifier = "==0.20.0" },
-]
+dev = [{ name = "pre-commit", specifier = "==4.5.1" }]
 doc = [
     { name = "ansys-sphinx-theme", extras = ["autoapi"], specifier = "==1.7.0" },
     { name = "sphinx-click", specifier = "==6.2.0" },
