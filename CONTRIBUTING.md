@@ -18,7 +18,8 @@ these commands:
 git clone https://github.com/ansys/python-usd-viewer/
 cd python-usd-viewer
 python -m pip install --upgrade pip
-pip install -e .
+pip install uv
+uv pip install -e .
 ```
 
 ## Adhere to code style
@@ -28,7 +29,7 @@ pip install -e .
 To ensure your code meets minimum code styling standards, run these commands:
 
 ```bash
-pip install pre-commit
+uv pip install pre-commit
 pre-commit run --all-files
 ```
 
@@ -43,7 +44,7 @@ pre-commit install
 Prior to running the tests, you must run this command to install the test dependencies:
 
 ```bash
-pip install -e .[tests]
+uv pip install -e .[tests]
 ```
 
 To run the tests, navigate to the root directory of the repository and run this command:
@@ -58,7 +59,7 @@ pytest
 Prior to building the documentation, you must run this command to install the documentation dependencies:
 
 ```bash
-pip install -e .[doc]
+uv pip install -e .[doc]
 ```
 
 To build the documentation, run the following commands:

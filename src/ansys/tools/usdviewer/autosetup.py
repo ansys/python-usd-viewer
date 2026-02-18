@@ -339,7 +339,7 @@ def build_and_install_openusd(install_path: Path = None, force_rebuild: bool = F
     # Install optional dependencies for schema generation tools
     try:
         print("Installing optional Python dependencies (Jinja2)...")
-        subprocess.run([sys.executable, "-m", "pip", "install", "jinja2"], capture_output=True, check=True)  # nosec B603
+        subprocess.run([sys.executable, "-m", "uv", "pip", "install", "jinja2"], capture_output=True, check=True)  # nosec B603
         print("✓ Jinja2 installed (enables usdGenSchema tools)")
     except subprocess.CalledProcessError:
         print("⚠️  Warning: Could not install Jinja2. Schema generation tools will be omitted.")

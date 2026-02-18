@@ -37,7 +37,8 @@ The `VTKConverter` class handles the VTK assets by:
 
 1. Create a new Python environment for this repository.
 ```bash
-python -m venv .venv
+pip install uv  # if uv is not installed
+uv venv .venv
 ```
 2. Activate the environment:
 
@@ -53,7 +54,7 @@ source .venv/bin/activate
 
 3. Install the project:
 ```bash
-pip install .
+uv sync
 ```
 
 4. Use the auto installer to setup OpenUSD or follow the instructions in the OpenUSD repository

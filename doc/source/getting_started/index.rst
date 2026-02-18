@@ -34,7 +34,8 @@ This section guides you through installing the Python USD viewer in user mode st
 
 .. code-block:: bash
 
-    python -m venv .venv
+    pip install uv
+    uv venv .venv
 
 2. Activate the environment.
 
@@ -54,7 +55,7 @@ In Windows:
 
 .. code-block:: bash
 
-    pip install .
+    uv sync
 
 
 4. Run the installation program to set up OpenUSD.
