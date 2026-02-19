@@ -100,7 +100,7 @@ python_functions = [ "test_*" ]
 [tool.towncrier]
 package = "ansys.tools.usdviewer"
 directory = "doc/source/changelog"
-filename = "doc/source/changelog.rst"
+filename = "CHANGELOG.md"
 start_string = ".. towncrier release notes start\n"
 template = "doc/changelog/template"
 title_format = "`{version} <https://github.com/ansys/python-usd-viewer/releases/tag/v{version}>`_ - {project_date}"
