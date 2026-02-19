@@ -27,8 +27,8 @@ jobs:
     name: Changelog
     runs-on: ubuntu-latest
     permissions:
-      contents: write
-      pull-requests: write
+      contents: write # Required for the changelog
+      pull-requests: write # Required for the changelog
     steps:
       - name: Create fragment
         if: github.event_name == 'pull_request'
