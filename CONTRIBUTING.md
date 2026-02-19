@@ -5,13 +5,13 @@ Overall guidance on contributing to a PyAnsys library appears in the
 are thoroughly familiar with this guide before attempting to contribute to
 ansys-tools-usdviewer.
 
-The following contribution information is specific to *Python OpenUSD viewer*.
+The following contribution information is specific to the Python USD Viewer.
 
 [Contributing]: https://dev.docs.pyansys.com/how-to/contributing.html
 
 ## Clone the repository
 
-To clone and install the latest *Python OpenUSD viewer* release in development mode, run
+To clone and install the latest Python USD Viewer release in development mode, run
 these commands:
 
 ```bash
@@ -23,7 +23,7 @@ pip install -e .
 
 ## Adhere to code style
 
-*Python OpenUSD viewer* follows the PEP8 standard as outlined in PEP 8 in the PyAnsys Developer’s Guide and implements style checking using pre-commit.
+The Python USD Viewer follows the PEP8 standard as outlined in PEP 8 in the *PyAnsys developer’s guide* and implements style checking using pre-commit.
 
 To ensure your code meets minimum code styling standards, run these commands:
 
@@ -66,10 +66,10 @@ To build the documentation, run the following commands:
 ```bash
 cd doc
 
-# On linux
+# On Linux
 make html
 
-# On windows
+# On Windows
 ./make.bat html
 ```
 

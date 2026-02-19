@@ -1,52 +1,51 @@
-===============
-Getting Started
+Getting started
 ===============
 
-This section describes how to install the Python USD viewer and quickly begin using it.
+This section describes how to install the Python USD Viewer in user mode and quickly begin using it.
 
 Prerequisites
 -------------
 
-A C++ compiler is required to build USD from source. Please ensure you have one of the following installed:
-- Windows: visual Studio
-- Linux: gcc
+You need a C++ compiler to build USD from source. Make sure you have one of the following installed:
+
+- Linux: GCC
+- Windows: Visual Studio
 
 Installation
 ------------
 
-This section guides you through installing the Python USD viewer in user mode step-by-step.
+Follow these steps to install the Python USD Viewer in user mode:
 
-1.- Create a Python virtual environment:
+#. Create a Python virtual environment:
 
 .. code-block:: bash
 
     python -m venv .venv
 
-2.- Activate the environment.
+#. Activate the environment:
 
-In Linux:
+   On Linux:
 
-.. code-block:: bash
+   .. code-block:: bash
 
-    source .venv/bin/activate
+       source .venv/bin/activate
 
-In Windows:
+   On Windows:
 
-.. code-block:: bash
+   .. code-block:: bash
 
-    .venv/Scripts/activate
+       .venv/Scripts/activate
 
-3.- Install the project:
+#. Install the project:
 
 .. code-block:: bash
 
     pip install .
 
-
-4.- Run the installation program to set up OpenUSD.
+#. Run the setup program to configure OpenUSD:
 
 .. code-block:: bash
 
     usd-setup
 
-After completing these steps, you should have the Python USD viewer installed and ready to use.
+After completing these steps, the Python USD Viewer is installed and ready to use.

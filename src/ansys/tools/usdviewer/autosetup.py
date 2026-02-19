@@ -43,12 +43,12 @@ def clone_openusd() -> str:
     Returns
     -------
     str:
-        Path to the cloned repo.
+        Path to the cloned repository.
     """
     openusd_path = "OpenUSD"
 
     if Path(openusd_path).exists():
-        print(f"✓ OpenUSD repository already exists at {openusd_path}")
+        print(f"✓ OpenUSD repository already exists at {openusd_path}.")
         return openusd_path
 
     print("Cloning OpenUSD repository...")
@@ -58,7 +58,7 @@ def clone_openusd() -> str:
         try:
             subprocess.run(["git", "config", "--global", "core.longpaths", "true"], check=True, capture_output=True)
         except subprocess.CalledProcessError:
-            print("Warning: Could not enable git long paths support")
+            print("Warning: Could not enable git long paths support.")
 
     try:
         # Clone with shallow depth first to avoid some long path issues
@@ -70,13 +70,13 @@ def clone_openusd() -> str:
         # Then fetch submodules
         subprocess.run(["git", "submodule", "update", "--init", "--recursive"], cwd=openusd_path, check=True)
 
-        print(f"✓ OpenUSD repository cloned to {openusd_path}")
+        print(f"✓ OpenUSD repository cloned to {openusd_path}.")
         return openusd_path
 
     except subprocess.CalledProcessError:
         raise RuntimeError(
             "Failed to clone OpenUSD repository. This may be due to Windows path length limitations. "
-            "Try enabling long path support in Windows or running from a shorter directory path"
+            "Try enabling long path support in Windows or running from a shorter directory path."
         )
 
 
@@ -124,19 +124,19 @@ def check_build_dependencies():
                 OpenUSD requires a C++ compiler to build. On Windows, you need to install
                 Microsoft Visual Studio or Visual Studio Build Tools.
 
-                Please install one of the following:
+                Install one of the following:
 
-                1. Visual Studio 2019 or later (Community Edition is free):
-                   https://visualstudio.microsoft.com/downloads/
+                - Visual Studio 2019 or later (Community Edition is free):
+                  https://visualstudio.microsoft.com/downloads/
 
-                   During installation, make sure to select:
-                   - "Desktop development with C++"
+                  During installation, make sure to select:
+                  - "Desktop development with C++"
 
-                2. Visual Studio Build Tools (lighter installation):
-                   https://visualstudio.microsoft.com/downloads/#build-tools-for-visual-studio-2022
+                - Visual Studio Build Tools (lighter installation):
+                  https://visualstudio.microsoft.com/downloads/#build-tools-for-visual-studio-2022
 
-                   During installation, select:
-                   - "Desktop development with C++"
+                  During installation, select:
+                  - "Desktop development with C++"
 
                 After installation, restart your terminal and run this script again.
 
@@ -146,20 +146,20 @@ def check_build_dependencies():
             warnings.warn(error_msg)
             raise RuntimeError(error_msg)
         else:
-            print("✓ Visual Studio C++ compiler found")
+            print("✓ Visual Studio C++ compiler found.")
 
     elif system == "Linux":
         # Check for gcc or g++
         try:
             subprocess.run(["g++", "--version"], capture_output=True, check=True)
-            print("✓ g++ compiler found")
+            print("✓ g++ compiler found.")
         except (subprocess.CalledProcessError, FileNotFoundError):
             error_msg = textwrap.dedent("""
-                ❌ ERROR: C++ compiler not found
+                ❌ ERROR: C++ compiler not found.
 
                 OpenUSD requires a C++ compiler to build. On Linux, you need gcc/g++.
 
-                Please install using your package manager:
+                Install using your package manager:
 
                 Ubuntu/Debian:
                   sudo apt-get install build-essential
@@ -175,14 +175,14 @@ def check_build_dependencies():
         # Check for clang (Xcode command line tools)
         try:
             subprocess.run(["clang++", "--version"], capture_output=True, check=True)
-            print("✓ clang++ compiler found")
+            print("✓ clang++ compiler found.")
         except (subprocess.CalledProcessError, FileNotFoundError):
             error_msg = textwrap.dedent("""
-                ❌ ERROR: C++ compiler not found
+                ❌ ERROR: C++ compiler not found.
 
                 OpenUSD requires a C++ compiler to build. On macOS, you need Xcode Command Line Tools.
 
-                Please install by running:
+                Install by running:
                   xcode-select --install
 
                 After installation, run this script again.
@@ -196,11 +196,11 @@ def check_build_dependencies():
         print(f"✓ CMake found: {cmake_version}")
     except (subprocess.CalledProcessError, FileNotFoundError):
         error_msg = textwrap.dedent("""
-            ❌ ERROR: CMake not found
+            ❌ ERROR: CMake not found.
 
             OpenUSD requires CMake to build.
 
-            Please install CMake from: https://cmake.org/download/
+            Install CMake from: https://cmake.org/download/
 
             Or use a package manager:
             - Windows: choco install cmake (requires Chocolatey)
@@ -289,17 +289,17 @@ def build_and_install_openusd(install_path: Path = None, force_rebuild: bool = F
 
     # Check if already built and not forcing rebuild
     if not force_rebuild and install_path.exists() and (install_path / "lib").exists():
-        print(f"✓ OpenUSD installation already exists at {install_path}")
-        print("  Use --force-rebuild to rebuild from scratch")
+        print(f"✓ OpenUSD installation already exists at {install_path}.")
+        print("  Use --force-rebuild to rebuild from scratch.")
         return install_path
 
-    print("Building and installing OpenUSD... This may take a while (30+ minutes)")
+    print("Building and installing OpenUSD... This may take a while (30+ minutes).")
 
     # Install optional dependencies for schema generation tools
     try:
         print("Installing optional Python dependencies (Jinja2)...")
         subprocess.run([sys.executable, "-m", "pip", "install", "jinja2"], capture_output=True, check=True)
-        print("✓ Jinja2 installed (enables usdGenSchema tools)")
+        print("✓ Jinja2 installed (enables usdGenSchema tools).")
     except subprocess.CalledProcessError:
         print("⚠️  Warning: Could not install Jinja2. Schema generation tools will be omitted.")
 
@@ -332,11 +332,11 @@ def build_and_install_openusd(install_path: Path = None, force_rebuild: bool = F
         # Run the build with Visual Studio environment
         subprocess.run(cmd, env=env, check=True)
 
-        print("✓ OpenUSD built and installed successfully")
+        print("✓ OpenUSD built and installed successfully.")
 
         # Add installation instructions
         print("\n" + "=" * 60)
-        print("INSTALLATION COMPLETE!")
+        print("Installation complete.")
         print("=" * 60)
         print(f"OpenUSD has been installed to: {install_path}")
         return install_path
@@ -351,7 +351,7 @@ def cleanup_openusd_repo(openusd_path):
         print(f"Cleaning up cloned repository at {openusd_path}...")
         try:
             shutil.rmtree(openusd_path)
-            print("✓ OpenUSD repository cleaned up successfully")
+            print("✓ OpenUSD repository cleaned up successfully.")
         except Exception as e:
             print(f"⚠️  Warning: Could not remove OpenUSD repository: {e}")
             print(f"   You can manually delete the directory: {Path(openusd_path).absolute()}")
@@ -362,11 +362,11 @@ def parse_arguments():
     parser = argparse.ArgumentParser(
         prog="usd-setup",
         description="Auto-setup script for OpenUSD installation with USD Viewer project.",
-        epilog="This script will create a virtual environment, clone OpenUSD, and build it for your project.",
+        epilog="This script creates a virtual environment, clones OpenUSD, and builds it for your project.",
     )
 
     parser.add_argument(
-        "--force-rebuild", action="store_true", help="Force rebuild of OpenUSD even if it already exists"
+        "--force-rebuild", action="store_true", help="Force rebuild of OpenUSD even if it already exists."
     )
 
     return parser.parse_args()
@@ -393,7 +393,7 @@ def main():
         build_and_install_openusd(force_rebuild=args.force_rebuild)
         cleanup_openusd_repo(openusd_path)
 
-        print("\n✅ Setup completed successfully!")
+        print("\n✅ Setup completed successfully.")
 
         # Add USD to Python path automatically if in a Linux virtual environment
         if platform.system() == "Linux":
@@ -414,16 +414,16 @@ def main():
                         if site_packages.exists():
                             pth_file = site_packages / "usd.pth"
                             pth_file.write_text(str(usd_lib_path) + "\n")
-                            print(f"✓ Added USD to Python path via {pth_file}")
+                            print(f"✓ Added USD to Python path via {pth_file}.")
                         else:
-                            print("⚠️  Could not find site-packages directory in virtual environment")
+                            print("⚠️  Could not find site-packages directory in virtual environment.")
                     else:
-                        print("⚠️  Could not find Python version directory in virtual environment")
+                        print("⚠️  Could not find Python version directory in virtual environment.")
 
                 except Exception as e:
                     print(f"⚠️  Warning: Could not automatically add USD to Python path: {e}")
                     usd_path = Path.cwd() / "usd_install" / "lib" / "python"
-                    print(f"   You may need to manually add {usd_path} to your PYTHONPATH")
+                    print(f"   You may need to manually add {usd_path} to your PYTHONPATH.")
 
     except Exception as e:
         print(f"\n❌ Setup failed: {e}")

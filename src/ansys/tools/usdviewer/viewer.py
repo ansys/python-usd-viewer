@@ -16,7 +16,7 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-"""USDViewer main module."""
+"""USD Viewer main module."""
 
 import sys
 import warnings
@@ -26,30 +26,30 @@ try:
     from pxr.Usdviewq.stageView import StageView
 except ImportError:
     warnings.warn(
-        "The 'pxr' module is required to use the USDViewer. "
-        "Please install the 'usd-core' package. "
-        "Refer to the documentation for installation instructions."
+        "The 'pxr' module is required to use the USD Viewer. "
+        "Install the 'usd-core' package. "
+        "For installation instructions, see the documentation."
     )
 
 try:
     from PySide6 import QtCore, QtWidgets
 except ImportError:
-    warnings.warn("The 'PySide6' module is not available in this environment. ")
+    warnings.warn("The PySide6 module is not available in this environment. ")
 
 from ansys.tools.usdviewer.vtk_converter import VTKConverter
 
 
 class Widget(QtWidgets.QWidget):
-    """USD Viewer Widget to display USD stages in Qt.
+    """USD Viewer widget to display USD stages in the Qt app.
 
     Parameters
     ----------
     stage : Usd.Stage, optional
-        The USD stage to display.
+        USD stage to display.
     """
 
     def __init__(self, stage=None):
-        """Initialize the USD Viewer Widget."""
+        """Initialize the USD Viewer widget."""
         super(Widget, self).__init__()
         self.model = StageView.DefaultDataModel()
 
@@ -77,10 +77,10 @@ class USDViewer:
 
     Parameters
     ----------
-    title : str, optional
-        The title of the viewer window. Default is "Viewer".
-    size : tuple[int, int], optional
-        The size of the viewer window as (width, height). Default is (750, 750).
+    title : str, default: ``"Viewer"``
+        Title of the viewer window.
+    size : tuple[int, int], default: ``(750, 750)``
+        Size of the viewer window in this format: ``(width, height)``. 
     """
 
     def __init__(self, title: str = "Viewer", size: tuple[int, int] = (750, 750)):
@@ -100,7 +100,7 @@ class USDViewer:
         Parameters
         ----------
         stage : Usd.Stage
-            The USD stage to load VTK assets for.
+            USD stage to load VTK assets for.
         """
         for vtk_path in self._vtk_paths:
             print(f"Loading VTK asset: {vtk_path}")
@@ -116,7 +116,7 @@ class USDViewer:
         Parameters
         ----------
         stage : Usd.Stage
-            The USD stage to display.
+            USD stage to display.
 
         """
         self._load_vtk_assets(stage)
@@ -125,25 +125,25 @@ class USDViewer:
         self.window.resize(QtCore.QSize(*self._size))
 
     def show(self) -> None:
-        """Show the viewer window.
+        """Show the USD Viewer window.
 
-        Displays the USD viewer window and starts the Qt application event loop.
+        Displays the USD Viewer window and starts the Qt app event loop.
         """
         self.window.show()
         self._app.exec()
 
     def _extract_vtk_paths(self, stage: "Usd.Stage") -> list[str]:
-        """Extract VTK paths from the given USD stage.
+        """Extract VTK paths from a given USD stage.
 
         Parameters
         ----------
         stage : Usd.Stage
-            The USD stage to extract VTK paths from.
+            USD stage to extract VTK paths from.
 
         Returns
         -------
         list[str]
-            A list of VTK paths.
+            List of VTK paths.
         """
         vtk_paths = []
         for prim in stage.Traverse():
@@ -156,12 +156,12 @@ class USDViewer:
         return vtk_paths
 
     def load_usd(self, path: str) -> "Usd.Stage":
-        """Load a USD stage from the given file path.
+        """Load a USD stage from a given file path.
 
         Parameters
         ----------
         path : str
-            The file path to the USD file.
+            File path to the USD file.
         """
         with Usd.StageCacheContext(UsdUtils.StageCache.Get()):
             stage = Usd.Stage.Open(path)
@@ -169,7 +169,7 @@ class USDViewer:
             print(f"Stage loaded: {stage.GetRootLayer().GetDisplayName()}")
             self._vtk_paths = self._extract_vtk_paths(stage)
         else:
-            print("Failed to load stage!")
+            print("Failed to load stage.")
             sys.exit(1)
 
         # plot the stage
@@ -177,17 +177,17 @@ class USDViewer:
         return stage
 
     def load_asset(self, asset_path: str) -> "Usd.Stage":
-        """Load any supported asset (USD, VTK, etc.) as a USD stage.
+        """Load any supported asset (such as USD or VTK) as a USD stage.
 
         Parameters
         ----------
         asset_path : str
-            Path to the asset file. Can be USD, VTK, OBJ, PLY, STL, etc.
+            Path to the asset file. File options include USD, VTK, OBJ, PLY, and STL.
 
         Returns
         -------
         Usd.Stage
-            The loaded USD stage.
+            Loaded USD stage.
         """
         stage = self._asset_resolver.load_asset_as_usd(asset_path)
 

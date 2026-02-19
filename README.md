@@ -1,23 +1,29 @@
-# Python OpenUSD viewer
+# Python USD Viewer
 
 ## Goals
-This library allows to visualize VTK-based 3D models (meshes, point clouds, etc.) within the USD viewer,
-even though USD and VTK are different 3D formats. The converter acts as a bridge between the 2 ecosystems.
+The Python USD Viewer lets you visualize VTK-based 3D models (such as meshes and point clouds), even though USD and VTK are different 3D formats. This library converts between the two ecosystems.
 
-## How does the conversion work?
-the `_VTKConverter` class handles the VTK assets by:
-1. Reading the VTK file using the appropriate VTK reader
-2. Converting the VTK geometry data to polydata(surface representation) or at least extract the surface
-3. Translating the VTK polydata to a USD mesh
-4. Embedding it into a USD stage for visualization
+## How the conversion works
 
-## Installation steps:
-Prerequisites: Have C++ compiler (Visual Studio in Windows, should be available by default in Linux)
+The `_VTKConverter` class processes VTK assets by performing these steps:
 
-1. Create a new Python environment for this repository.
+1. Reads the VTK file using the appropriate VTK reader.
+2. Converts the VTK geometry data to polydata (surface representation) or at least extracts the surface.
+3. Translates the VTK polydata to a USD mesh.
+4. Embeds the USD mesh into a USD stage for visualization.
+
+## Installation
+
+**Prerequisites**
+
+You must have a C++ compiler. Linux typically includes one by default. On Windows, you can use Visual Studio.
+
+1. Create a new Python environment for this repository:
+
 ```bash
 python -m venv .venv
 ```
+
 2. Activate the environment:
 
 ```bash
@@ -31,15 +37,19 @@ source .venv/bin/activate
 ```
 
 3. Install the project:
+
 ```bash
 pip install .
 ```
 
-4. Use the auto installer to setup OpenUSD or follow the instructions in the OpenUSD repository
+4. Set up OpenUSD using the OpenUSD auto-installer:
+
 ```bash
 usd-setup
 ```
 
+Or, follow the instructions in the OpenUSD repository.
+
 ## Usage
 
-Maya style controls: Press alt to move around with the mouse.
+Python USD Viewer uses Maya-style controls. To move the camera with the mouse, press and hold the **Alt** key.
