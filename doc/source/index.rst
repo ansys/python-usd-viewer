@@ -48,3 +48,4 @@ to work with complex 3D assets.
     user_guide/index
     api/index
     examples/index
+    changelog
