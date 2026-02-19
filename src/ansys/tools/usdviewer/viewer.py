@@ -80,7 +80,7 @@ class USDViewer:
     title : str, default: ``"Viewer"``
         Title of the viewer window.
     size : tuple[int, int], default: ``(750, 750)``
-        Size of the viewer window in this format: ``(width, height)``. 
+        Size of the viewer window in this format: ``(width, height)``.
     """
 
     def __init__(self, title: str = "Viewer", size: tuple[int, int] = (750, 750)):
