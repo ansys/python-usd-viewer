@@ -21,8 +21,6 @@ jobs:
   pr-name:
     name: Check the name of the PR
     runs-on: ubuntu-latest
-    permissions:
-      pull-requests: read # Required for check-pr-title action
     steps:
       - name: Check commit name
         uses: ansys/actions/check-pr-title@3931ac9351b13ae11b1203c2ef6b51e5c75502ea # v10.2.5
@@ -46,6 +44,7 @@ jobs:
   labeler:
     name: Labels
     permissions:
+      contents: read # Needed to read existing labels on the repository
       pull-requests: write # Needed to add existing labels to PRs
       issues: write # Needed to create labels that do not already exist
     runs-on: ubuntu-latest
