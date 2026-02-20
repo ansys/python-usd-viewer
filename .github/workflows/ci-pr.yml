@@ -72,6 +72,7 @@ jobs:
     name: Suggest labels if none assigned
     runs-on: ubuntu-latest
     permissions:
+      contents: read # needed to read existing labels on the pull request
       pull-requests: write # needed for comment action
     steps:
       - name: Suggest to add labels
