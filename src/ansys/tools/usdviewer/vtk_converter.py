@@ -12,12 +12,9 @@ try:
     from pxr import Gf, Usd, UsdGeom
 except ImportError:  # pragma: no cover
     warnings.warn(
-        "The 'pxr' module from OpenUSD is required to use the USDViewer. "
-        "Please install OpenUSD with the usdview component. "
-        "Note: The basic 'usd-core' package does not include usdview. "
-        "See installation instructions at: "
-        "https://github.com/ansys/python-usd-viewer or "
-        "https://github.com/PixarAnimationStudios/OpenUSD#getting-and-building-the-code"
+        "The 'pxr' module is required to use the USDViewer. "
+        "Install the 'usd-core' package. "
+        "For installation instructions, see the documentation."
     )
 
 import vtk
@@ -35,7 +32,7 @@ class VTKConverter:
         vtk_file_path : Union[str, Path]
             Path to the VTK file to convert.
         stage : Usd.Stage
-            The stage to add the converted USD data to.
+            Stage to add the converted USD data to.
         """
         vtk_file_path = Path(vtk_file_path)
         mesh_name = vtk_file_path.stem  # Use filename without extension
@@ -61,12 +58,12 @@ class VTKConverter:
         vtk_file_path : Union[str, Path]
             Path to the VTK file to convert.
         stage : Usd.Stage
-            The stage to add the VTK data to.
+            Stage to add the VTK data to.
 
         Returns
         -------
         Usd.Stage
-            The stage containing the VTK data.
+            Stage containing the VTK data.
         """
         if stage is None:
             stage = Usd.Stage.CreateNew("temp.usda")
@@ -97,12 +94,12 @@ class VTKConverter:
 
     @staticmethod
     def get_vtk_reader(file_path: Path) -> vtk.vtkAlgorithm:
-        """Get appropriate VTK reader based on file extension.
+        """Get the appropriate VTK reader based on the file extension.
 
         Parameters
         ----------
         file_path : Path
-            The path to the VTK file.
+            Path to the VTK file.
         """
         extension = file_path.suffix.lower()
 
@@ -133,11 +130,11 @@ class VTKConverter:
         Parameters
         ----------
         polydata : vtk.vtkPolyData
-            The VTK polydata to convert.
+            VTK polydata to convert.
         stage : Usd.Stage
-            The USD stage to add the mesh to.
-        mesh_name : str, optional
-            The name of the mesh in USD, by default "VTKMesh".
+            USD stage to add the mesh to.
+        mesh_name : str, default: ``"VTKMesh"``
+            Name of the mesh in USD.
         """
         if stage is None:
             stage = Usd.Stage.CreateNew("temp.usda")
@@ -202,14 +199,14 @@ class VTKConverter:
         Parameters
         ----------
         stage : Usd.Stage
-            The USD stage containing the mesh.
-        mesh_path : str, optional
-            The path to the mesh in USD. If None, finds the first mesh in the stage.
+            USD stage containing the mesh.
+        mesh_path : str, default: None
+            Path to the mesh in USD. If ``None``, the first mesh in the stage is used.
 
         Returns
         -------
         Optional[vtk.vtkPolyData]
-            The converted VTK polydata, or None if conversion failed.
+            Converted VTK polydata or ``None`` if conversion failed.
         """
         # If no mesh path is provided, find the first mesh in the stage
         if mesh_path is None:
@@ -219,7 +216,7 @@ class VTKConverter:
                     break
 
             if mesh_path is None:
-                warnings.warn("No mesh found in the USD stage")
+                warnings.warn("No mesh found in the USD stage.")
                 return None
 
         mesh_prim = stage.GetPrimAtPath(mesh_path)
@@ -279,19 +276,19 @@ class VTKConverter:
         return polydata
 
     def load_asset(self, asset_path: str, stage: "Usd.Stage") -> Optional["Usd.Stage"]:
-        """Load a VTK asset into the provided stage.
+        """Load a VTK asset into a given stage.
 
         Parameters
         ----------
         asset_path : str
             Path to the asset file.
         stage : Usd.Stage
-            The stage to add the asset to.
+            Stage to add the asset to.
 
         Returns
         -------
         Optional[Usd.Stage]
-            The stage with the loaded asset, or None if loading failed.
+            Stage with the loaded asset or ``None`` if loading failed.
         """
         # Resolve and validate the asset path
         asset_file = Path(asset_path)
