@@ -1,11 +1,12 @@
-===============
-Getting Started
+Getting started
 ===============
 
-This section describes how to install the Python USD viewer and quickly begin using it.
+This section describes how to install the Python USD Viewer in user mode and quickly begin using it.
 
 Prerequisites
 -------------
+
+You need a C++ compiler to build USD from source. Make sure you have one of the following installed:
 
 **Windows:**
 
@@ -30,45 +31,41 @@ Other Requirements
 Installation
 ------------
 
-This section guides you through installing the Python USD viewer in user mode step-by-step.
+Follow these steps to install the Python USD Viewer in user mode:
 
-1. Install uv (if not already installed):
+#. Create a Python virtual environment:
 
 .. code-block:: bash
 
     pip install uv
 
-2. Create a Python virtual environment:
+#. Activate the environment:
 
-.. code-block:: bash
+   On Linux:
 
-    uv venv .venv
+   .. code-block:: bash
 
-3. Activate the environment.
+       source .venv/bin/activate
 
-In Linux:
+   On Windows:
 
-.. code-block:: bash
+   .. code-block:: bash
 
-    source .venv/bin/activate
+       .venv/Scripts/activate
 
-In Windows:
-
-.. code-block:: bash
-
-    .venv\Scripts\activate
-
-4. Install the project:
+#. Install the project:
 
 .. code-block:: bash
 
     uv sync
 
-5. Run the installation program to set up OpenUSD.
+#. Run the setup program to configure OpenUSD:
 
 .. code-block:: bash
 
     usd-setup
+
+After completing these steps, the Python USD Viewer is installed and ready to use.
 
 .. warning::
 
@@ -78,6 +75,7 @@ In Windows:
    (for example, ``C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.44\bin\Hostx64\x64``,
    ``C:\Program Files\Microsoft Visual Studio\2022\Community\Common7\IDE``,
    ``C:\Program Files\Microsoft Visual Studio\2022\Community\Common7\Tools``) to your PATH.
+
 
 After completing these steps, you should have the Python USD viewer installed and ready to use.
 

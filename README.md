@@ -1,41 +1,25 @@
-# Python OpenUSD viewer
+# Python USD Viewer
 
 ## Goals
-This library allows to visualize VTK-based 3D models (meshes, point clouds, etc.) within the USD viewer,
-even though USD and VTK are different 3D formats. The converter acts as a bridge between the 2 ecosystems.
+The Python USD Viewer lets you visualize VTK-based 3D models (such as meshes and point clouds), even though USD and VTK are different 3D formats. This library converts between the two ecosystems.
 
-## How does the conversion work?
-The `VTKConverter` class handles the VTK assets by:
-1. Reading the VTK file using the appropriate VTK reader
-2. Converting the VTK geometry data to polydata(surface representation) or at least extract the surface
-3. Translating the VTK polydata to a USD mesh
-4. Embedding it into a USD stage for visualization
+## How the conversion works
 
-## Installation steps:
+The `_VTKConverter` class processes VTK assets by performing these steps:
 
-### Prerequisites
+1. Reads the VTK file using the appropriate VTK reader.
+2. Converts the VTK geometry data to polydata (surface representation) or at least extracts the surface.
+3. Translates the VTK polydata to a USD mesh.
+4. Embeds the USD mesh into a USD stage for visualization.
 
-#### C++ Compiler Requirements
+## Installation
 
-**Windows:**
-- **Visual Studio 2022 or earlier** (Community, Professional, Enterprise, or Build Tools)
-- **Visual Studio 2026 (version 18) is NOT yet supported** by OpenUSD's build system
-- The `usd-setup` script relies on OpenUSD's `build_usd.py`, which currently only supports up to Visual Studio 2022 (version 17)
+**Prerequisites**
 
-**Recommended installation:**
-- [Visual Studio 2022 Build Tools](https://visualstudio.microsoft.com/downloads/#build-tools-for-visual-studio-2022)
-- During installation, select **"Desktop development with C++"**
+You must have a C++ compiler. Linux typically includes one by default. On Windows, you can use Visual Studio.
 
-**Linux/macOS:**
-- C++ compiler should be available by default (gcc/g++ on Linux, clang on macOS)
+1. Create a new Python environment for this repository:
 
-#### Other Requirements
-- CMake 3.14 or latery
-- Git (for cloning OpenUSD repository)
-
-### Installation Steps
-
-1. Install uv (if not already installed):
 ```bash
 pip install uv
 ```
@@ -57,16 +41,20 @@ source .venv/bin/activate
 .venv\Scripts\activate
 ```
 
-4. Install the project:
+3. Install the project:
+
 ```bash
 uv sync
 ```
 
-5. Use the auto installer to setup OpenUSD or follow the instructions in the OpenUSD repository:
+4. Set up OpenUSD using the OpenUSD auto-installer:
+
 ```bash
 usd-setup
 ```
 
+Or, follow the instructions in the OpenUSD repository.
+
 ## Usage
 
-Maya style controls: Press alt to move around with the mouse.
+Python USD Viewer uses Maya-style controls. To move the camera with the mouse, press and hold the **Alt** key.
