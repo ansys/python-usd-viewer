@@ -39,9 +39,11 @@ jobs:
       - name: Create fragment
         uses: ansys/actions/doc-changelog@3931ac9351b13ae11b1203c2ef6b51e5c75502ea # v10.2.5
         with:
-          token: ${{ secrets.PYANSYS_CI_BOT_TOKEN }}
           bot-user: ${{ secrets.PYANSYS_CI_BOT_USERNAME }}
           bot-email: ${{ secrets.PYANSYS_CI_BOT_EMAIL }}
+          token: ${{ secrets.PYANSYS_CI_BOT_TOKEN }}
+          use-default-towncrier-config: true
+          use-pull-request-title: true
 
   labeler:
     name: Labels
