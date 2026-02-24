@@ -31,11 +31,17 @@ dependencies = [
   "pyside6", # OpenUSD build dep
   "vtk",
 ]
-
 scripts.usd-setup = "ansys.tools.usdviewer.autosetup:main"
 
-[dependency-groups]
+[project.urls]
+Bugs = "https://github.com/ansys/python-usd-viewer/issues"
+Documentation = "https://usd-viewer.docs.pyansys.com/"
+Source = "https://github.com/ansys/python-usd-viewer"
+Discussions = "https://github.com/ansys/python-usd-viewer/discussions"
+Releases = "https://github.com/ansys/python-usd-viewer/releases"
+Changelog = "https://github.com/ansys/python-usd-viewer/blob/main/doc/source/changelog.rst"
 
+[dependency-groups]
 # NOTE: The `dependency-groups` section is used to define groups of dependencies
 # only available when a developer clones the repository and installs the package
 # for local development.
@@ -99,10 +105,10 @@ python_functions = [ "test_*" ]
 
 [tool.towncrier]
 package = "ansys.tools.usdviewer"
-directory = "doc/source/changelog"
+directory = "doc/changelog.d"
 filename = "doc/source/changelog.rst"
 start_string = ".. towncrier release notes start\n"
-template = "doc/changelog/template"
+template = "doc/changelog.d/changelog_template.jinja"
 title_format = "`{version} <https://github.com/ansys/python-usd-viewer/releases/tag/v{version}>`_ - {project_date}"
 issue_format = "`#{issue} <https://github.com/ansys/python-usd-viewer/pull/{issue}>`_"
 
@@ -112,13 +118,13 @@ name = "Added"
 showcontent = true
 
 [[tool.towncrier.type]]
-directory = "changed"
-name = "Changed"
+directory = "fixed"
+name = "Fixed"
 showcontent = true
 
 [[tool.towncrier.type]]
-directory = "fixed"
-name = "Fixed"
+directory = "changed"
+name = "Changed"
 showcontent = true
 
 [[tool.towncrier.type]]
