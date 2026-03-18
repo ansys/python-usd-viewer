@@ -21,6 +21,8 @@
 import sys
 import warnings
 
+import ansys.tools.usdviewer as _usdviewer
+
 try:
     from pxr import Usd, UsdUtils
     from pxr.Usdviewq.stageView import StageView
@@ -86,7 +88,9 @@ class USDViewer:
 
     def __init__(self, title: str = "Viewer", size: tuple[int, int] = (750, 750)):
         """Initialize the USD Viewer."""
-        self._app = QtWidgets.QApplication([])
+        # If app exists, use it. Otherwise, create a new one.
+        # Fixes issue of "QApplication instance already exists".
+        self._app = QtWidgets.QApplication.instance() or QtWidgets.QApplication([])
 
         self._title = title
         self._size = size
@@ -129,7 +133,13 @@ class USDViewer:
         """Show the USD Viewer window.
 
         Displays the USD Viewer window and starts the Qt app event loop.
+        When :attr:`ansys.tools.usdviewer.OFF_SCREEN` or
+        :attr:`ansys.tools.usdviewer.BUILDING_GALLERY` is ``True``, this
+        method is a no-op so that documentation builds and automated tests
+        run without opening a display.
         """
+        if _usdviewer.OFF_SCREEN or _usdviewer.BUILDING_GALLERY:
+            return
         self.window.show()
         self._app.exec()
 
