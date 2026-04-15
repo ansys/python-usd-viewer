@@ -115,7 +115,7 @@ def check_build_dependencies():
                         vs_found = True
 
                         # Check Visual Studio version
-                        version_result = subprocess.run(
+                        version_result = subprocess.run(  # nosec B603
                             [vswhere_path, "-latest", "-property", "catalog_productLineVersion"],
                             capture_output=True,
                             text=True,

@@ -33,29 +33,18 @@ jobs:
           bot-user: ${{ secrets.PYANSYS_CI_BOT_USERNAME }}
           bot-email: ${{ secrets.PYANSYS_CI_BOT_EMAIL }}
 
-  # vulnerabilities:
-  #   name: Vulnerabilities
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - name: PyAnsys Vulnerability check (on main)
-  #       if: github.ref == 'refs/heads/main'
-  #       uses: ansys/actions/check-vulnerabilities@41f86da4c9ead510db9135e428e33df9cc6f92e1 # v10.2.3
-  #       with:
-  #         python-version: ${{ env.MAIN_PYTHON_VERSION }}
-  #         python-package-name: ${{ env.PACKAGE_NAME }}
-  #         token: ${{ secrets.PYANSYS_CI_BOT_TOKEN }}
-  #         upload-reports: true
-
-  #     - name: PyAnsys Vulnerability check (on dev mode)
-  #       if: github.ref != 'refs/heads/main'
-  #       uses: ansys/actions/check-vulnerabilities@41f86da4c9ead510db9135e428e33df9cc6f92e1 # v10.2.3
-  #       with:
-  #         python-version: ${{ env.MAIN_PYTHON_VERSION }}
-  #         python-package-name: ${{ env.PACKAGE_NAME }}
-  #         token: ${{ secrets.PYANSYS_CI_BOT_TOKEN }}
-  #         dev-mode: true
-  #         upload-reports: true
-  #         hide-log: false
+  vulnerabilities:
+    name: Vulnerabilities
+    runs-on: ubuntu-latest
+    steps:
+      - name: PyAnsys Vulnerability check (on main)
+        if: github.ref == 'refs/heads/main'
+        uses: ansys/actions/check-vulnerabilities@41f86da4c9ead510db9135e428e33df9cc6f92e1 # v10.2.3
+        with:
+          python-version: ${{ env.MAIN_PYTHON_VERSION }}
+          python-package-name: ${{ env.PACKAGE_NAME }}
+          token: ${{ secrets.PYANSYS_CI_BOT_TOKEN }}
+          upload-reports: true
 
   code-style:
     name: Code style
@@ -162,14 +151,13 @@ jobs:
           name: ${{ env.PACKAGE_NAME }}-artifacts
           path: ${{ env.PACKAGE_NAME }}-artifacts
 
-      # Uncomment the following once ready to publish to PyPI
-      # - name: Release to the public PyPI
-      #   uses: pypa/gh-action-pypi-publish@ed0c53931b1dc9bd32cbe73a98c7f6766f8a527e # v1.13.0
-      #   with:
-      #     repository-url: https://upload.pypi.org/legacy/
-      #     print-hash: true
-      #     packages-dir: ${{ env.PACKAGE_NAME }}-artifacts
-      #     skip-existing: false
+      - name: Release to the public PyPI
+        uses: pypa/gh-action-pypi-publish@ed0c53931b1dc9bd32cbe73a98c7f6766f8a527e # v1.13.0
+        with:
+          repository-url: https://upload.pypi.org/legacy/
+          print-hash: true
+          packages-dir: ${{ env.PACKAGE_NAME }}-artifacts
+          skip-existing: false
 
       - name: Release to GitHub
         uses: ansys/actions/release-github@7d55ff0b9f67c77dae50a286d711ee1ae27b0a25 # v10.2.12
