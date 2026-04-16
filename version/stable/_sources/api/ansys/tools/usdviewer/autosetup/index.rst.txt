@@ -1,0 +1,150 @@
+
+
+
+
+
+
+The ``autosetup.py`` module
+===========================
+
+.. py:module:: ansys.tools.usdviewer.autosetup
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+.. py:currentmodule:: autosetup
+.. tab-set::
+
+
+
+
+
+
+
+    .. tab-item:: Functions
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~clone_openusd`
+            - Clone the OpenUSD repository if it doesn't exist.
+
+
+          * - :py:obj:`~check_build_dependencies`
+            - Check if required build dependencies are available.
+
+
+          * - :py:obj:`~get_vs_environment`
+            - Get Visual Studio environment variables on Windows.
+
+
+          * - :py:obj:`~build_and_install_openusd`
+            - Build and install OpenUSD using the build script.
+
+
+          * - :py:obj:`~cleanup_openusd_repo`
+            - Clean up the cloned OpenUSD repository after successful installation.
+
+
+          * - :py:obj:`~parse_arguments`
+            - Parse command line arguments.
+
+
+          * - :py:obj:`~main`
+            - Run the OpenUSD auto-setup process.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Description
+-----------
+
+Auto-setup script for OpenUSD installation.
+
+This script creates a virtual environment if needed, clones the OpenUSD repository,
+and installs it with all necessary dependencies.
+
+
+
+
+
+
+
+Module detail
+-------------
+
+.. py:function:: clone_openusd() -> str
+
+   Clone the OpenUSD repository if it doesn't exist.
+
+   Returns
+   -------
+   str:
+       Path to the cloned repository.
+
+
+.. py:function:: check_build_dependencies()
+
+   Check if required build dependencies are available.
+
+   Raises
+   ------
+   RuntimeError
+       If required build dependencies are not found.
+
+
+.. py:function:: get_vs_environment() -> dict
+
+   Get Visual Studio environment variables on Windows.
+
+   Returns
+   -------
+   dict
+       Environment variables with Visual Studio paths added.
+
+
+.. py:function:: build_and_install_openusd(install_path: pathlib.Path = None, force_rebuild: bool = False) -> pathlib.Path
+
+   Build and install OpenUSD using the build script.
+
+
+.. py:function:: cleanup_openusd_repo(openusd_path)
+
+   Clean up the cloned OpenUSD repository after successful installation.
+
+
+.. py:function:: parse_arguments()
+
+   Parse command line arguments.
+
+
+.. py:function:: main()
+
+   Run the OpenUSD auto-setup process.
+
+
+
+
