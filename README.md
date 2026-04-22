@@ -1,7 +1,6 @@
 # Python USD Viewer
 
-## Goals
-The Python USD Viewer lets you visualize VTK-based 3D models (such as meshes and point clouds), even though USD and VTK are different 3D formats. This library converts between the two ecosystems.
+**Python USD Viewer** allows you to view OpenUSD files and convert VTK objects to OpenUSD objects. 
 
 ## How the conversion works
 
