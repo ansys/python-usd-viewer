@@ -105,7 +105,7 @@ dev = [
     { name = "pre-commit", specifier = "==4.5.1" },
     { name = "pytest", specifier = "==9.0.3" },
     { name = "pytest-cov", specifier = "==7.1.0" },
-    { name = "pytest-pyvista", specifier = "==0.3.2" },
+    { name = "pytest-pyvista", specifier = "==0.3.3" },
     { name = "pyvista", specifier = "==0.47.0" },
     { name = "sphinx-click", specifier = "==6.2.0" },
     { name = "sphinx-copybutton", specifier = "==0.5.2" },
@@ -121,7 +121,7 @@ examples = [{ name = "pyvista" }]
 tests = [
     { name = "pytest", specifier = "==9.0.3" },
     { name = "pytest-cov", specifier = "==7.1.0" },
-    { name = "pytest-pyvista", specifier = "==0.3.2" },
+    { name = "pytest-pyvista", specifier = "==0.3.3" },
     { name = "pyvista", specifier = "==0.47.0" },
 ]
 
@@ -1266,14 +1266,14 @@ wheels = [
 
 [[package]]
 name = "pytest-pyvista"
-version = "0.3.2"
+version = "0.3.3"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "pytest" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/3a/45/68268b5786530d51fd9714d1a247b26db0a75f09f1f43c91863f7c5febf2/pytest_pyvista-0.3.2.tar.gz", hash = "sha256:f67621c9e1b3e31f5341657f4150d3d63542daac9a1218cf1cb37ace8b1af341", size = 32557, upload-time = "2025-12-02T22:13:35.211Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/a1/2a/95ac7bf300a037b8412a91d261d479bf27bc7ee04d55e6fef19d5236a682/pytest_pyvista-0.3.3.tar.gz", hash = "sha256:0a8da0ccbacc35261a28613a99fc1a3dfd4bd474558e7a0a6ea014bfb3b93de7", size = 32772, upload-time = "2026-04-13T00:40:58.229Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/6e/2c/f0c3e488012cccc97ffc2ae29013c2d27f475bbb402e893ebbb0b7a59574/pytest_pyvista-0.3.2-py2.py3-none-any.whl", hash = "sha256:1ece4a6426afb3f70051262bcbfa0870daaff4fb13b518d4d62bf578148c0ad3", size = 28568, upload-time = "2025-12-02T22:13:33.841Z" },
+    { url = "https://files.pythonhosted.org/packages/0b/8e/72860c980fffa10aa86a2ecab62d7f6a93248328ea23af5fe887bdf211b5/pytest_pyvista-0.3.3-py3-none-any.whl", hash = "sha256:3342371bda4da54503b2ac627df5b6906989622afc1c843c496d17e2b65a099e", size = 28672, upload-time = "2026-04-13T00:40:56.72Z" },
 ]
 
 [[package]]
