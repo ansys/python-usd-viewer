@@ -4,7 +4,7 @@ requires = [ "hatchling" ]
 
 [project]
 name = "ansys-tools-usdviewer"
-version = "0.1.dev0"
+version = "0.1.0"
 description = "A USD viewer built with PySide6 and Pixar's USD library."
 readme = "README.md"
 license = "MIT"
