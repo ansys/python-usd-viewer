@@ -1,6 +1,6 @@
 # Python USD Viewer
 
-**Python USD Viewer** allows you to view OpenUSD files and convert VTK objects to OpenUSD objects. 
+**Python USD Viewer** allows you to view OpenUSD files and convert VTK objects to OpenUSD objects.
 
 ## How the conversion works
 
