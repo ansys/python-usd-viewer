@@ -46,7 +46,7 @@ Changelog = "https://github.com/ansys/python-usd-viewer/blob/main/doc/source/cha
 # only available when a developer clones the repository and installs the package
 # for local development.
 dev = [
-  "pre-commit==4.5.1",
+  "pre-commit==4.6.0",
   { include-group = "doc" },
   { include-group = "tests" },
 ]
