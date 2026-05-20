@@ -185,7 +185,16 @@ not_a_dir
 *usd_build/
 *OpenUSD/
 *install_dir/
+*oneTBB/
+*tbb_wasm/
+*tbb_wasm_build/
+*usd_wasm/
+*openusd_wasm_build/
+*emsdk/
 examples/sphere.usda
+examples/*_viewer.html
+examples/*_page.html
+examples/*_webprep.usda
 
 /ALL_BUILD*
 /CMakeCache.txt

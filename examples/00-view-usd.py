@@ -31,7 +31,7 @@ This example shows the plain usage of the USD Viewer.
 from ansys.tools.usdviewer.viewer import USDViewer
 
 # Load USD file
-path = r"display_color.usda"
+path = r"assets/display_color_vertex.usda"
 viewer = USDViewer(title="USD Viewer", size=(800, 800))
 viewer.load_usd(path)
 viewer.show()

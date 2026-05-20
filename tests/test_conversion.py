@@ -276,6 +276,80 @@ def test_convert_polydata_with_rgba_colors():
 
 
 @requires_openusd
+def test_convert_polydata_with_single_component_point_scalars():
+    """Test conversion of scalar point data to mapped USD display colors."""
+    stage = Usd.Stage.CreateInMemory()
+    points = vtk.vtkPoints()
+    points.InsertNextPoint(0, 0, 0)
+    points.InsertNextPoint(1, 0, 0)
+    points.InsertNextPoint(0, 1, 0)
+
+    polydata = vtk.vtkPolyData()
+    polydata.SetPoints(points)
+
+    scalar_values = vtk.vtkFloatArray()
+    scalar_values.SetNumberOfComponents(1)
+    scalar_values.SetName("stress")
+    scalar_values.InsertNextValue(10.0)
+    scalar_values.InsertNextValue(20.0)
+    scalar_values.InsertNextValue(30.0)
+    polydata.GetPointData().SetScalars(scalar_values)
+
+    VTKConverter.convert_polydata_to_usd_mesh(polydata, stage, "ScalarPoints")
+
+    mesh = UsdGeom.Mesh(stage.GetPrimAtPath("/ScalarPoints"))
+    display_color_primvar = mesh.GetDisplayColorPrimvar()
+    usd_colors = display_color_primvar.Get()
+
+    assert usd_colors is not None, "Mapped colors should be authored"
+    assert len(usd_colors) == 3, "Should have one mapped color per point"
+    assert display_color_primvar.GetInterpolation() == UsdGeom.Tokens.vertex
+
+
+@requires_openusd
+def test_convert_polydata_with_single_component_cell_scalars():
+    """Test conversion of scalar cell data to mapped USD display colors."""
+    stage = Usd.Stage.CreateInMemory()
+
+    points = vtk.vtkPoints()
+    points.InsertNextPoint(0, 0, 0)
+    points.InsertNextPoint(1, 0, 0)
+    points.InsertNextPoint(1, 1, 0)
+    points.InsertNextPoint(0, 1, 0)
+
+    polys = vtk.vtkCellArray()
+    polys.InsertNextCell(3)
+    polys.InsertCellPoint(0)
+    polys.InsertCellPoint(1)
+    polys.InsertCellPoint(2)
+    polys.InsertNextCell(3)
+    polys.InsertCellPoint(0)
+    polys.InsertCellPoint(2)
+    polys.InsertCellPoint(3)
+
+    polydata = vtk.vtkPolyData()
+    polydata.SetPoints(points)
+    polydata.SetPolys(polys)
+
+    cell_scalars = vtk.vtkFloatArray()
+    cell_scalars.SetNumberOfComponents(1)
+    cell_scalars.SetName("cell_stress")
+    cell_scalars.InsertNextValue(100.0)
+    cell_scalars.InsertNextValue(200.0)
+    polydata.GetCellData().SetScalars(cell_scalars)
+
+    VTKConverter.convert_polydata_to_usd_mesh(polydata, stage, "ScalarCells")
+
+    mesh = UsdGeom.Mesh(stage.GetPrimAtPath("/ScalarCells"))
+    display_color_primvar = mesh.GetDisplayColorPrimvar()
+    usd_colors = display_color_primvar.Get()
+
+    assert usd_colors is not None, "Mapped colors should be authored"
+    assert len(usd_colors) == 2, "Should have one mapped color per cell"
+    assert display_color_primvar.GetInterpolation() == UsdGeom.Tokens.uniform
+
+
+@requires_openusd
 def test_convert_usd_to_vtk_with_normalized_colors():
     """Test conversion from USD to VTK with normalized colors (0-1 range)."""
     # Create USD stage with a triangle and colors in 0-1 range

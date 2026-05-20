@@ -31,7 +31,7 @@ This example shows how to view a USD file that contains a VTK asset.
 from ansys.tools.usdviewer.viewer import USDViewer
 
 
-vtk_asset_path = r"display_color_vtk.usda"
+vtk_asset_path = r"assets/display_color_vtk.usda"
 # Initialize the USD Viewer.
 viewer = USDViewer(title="USD Viewer", size=(800, 800))
 # Load USD file with VTK asset.

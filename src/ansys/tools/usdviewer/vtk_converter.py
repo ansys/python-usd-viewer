@@ -24,6 +24,56 @@ class VTKConverter:
     """Convert VTK files to USD format for visualization."""
 
     @staticmethod
+    def _normalize_rgb_color(color: tuple[float, float, float]) -> "Gf.Vec3f":
+        """Normalize an RGB tuple to USD's 0-1 range."""
+        if any(c > 1.0 for c in color):
+            return Gf.Vec3f(color[0] / 255.0, color[1] / 255.0, color[2] / 255.0)
+        return Gf.Vec3f(color[0], color[1], color[2])
+
+    @staticmethod
+    def _extract_display_colors_from_scalars(
+        scalars: "vtk.vtkDataArray",
+    ) -> list["Gf.Vec3f"]:
+        """Extract RGB display colors from VTK scalar data.
+
+        For RGB/RGBA arrays, values are used directly (alpha ignored).
+        For single-component scalar arrays, a lookup table is used to map
+        scalar values to colors.
+        """
+        num_components = scalars.GetNumberOfComponents()
+        num_tuples = scalars.GetNumberOfTuples()
+
+        if num_tuples == 0:
+            return []
+
+        if num_components >= 3:
+            colors = []
+            for i in range(num_tuples):
+                color = scalars.GetTuple(i)
+                colors.append(VTKConverter._normalize_rgb_color((color[0], color[1], color[2])))
+            return colors
+
+        if num_components == 1:
+            lut = scalars.GetLookupTable()
+            if lut is None:
+                lut = vtk.vtkLookupTable()
+                scalar_min, scalar_max = scalars.GetRange()
+                if scalar_min == scalar_max:
+                    scalar_max = scalar_min + 1.0
+                lut.SetRange(scalar_min, scalar_max)
+                lut.Build()
+
+            colors = []
+            for i in range(num_tuples):
+                scalar_value = scalars.GetTuple1(i)
+                rgb = [0.0, 0.0, 0.0]
+                lut.GetColor(scalar_value, rgb)
+                colors.append(Gf.Vec3f(rgb[0], rgb[1], rgb[2]))
+            return colors
+
+        return []
+
+    @staticmethod
     def convert_vtk_file_to_usd(vtk_file_path: Union[str, Path], stage: "Usd.Stage" = None) -> None:
         """Convert a VTK file to a USD file.
 
@@ -175,22 +225,23 @@ class VTKConverter:
 
         # Handle colors if available
         point_data = polydata.GetPointData()
-        if point_data and point_data.GetScalars():
+        cell_data = polydata.GetCellData()
+
+        scalars = None
+        interpolation = None
+
+        if point_data and point_data.GetScalars() and point_data.GetScalars().GetNumberOfTuples() > 0:
             scalars = point_data.GetScalars()
-            if scalars.GetNumberOfComponents() >= 3:
-                colors = []
-                for i in range(scalars.GetNumberOfTuples()):
-                    color = scalars.GetTuple(i)
-                    if scalars.GetNumberOfComponents() == 3:
-                        colors.append(Gf.Vec3f(color[0], color[1], color[2]))
-                    else:  # RGBA
-                        colors.append(Gf.Vec3f(color[0], color[1], color[2]))
+            interpolation = UsdGeom.Tokens.vertex
+        elif cell_data and cell_data.GetScalars() and cell_data.GetScalars().GetNumberOfTuples() > 0:
+            scalars = cell_data.GetScalars()
+            interpolation = UsdGeom.Tokens.uniform
 
-                # Normalize colors if they're in 0-255 range
-                if any(c > 1.0 for color in colors for c in color):
-                    colors = [Gf.Vec3f(c[0] / 255.0, c[1] / 255.0, c[2] / 255.0) for c in colors]
-
-                mesh_prim.CreateDisplayColorAttr().Set(colors)
+        if scalars is not None:
+            colors = VTKConverter._extract_display_colors_from_scalars(scalars)
+            if colors:
+                display_color_primvar = mesh_prim.CreateDisplayColorPrimvar(interpolation)
+                display_color_primvar.Set(colors)
 
     @staticmethod
     def convert_usd_to_vtk(stage: "Usd.Stage", mesh_path: Optional[str] = None) -> Optional[vtk.vtkPolyData]:
