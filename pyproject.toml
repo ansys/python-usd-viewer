@@ -11,12 +11,13 @@ license = "MIT"
 license-files = [ "LICENSE" ]
 maintainers = [ { name = "ANSYS, Inc.", email = "pyansys.core@ansys.com" } ]
 authors = [ { name = "ANSYS, Inc.", email = "pyansys.core@ansys.com" } ]
-requires-python = ">=3.11,<4"
+requires-python = ">=3.10,<4"
 classifiers = [
   "Development Status :: 4 - Beta",
   "Intended Audience :: Science/Research",
   "Operating System :: OS Independent",
   "Programming Language :: Python :: 3 :: Only",
+  "Programming Language :: Python :: 3.10",
   "Programming Language :: Python :: 3.11",
   "Programming Language :: Python :: 3.12",
   "Programming Language :: Python :: 3.13",
@@ -113,6 +114,11 @@ title_format = "`{version} <https://github.com/ansys/python-usd-viewer/releases/
 issue_format = "`#{issue} <https://github.com/ansys/python-usd-viewer/pull/{issue}>`_"
 
 [[tool.towncrier.type]]
+directory = "breaking"
+name = "Breaking"
+showcontent = true
+
+[[tool.towncrier.type]]
 directory = "added"
 name = "Added"
 showcontent = true
@@ -123,8 +129,8 @@ name = "Fixed"
 showcontent = true
 
 [[tool.towncrier.type]]
-directory = "changed"
-name = "Changed"
+directory = "documentation"
+name = "Documentation"
 showcontent = true
 
 [[tool.towncrier.type]]
@@ -133,23 +139,23 @@ name = "Dependencies"
 showcontent = true
 
 [[tool.towncrier.type]]
-directory = "miscellaneous"
-name = "Miscellaneous"
-showcontent = true
-
-[[tool.towncrier.type]]
-directory = "documentation"
-name = "Documentation"
-showcontent = true
-
-[[tool.towncrier.type]]
 directory = "maintenance"
 name = "Maintenance"
 showcontent = true
 
 [[tool.towncrier.type]]
+directory = "miscellaneous"
+name = "Miscellaneous"
+showcontent = true
+
+[[tool.towncrier.type]]
 directory = "test"
 name = "Test"
+showcontent = true
+
+[[tool.towncrier.type]]
+directory = "changed"
+name = "Changed"
 showcontent = true
 
 [tool.uv]
