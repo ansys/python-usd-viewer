@@ -6,7 +6,7 @@ updates:
     schedule:
       interval: "daily"
     cooldown:
-      default-days: 5
+      default-days: 7
       exclude:
         - "ansys-sphinx-theme"
       include:
@@ -24,7 +24,7 @@ updates:
     schedule:
       interval: "daily"
     cooldown:
-      default-days: 5
+      default-days: 7
       include:
         - "*"
       exclude:
