@@ -14,7 +14,7 @@ def Xform "root"
         int[] faceVertexIndices = [0, 2, 3, 1]
         normal3f[] normals = [(0, 1, 0), (0, 1, 0), (0, 1, 0), (0, 1, 0)]
         point3f[] points = [(-5, 0, 5), (-5, 0, -5), (5, 0, 5), (5, 0, -5)]
-        color3f[] primvars:displayColor = [(1, 0, 0)]
+        color3f[] primvars:displayColor = [(0, 1, 0)]
         uniform token subdivisionScheme = "none"
     }
 

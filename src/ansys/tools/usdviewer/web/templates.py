@@ -9,7 +9,6 @@ import json
 from pathlib import Path
 
 _GLB_TEMPLATE_FILE = "glb_template.html"
-_MESH_TEMPLATE_FILE = "mesh_template.html"
 
 
 def build_viewer_html_glb(glb_b64: str, model_name: str) -> str:
@@ -17,14 +16,6 @@ def build_viewer_html_glb(glb_b64: str, model_name: str) -> str:
     template = _load_template(_GLB_TEMPLATE_FILE)
     return template.replace("__MODEL_NAME_JSON__", json.dumps(model_name)).replace(
         "__GLB_B64_JSON__", json.dumps(glb_b64)
-    )
-
-
-def build_viewer_html(meshes: list[dict], model_name: str) -> str:
-    """Build a self-contained HTML viewer from extracted mesh JSON."""
-    template = _load_template(_MESH_TEMPLATE_FILE)
-    return template.replace("__MODEL_NAME_JSON__", json.dumps(model_name)).replace(
-        "__MESH_DATA_JSON__", json.dumps(meshes)
     )
 
 

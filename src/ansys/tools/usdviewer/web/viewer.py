@@ -11,8 +11,7 @@ from pathlib import Path
 from ansys.tools.usdviewer.vtk_converter import VTKConverter
 
 from .glb import convert_usd_to_glb
-from .mesh import extract_meshes_from_stage_file
-from .templates import build_viewer_html, build_viewer_html_glb
+from .templates import build_viewer_html_glb
 
 _SUPPORTED_USD_EXTENSIONS = {".usd", ".usda", ".usdc", ".usdz"}
 
@@ -127,17 +126,12 @@ def _prepare_source_for_web(source_path: Path, export_root: Path) -> Path:
 def _generate_viewer_html(source_path: Path, html_path: Path) -> None:
     """Prepare mesh data and write a viewer HTML file to *html_path*.
 
-    Tries to export a GLB via ``pygltflib`` for full PBR material support.
-    Falls back to the raw mesh extraction path when ``pygltflib`` is not
-    installed.  Intermediate files (e.g. ``_webprep.usda``) are written to
+    Converts the USD asset to GLB via ``pygltflib`` for full PBR material
+    support.  Intermediate files (e.g. ``_webprep.usda``) are written to
     ``html_path.parent``.
     """
     prepared_path = _prepare_source_for_web(source_path, html_path.parent)
-    try:
-        glb_bytes = convert_usd_to_glb(prepared_path)
-        glb_b64 = base64.b64encode(glb_bytes).decode("ascii")
-        html = build_viewer_html_glb(glb_b64, source_path.name)
-    except ImportError:
-        meshes = extract_meshes_from_stage_file(prepared_path)
-        html = build_viewer_html(meshes, source_path.name)
+    glb_bytes = convert_usd_to_glb(prepared_path)
+    glb_b64 = base64.b64encode(glb_bytes).decode("ascii")
+    html = build_viewer_html_glb(glb_b64, source_path.name)
     html_path.write_text(html, encoding="utf-8")

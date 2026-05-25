@@ -211,3 +211,5 @@ examples/*_webprep.usda
 /source/
 /cmake.*
 temp.usda
+
+examples/assets/complex_scene/*

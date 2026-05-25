@@ -1,7 +1,7 @@
 #usda 1.0
 (
     defaultPrim = "root"
-    doc = """Generated from Composed Stage of root layer D:\\repositories\\python-usd-viewer\\examples\\display_color_vtk.usda
+    doc = """Generated from Composed Stage of root layer D:\\repositories\\python-usd-viewer\\examples\\assets\\display_color_vtk.usda
 """
     endTimeCode = 300
     framesPerSecond = 30
@@ -16,7 +16,7 @@ def Xform "root"
         int[] faceVertexIndices = [0, 2, 3, 1]
         normal3f[] normals = [(0, 1, 0), (0, 1, 0), (0, 1, 0), (0, 1, 0)]
         point3f[] points = [(-5, 0, 5), (-5, 0, -5), (5, 0, 5), (5, 0, -5)]
-        color3f[] primvars:displayColor = [(1, 0, 0)]
+        color3f[] primvars:displayColor = [(0, 1, 0)]
         uniform token subdivisionScheme = "none"
     }
 
