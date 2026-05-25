@@ -9,7 +9,7 @@ from ansys.tools.usdviewer.web.viewer import export_viewer_html
 
 
 if __name__ == "__main__":
-    html_path = export_viewer_html("assets/display_color_vtk.usda")
+    html_path = export_viewer_html("assets/complex_scene/scene.usda")
     print(f"Viewer page generated at: {html_path}")
     print("Controls: left-drag orbit, right-drag pan, mouse wheel zoom.")
     webbrowser.open(html_path.resolve().as_uri())
