@@ -1,6 +1,25 @@
 # Copyright (C) 2025 - 2026 ANSYS, Inc. and/or its affiliates.
 # SPDX-License-Identifier: MIT
 #
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+
 """Material and texture conversion helpers for GLB export."""
 
 from __future__ import annotations
@@ -16,13 +35,39 @@ from .glb_builder import GLBBuilder
 
 
 def _append_material_and_get_index(gltf: Any, material: Any) -> int:
-    """Append a GLTF material and return its index."""
+    """Append a GLTF material and return its index.
+
+    Parameters
+    ----------
+    gltf : Any
+        The glTF document to modify.
+    material : Any
+        The material to append to the glTF document.
+
+    Returns
+    -------
+    int
+        The index of the newly appended material in the glTF document.
+    """
     gltf.materials.append(material)
     return len(gltf.materials) - 1
 
 
 def _build_material_from_shader(shader: Any, prim_name: str) -> Any:
-    """Build a GLTF material from a UsdPreviewSurface shader."""
+    """Build a GLTF material from a UsdPreviewSurface shader.
+
+    Parameters
+    ----------
+    shader : Any
+        The UsdPreviewSurface shader to convert.
+    prim_name : str
+        The name of the primitive associated with the shader.
+
+    Returns
+    -------
+    Any
+        The resulting GLTF material.
+    """
     # Match UsdPreviewSurface defaults to avoid glTF defaults (metallic=1)
     # when USD scalar inputs are texture-connected and return None.
     pbr = pygltflib.PbrMetallicRoughness(
@@ -55,7 +100,20 @@ def _build_material_from_shader(shader: Any, prim_name: str) -> Any:
 
 
 def _get_connected_shader_input(shader: Any, input_name: str) -> tuple[Any, str] | None:
-    """Return connected shader and output name for a shader input."""
+    """Return connected shader and output name for a shader input.
+
+    Parameters
+    ----------
+    shader : Any
+        The shader containing the input to check.
+    input_name : str
+        The name of the shader input to check for a connection.
+
+    Returns
+    -------
+    tuple[Any, str] | None
+        A tuple containing the connected shader and output name, or None if no connection exists.
+    """
     shader_input = shader.GetInput(input_name)
     if not shader_input:
         return None
@@ -77,7 +135,18 @@ def _get_connected_shader_input(shader: Any, input_name: str) -> tuple[Any, str]
 
 
 def _map_wrap_mode(token: Any) -> int:
-    """Map USD wrap token to glTF sampler wrap mode."""
+    """Map USD wrap token to glTF sampler wrap mode.
+
+    Parameters
+    ----------
+    token : Any
+        The USD token representing the wrap mode (e.g., "repeat", "mirror", "clamp").
+
+    Returns
+    -------
+    int
+        The corresponding glTF wrap mode constant (e.g., pygltflib.REPEAT).
+    """
     if token == "repeat":
         return pygltflib.REPEAT
     if token == "mirror":
@@ -86,7 +155,20 @@ def _map_wrap_mode(token: Any) -> int:
 
 
 def _resolve_asset_file_path(asset_input: Any, shader_prim: Any) -> Path | None:
-    """Resolve a USD asset path from an input to a file path."""
+    """Resolve a USD asset path from an input to a file path.
+
+    Parameters
+    ----------
+    asset_input : Any
+        The USD asset input to resolve.
+    shader_prim : Any
+        The shader primitive associated with the asset input.
+
+    Returns
+    -------
+    Path | None
+        The resolved file path, or None if it cannot be resolved.
+    """
     if not asset_input:
         return None
 
@@ -124,7 +206,29 @@ def _get_texture_index_from_usd_uv_texture(
     image_cache: dict[str, int],
     sampler_cache: dict[tuple[int, int], int],
 ) -> int | None:
-    """Create or reuse a glTF texture index from a UsdUVTexture shader."""
+    """Create or reuse a glTF texture index from a UsdUVTexture shader.
+
+    Parameters
+    ----------
+    source_shader : Any
+        The UsdUVTexture shader to convert.
+    gltf : Any
+        The glTF document to modify.
+    builder : GLBBuilder
+        The GLBBuilder instance managing the binary buffer.
+    texture_cache : dict[tuple[str, str, str], int]
+        Cache mapping (file_path, wrap_s, wrap_t) to glTF texture indices.
+    image_cache : dict[str, int]
+        Cache mapping file paths to glTF image indices.
+    sampler_cache : dict[tuple[int, int], int]
+        Cache mapping (wrap_s, wrap_t) to glTF sampler indices.
+
+    Returns
+    -------
+    int | None
+        The index of the corresponding glTF texture, or None if the shader is not a
+        UsdUVTexture or lacks a valid file input.
+    """
     shader_id = source_shader.GetIdAttr().Get()
     if shader_id != "UsdUVTexture":
         return None
@@ -175,7 +279,24 @@ def _apply_preview_surface_textures(
     image_cache: dict[str, int],
     sampler_cache: dict[tuple[int, int], int],
 ) -> None:
-    """Apply supported UsdPreviewSurface texture connections to a GLTF material."""
+    """Apply supported UsdPreviewSurface texture connections to a GLTF material.
+
+    Parameters
+    ----------
+    shader : Any
+        The UsdPreviewSurface shader to check for texture connections.
+        material : Any
+    gltf : Any
+        The glTF document to modify with new textures, images, and samplers as needed.
+    builder : GLBBuilder
+        The GLBBuilder instance managing the binary buffer.
+    texture_cache : dict[tuple[str, str, str], int]
+        Cache mapping (file_path, wrap_s, wrap_t) to glTF texture indices.
+    image_cache : dict[str, int]
+        Cache mapping file paths to glTF image indices.
+    sampler_cache : dict[tuple[int, int], int]
+        Cache mapping (wrap_s, wrap_t) to glTF sampler indices.
+    """
     pbr = material.pbrMetallicRoughness
 
     diffuse_connection = _get_connected_shader_input(shader, "diffuseColor")
@@ -233,7 +354,20 @@ def _apply_preview_surface_textures(
 
 
 def _build_display_color_material(display_colors: Any, prim_name: str) -> Any:
-    """Build a fallback GLTF material from the first displayColor value."""
+    """Build a fallback GLTF material from the first displayColor value.
+
+    Parameters
+    ----------
+    display_colors : Any
+        The displayColor values to use for the material.
+    prim_name : str
+        The name of the prim to use for the material name.
+
+    Returns
+    -------
+    Any
+        The constructed GLTF material.
+    """
     c = display_colors[0]
     pbr = pygltflib.PbrMetallicRoughness(baseColorFactor=[float(c[0]), float(c[1]), float(c[2]), 1.0])
     return pygltflib.Material(pbrMetallicRoughness=pbr, name=f"{prim_name}_displayColor", doubleSided=True)
@@ -249,7 +383,32 @@ def get_material_index(
     image_cache: dict[str, int],
     sampler_cache: dict[tuple[int, int], int],
 ) -> int | None:
-    """Resolve GLTF material index from USD bindings or displayColor fallback."""
+    """Resolve GLTF material index from USD bindings or displayColor fallback.
+
+    Parameters
+    ----------
+    prim : Any
+        The USD prim to get the material for.
+    display_colors : Any
+        The displayColor values to use for the material.
+    color_interpolation : Any
+        The interpolation method for the display colors.
+    gltf : Any
+        The glTF document to modify with new textures, images, and samplers as needed.
+    builder : GLBBuilder
+        The GLBBuilder instance managing the binary buffer.
+    texture_cache : dict[tuple[str, str, str], int]
+        Cache mapping (file_path, wrap_s, wrap_t) to glTF texture indices.
+    image_cache : dict[str, int]
+        Cache mapping file paths to glTF image indices.
+    sampler_cache : dict[tuple[int, int], int]
+        Cache mapping (wrap_s, wrap_t) to glTF sampler indices.
+
+    Returns
+    -------
+    int | None
+        The index of the resolved GLTF material, or None if no material is found.
+    """
     mat_index = None
     binding = UsdShade.MaterialBindingAPI(prim).GetDirectBinding()
     if binding:

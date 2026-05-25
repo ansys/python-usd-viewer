@@ -1,6 +1,25 @@
 # Copyright (C) 2025 - 2026 ANSYS, Inc. and/or its affiliates.
 # SPDX-License-Identifier: MIT
 #
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+
 """USD-to-glTF light conversion helpers."""
 
 from __future__ import annotations
@@ -12,7 +31,18 @@ import pygltflib
 
 
 def _ensure_lights_extension(gltf: Any) -> list[dict[str, Any]]:
-    """Ensure KHR_lights_punctual is declared and return its light list."""
+    """Ensure KHR_lights_punctual is declared and return its light list.
+
+    Parameters
+    ----------
+    gltf : Any
+        The glTF document to check and modify.
+
+    Returns
+    -------
+    list[dict[str, Any]]
+        The list of lights in the KHR_lights_punctual extension, which may be newly created.
+    """
     if gltf.extensionsUsed is None:
         gltf.extensionsUsed = []
     if "KHR_lights_punctual" not in gltf.extensionsUsed:
@@ -35,7 +65,19 @@ def _ensure_lights_extension(gltf: Any) -> list[dict[str, Any]]:
 
 
 def _get_light_schema_and_type(prim: Any) -> tuple[Any, str] | None:
-    """Map a USD light prim to a KHR_lights_punctual-compatible type."""
+    """Map a USD light prim to a KHR_lights_punctual-compatible type.
+
+    Parameters
+    ----------
+    prim : Any
+        The USD light prim to map.
+
+    Returns
+    -------
+    tuple[Any, str] | None
+        A tuple containing the USD light schema and the corresponding glTF light type,
+        or None if the prim is not a supported light type.
+    """
     if prim.IsA(UsdLux.DistantLight):
         return UsdLux.DistantLight(prim), "directional"
 
@@ -49,7 +91,18 @@ def _get_light_schema_and_type(prim: Any) -> tuple[Any, str] | None:
 
 
 def _make_gltf_light(prim: Any) -> dict[str, Any] | None:
-    """Build one glTF punctual light description from a USD light prim."""
+    """Build one glTF punctual light description from a USD light prim.
+
+    Parameters
+    ----------
+    prim : Any
+        The USD light prim to convert.
+
+    Returns
+    -------
+    dict[str, Any] | None
+        A dictionary representing the glTF light, or None if the prim is not a supported light type.
+    """
     schema_and_type = _get_light_schema_and_type(prim)
     if schema_and_type is None:
         return None
@@ -88,7 +141,17 @@ def _make_gltf_light(prim: Any) -> dict[str, Any] | None:
 
 
 def append_usd_lights_to_scene(stage: Any, gltf: Any, scene: Any) -> None:
-    """Convert supported USD lights into glTF KHR_lights_punctual lights."""
+    """Convert supported USD lights into glTF KHR_lights_punctual lights.
+
+    Parameters
+    ----------
+    stage : Any
+        The USD stage containing the lights.
+    gltf : Any
+        The glTF document to modify.
+    scene : Any
+        The glTF scene to which the lights will be added.
+    """
     lights = _ensure_lights_extension(gltf)
 
     for prim in stage.Traverse():

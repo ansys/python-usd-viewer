@@ -1,6 +1,25 @@
 # Copyright (C) 2025 - 2026 ANSYS, Inc. and/or its affiliates.
 # SPDX-License-Identifier: MIT
 #
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+
 """Mesh geometry conversion helpers for GLB export."""
 
 from __future__ import annotations
@@ -16,7 +35,20 @@ from .glb_materials import get_material_index
 
 
 def triangulate_faces(indices: list[int], counts: list[int]) -> list[int]:
-    """Convert polygon faces to triangles using fan triangulation."""
+    """Convert polygon faces to triangles using fan triangulation.
+
+    Parameters
+    ----------
+    indices : list[int]
+        The list of vertex indices for all faces, as defined by USD's faceVertexIndices.
+    counts : list[int]
+        The list of vertex counts for each face, as defined by USD's faceVertexCounts.
+
+    Returns
+    -------
+    list[int]
+        The list of triangle indices.
+    """
     result = []
     idx = 0
     for count in counts:
@@ -28,7 +60,20 @@ def triangulate_faces(indices: list[int], counts: list[int]) -> list[int]:
 
 
 def _add_position_attribute(points: list[Any], builder: GLBBuilder) -> int:
-    """Write position data and return the POSITION accessor index."""
+    """Write position data and return the POSITION accessor index.
+
+    Parameters
+    ----------
+    points : list[Any]
+        The list of vertex positions.
+    builder : GLBBuilder
+        The GLBBuilder instance managing the binary buffer.
+
+    Returns
+    -------
+    int
+        The index of the POSITION accessor.
+    """
     pos_data = struct.pack(f"{len(points) * 3}f", *[c for p in points for c in (float(p[0]), float(p[1]), float(p[2]))])
     xs = [float(p[0]) for p in points]
     ys = [float(p[1]) for p in points]
@@ -45,7 +90,20 @@ def _add_position_attribute(points: list[Any], builder: GLBBuilder) -> int:
 
 
 def _add_index_accessor(triangle_indices: list[int], builder: GLBBuilder) -> int:
-    """Write triangle index data and return the index accessor."""
+    """Write triangle index data and return the index accessor.
+
+    Parameters
+    ----------
+    triangle_indices : list[int]
+        The list of triangle indices.
+    builder : GLBBuilder
+        The GLBBuilder instance managing the binary buffer.
+
+    Returns
+    -------
+    int
+        The index of the triangle index accessor.
+    """
     idx_data = struct.pack(f"{len(triangle_indices)}I", *triangle_indices)
     idx_buffer_view = builder.add_buffer_view(idx_data, pygltflib.ELEMENT_ARRAY_BUFFER)
     return builder.add_accessor(idx_buffer_view, pygltflib.UNSIGNED_INT, len(triangle_indices), pygltflib.SCALAR)
@@ -56,7 +114,17 @@ def _add_uv_attribute(
     uv_values: list[tuple[float, float]] | None,
     builder: GLBBuilder,
 ) -> None:
-    """Attach TEXCOORD_0 accessor when matching UV data exists."""
+    """Attach TEXCOORD_0 accessor when matching UV data exists.
+
+    Parameters
+    ----------
+    attributes : Any
+        The attributes object to modify.
+    uv_values : list[tuple[float, float]] | None
+        The list of UV coordinates.
+    builder : GLBBuilder
+        The GLBBuilder instance managing the binary buffer.
+    """
     if not uv_values:
         return
 
@@ -66,7 +134,18 @@ def _add_uv_attribute(
 
 
 def _get_display_colors(usd_mesh: Any) -> tuple[Any, Any]:
-    """Return display colors and interpolation token from USD mesh."""
+    """Return display colors and interpolation token from USD mesh.
+
+    Parameters
+    ----------
+     usd_mesh : Any
+         The USD mesh prim to query for display color information.
+
+    Returns
+    -------
+    tuple[Any, Any]
+        A tuple containing the display colors and the interpolation token.
+    """
     display_color_primvar = usd_mesh.GetDisplayColorPrimvar()
     colors = display_color_primvar.Get() if display_color_primvar else usd_mesh.GetDisplayColorAttr().Get()
     interpolation = display_color_primvar.GetInterpolation() if display_color_primvar else None
@@ -75,25 +154,47 @@ def _get_display_colors(usd_mesh: Any) -> tuple[Any, Any]:
 
 def _add_display_color_attribute(
     points: list[Any],
+    source_point_indices: list[int],
     display_colors: Any,
     color_interpolation: Any,
     attributes: Any,
     builder: GLBBuilder,
 ) -> None:
-    """Attach COLOR_0 when displayColor is vertex-compatible."""
-    if not (
-        display_colors
-        and color_interpolation in {UsdGeom.Tokens.vertex, UsdGeom.Tokens.varying}
-        and len(display_colors) == len(points)
-    ):
+    """Attach COLOR_0 when displayColor is vertex-compatible.
+
+    Parameters
+    ----------
+    points : list[Any]
+        The list of points in the mesh.
+    source_point_indices : list[int]
+        The list of source point indices.
+    display_colors : Any
+        The displayColor values to use for the attribute.
+    color_interpolation : Any
+        The interpolation method for the display colors.
+    attributes : Any
+        The attributes object to modify.
+    builder : GLBBuilder
+        The GLBBuilder instance managing the binary buffer.
+    """
+    if not (display_colors and color_interpolation in {UsdGeom.Tokens.vertex, UsdGeom.Tokens.varying}):
+        return
+
+    if len(display_colors) == len(points):
+        expanded_colors = display_colors
+    elif source_point_indices and len(display_colors) > 0:
+        if any(index < 0 or index >= len(display_colors) for index in source_point_indices):
+            return
+        expanded_colors = [display_colors[index] for index in source_point_indices]
+    else:
         return
 
     color_data = struct.pack(
-        f"{len(display_colors) * 3}f",
-        *[c for color in display_colors for c in (float(color[0]), float(color[1]), float(color[2]))],
+        f"{len(expanded_colors) * 3}f",
+        *[c for color in expanded_colors for c in (float(color[0]), float(color[1]), float(color[2]))],
     )
     color_buffer_view = builder.add_buffer_view(color_data, pygltflib.ARRAY_BUFFER)
-    attributes.COLOR_0 = builder.add_accessor(color_buffer_view, pygltflib.FLOAT, len(display_colors), pygltflib.VEC3)
+    attributes.COLOR_0 = builder.add_accessor(color_buffer_view, pygltflib.FLOAT, len(expanded_colors), pygltflib.VEC3)
 
 
 def _append_mesh_to_scene(
@@ -104,7 +205,23 @@ def _append_mesh_to_scene(
     gltf: Any,
     scene: Any,
 ) -> None:
-    """Append one mesh primitive and its node to the active scene."""
+    """Append one mesh primitive and its node to the active scene.
+
+    Parameters
+    ----------
+    prim : Any
+        The USD mesh prim being converted.
+    attributes : Any
+        The attributes object for the mesh primitive.
+    idx_acc : int
+        The index accessor for the mesh primitive.
+    mat_index : int | None
+        The material index for the mesh primitive.
+    gltf : Any
+        The glTF object to which the mesh primitive will be added.
+    scene : Any
+        The scene object to which the mesh node will be added.
+    """
     primitive = pygltflib.Primitive(attributes=attributes, indices=idx_acc, material=mat_index)
     gltf_mesh = pygltflib.Mesh(primitives=[primitive], name=prim.GetName())
     gltf.meshes.append(gltf_mesh)
@@ -119,8 +236,25 @@ def _build_attributes_for_mesh(
     usd_mesh: Any,
     builder: GLBBuilder,
 ) -> tuple[Any, int, Any, Any]:
-    """Build geometric attributes and index accessor for one mesh."""
-    triangle_positions, triangle_indices, triangle_uvs = _build_triangle_mesh_data(prim, usd_mesh)
+    """Build geometric attributes and index accessor for one mesh.
+
+    Parameters
+    ----------
+    prim : Any
+        The USD mesh prim being converted.
+    usd_mesh : Any
+        The USD mesh object.
+    builder : GLBBuilder
+        The GLBBuilder instance managing the binary buffer.
+
+    Returns
+    -------
+    tuple[Any, int, Any, Any]
+        A tuple containing the attributes object, index accessor, display colors, and color interpolation.
+    """
+    triangle_positions, triangle_indices, triangle_uvs, triangle_point_indices = _build_triangle_mesh_data(
+        prim, usd_mesh
+    )
     pos_acc = _add_position_attribute(triangle_positions, builder)
     idx_acc = _add_index_accessor(triangle_indices, builder)
 
@@ -130,6 +264,7 @@ def _build_attributes_for_mesh(
     display_colors, color_interpolation = _get_display_colors(usd_mesh)
     _add_display_color_attribute(
         triangle_positions,
+        triangle_point_indices,
         display_colors,
         color_interpolation,
         attributes,
@@ -144,7 +279,24 @@ def _resolve_primvar_element_index(
     corner_index: int,
     point_index: int,
 ) -> int | None:
-    """Resolve primvar element index by interpolation for one face corner."""
+    """Resolve primvar element index by interpolation for one face corner.
+
+    Parameters
+    ----------
+    interpolation : Any
+        The interpolation token for the primvar (e.g., vertex, faceVarying).
+    face_index : int
+        The index of the face being processed.
+    corner_index : int
+        The index of the corner being processed.
+    point_index : int
+        The index of the point being processed.
+
+    Returns
+    -------
+    int | None
+        The resolved element index for the primvar, or None if the interpolation type is unsupported.
+    """
     if interpolation in {UsdGeom.Tokens.vertex, UsdGeom.Tokens.varying}:
         return point_index
     if interpolation == UsdGeom.Tokens.faceVarying:
@@ -161,7 +313,22 @@ def _build_corner_uvs(
     face_vertex_indices: list[int],
     face_vertex_counts: list[int],
 ) -> list[tuple[float, float]] | None:
-    """Build one UV coordinate per face corner, honoring indexed primvars."""
+    """Build one UV coordinate per face corner, honoring indexed primvars.
+
+    Parameters
+    ----------
+    prim : Any
+        The USD mesh prim to query for UV information.
+    face_vertex_indices : list[int]
+        The indices of the vertices for each face.
+    face_vertex_counts : list[int]
+        The number of vertices for each face.
+
+    Returns
+    -------
+    list[tuple[float, float]] | None
+        A list of UV coordinates for each corner, or None if no UVs are defined.
+    """
     st_primvar = UsdGeom.PrimvarsAPI(prim).GetPrimvar("st")
     if not st_primvar or not st_primvar.IsDefined():
         return None
@@ -202,20 +369,34 @@ def _build_corner_uvs(
 def _build_triangle_mesh_data(
     prim: Any,
     usd_mesh: Any,
-) -> tuple[list[Any], list[int], list[tuple[float, float]] | None]:
-    """Build triangle-ready vertex data, including expanded UVs for face-varying primvars."""
+) -> tuple[list[Any], list[int], list[tuple[float, float]] | None, list[int]]:
+    """Build triangle-ready vertex data, including expanded UVs for face-varying primvars.
+
+    Parameters
+    ----------
+    prim : Any
+        The USD mesh prim being converted.
+    usd_mesh : Any
+        The USD mesh object.
+
+    Returns
+    -------
+    tuple[list[Any], list[int], list[tuple[float, float]] | None, list[int]]
+        A tuple containing the triangle positions, triangle indices, triangle UVs, and triangle point indices.
+    """
     points = usd_mesh.GetPointsAttr().Get() or []
     face_vertex_indices = list(usd_mesh.GetFaceVertexIndicesAttr().Get() or [])
     face_vertex_counts = list(usd_mesh.GetFaceVertexCountsAttr().Get() or [])
 
     if not points or not face_vertex_indices or not face_vertex_counts:
-        return points, list(range(len(points))), None
+        return points, list(range(len(points))), None, list(range(len(points)))
 
     corner_uvs = _build_corner_uvs(prim, face_vertex_indices, face_vertex_counts)
 
     triangle_positions: list[Any] = []
     triangle_indices: list[int] = []
     triangle_uvs: list[tuple[float, float]] | None = [] if corner_uvs is not None else None
+    triangle_point_indices: list[int] = []
 
     corner_offset = 0
     for count in face_vertex_counts:
@@ -234,17 +415,29 @@ def _build_triangle_mesh_data(
                 point = points[point_index]
                 triangle_positions.append(point)
                 triangle_indices.append(len(triangle_positions) - 1)
+                triangle_point_indices.append(point_index)
 
                 if triangle_uvs is not None and corner_uvs is not None:
                     triangle_uvs.append(corner_uvs[corner_index])
 
         corner_offset += count
 
-    return triangle_positions, triangle_indices, triangle_uvs
+    return triangle_positions, triangle_indices, triangle_uvs, triangle_point_indices
 
 
 def iter_usd_mesh_prims(stage: Any) -> list[Any]:
-    """Collect mesh prims from a USD stage."""
+    """Collect mesh prims from a USD stage.
+
+    Parameters
+    ----------
+    stage : Any
+        The USD stage to traverse for mesh prims.
+
+    Returns
+    -------
+    list[Any]
+        A list of USD mesh prims found in the stage.
+    """
     mesh_prims = []
     for prim in stage.Traverse():
         if prim.IsA(UsdGeom.Mesh):
@@ -261,7 +454,25 @@ def convert_mesh_prim_to_gltf(
     image_cache: dict[str, int],
     sampler_cache: dict[tuple[int, int], int],
 ) -> None:
-    """Convert one USD mesh prim into GLTF mesh/node entries."""
+    """Convert one USD mesh prim into GLTF mesh/node entries.
+
+    Parameters
+    ----------
+    prim : Any
+        The USD mesh prim to convert.
+    gltf : Any
+        The GLTF object to which the mesh will be added.
+    scene : Any
+        The GLTF scene to which the mesh node will be added.
+    builder : GLBBuilder
+        The GLBBuilder instance used for constructing the GLTF.
+    texture_cache : dict[tuple[str, str, str], int]
+        A cache mapping texture identifiers to GLTF texture indices.
+    image_cache : dict[str, int]
+        A cache mapping image file paths to GLTF image indices.
+    sampler_cache : dict[tuple[int, int], int]
+        A cache mapping sampler settings to GLTF sampler indices.
+    """
     usd_mesh = UsdGeom.Mesh(prim)
     points = usd_mesh.GetPointsAttr().Get()
     if not points:

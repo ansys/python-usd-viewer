@@ -18,6 +18,7 @@
 # SOFTWARE.
 """USD Viewer main module."""
 
+from pathlib import Path
 import sys
 import warnings
 
@@ -95,6 +96,8 @@ class USDViewer:
         self._asset_resolver = VTKConverter()
         self._vtk_paths = []
 
+    _SUPPORTED_VTK_ASSET_EXTENSIONS = {".vtk", ".vtp", ".vtu", ".vts", ".obj", ".ply", ".stl"}
+
     def _load_vtk_assets(self, stage: "Usd.Stage") -> None:
         """Load VTK assets referenced in the USD stage.
 
@@ -103,13 +106,19 @@ class USDViewer:
         stage : Usd.Stage
             USD stage to load VTK assets for.
         """
+        base_dir = self._get_stage_base_dir(stage)
         for vtk_path in self._vtk_paths:
-            print(f"Loading VTK asset: {vtk_path}")
-            vtk_stage = self._asset_resolver.load_asset(vtk_path, stage)
-            if vtk_stage:
-                print(f"VTK asset loaded: {vtk_path}")
+            raw_path = Path(vtk_path)
+            if raw_path.is_absolute() or base_dir is None:
+                resolved_path = raw_path.resolve()
             else:
-                print(f"Failed to load VTK asset: {vtk_path}")
+                resolved_path = (base_dir / raw_path).resolve()
+            print(f"Loading VTK asset: {resolved_path}")
+            vtk_stage = self._asset_resolver.load_asset(str(resolved_path), stage)
+            if vtk_stage:
+                print(f"VTK asset loaded: {resolved_path}")
+            else:
+                print(f"Failed to load VTK asset: {resolved_path}")
 
     def plot(self, stage: "Usd.Stage") -> None:
         """Plot the given USD stage in the viewer window.
@@ -151,10 +160,31 @@ class USDViewer:
             attr = prim.GetAttribute("Asset")
             if attr:
                 value = attr.Get()
-                if value and value.path.endswith(".vtk"):
-                    vtk_paths.append(value.path)
-                    print(f"Found VTK asset: {value.path}")
+                asset_path = getattr(value, "path", None)
+                if not asset_path:
+                    continue
+
+                raw_path = Path(asset_path)
+                if raw_path.suffix.lower() not in self._SUPPORTED_VTK_ASSET_EXTENSIONS:
+                    continue
+
+                vtk_paths.append(asset_path)
+                print(f"Found VTK asset: {asset_path}")
         return vtk_paths
+
+    @staticmethod
+    def _get_stage_base_dir(stage: "Usd.Stage") -> Path | None:
+        """Return the stage file directory when available."""
+        root_layer = getattr(stage, "GetRootLayer", None)
+        if root_layer is None:
+            return None
+
+        layer = root_layer()
+        real_path = getattr(layer, "realPath", None)
+        if not isinstance(real_path, str) or not real_path:
+            return None
+
+        return Path(real_path).resolve().parent
 
     def load_usd(self, path: str) -> "Usd.Stage":
         """Load a USD stage from a given file path.

@@ -8,10 +8,10 @@ from unittest.mock import patch
 
 import pytest
 
-from ansys.tools.usdviewer.web.viewer import export_viewer_html
+from ansys.tools.usdviewer.web.html_export import export_viewer_html
 
 
-@patch("ansys.tools.usdviewer.web.viewer._prepare_source_for_web")
+@patch("ansys.tools.usdviewer.web.html_export._prepare_source_for_web")
 def test_export_viewer_html_default_output_path(mock_prepare, tmp_path):
     """Test that export_viewer_html writes the HTML alongside the input file by default."""
     usda_path = tmp_path / "scene.usda"
@@ -26,7 +26,7 @@ def test_export_viewer_html_default_output_path(mock_prepare, tmp_path):
     assert "glbBase64" in html
 
 
-@patch("ansys.tools.usdviewer.web.viewer._prepare_source_for_web")
+@patch("ansys.tools.usdviewer.web.html_export._prepare_source_for_web")
 def test_export_viewer_html_explicit_output_path(mock_prepare, tmp_path):
     """Test that export_viewer_html respects an explicit output path."""
     usda_path = tmp_path / "scene.usda"
@@ -58,7 +58,7 @@ def test_export_viewer_html_unsupported_extension_raises(tmp_path):
 @patch("pxr.Usd.Stage.Open")
 def test_prepare_source_for_web_converts_vtk_assets(mock_stage_open, tmp_path):
     """Test that VTK assets referenced by custom Asset attributes are converted."""
-    from ansys.tools.usdviewer.web.viewer import _prepare_source_for_web
+    from ansys.tools.usdviewer.web.html_export import _prepare_source_for_web
 
     input_file = tmp_path / "scene_vtk.usda"
     input_file.write_text("#usda 1.0", encoding="utf-8")
@@ -80,7 +80,7 @@ def test_prepare_source_for_web_converts_vtk_assets(mock_stage_open, tmp_path):
     mock_stage_open.return_value = MockStage()
 
     with patch(
-        "ansys.tools.usdviewer.web.viewer.VTKConverter.load_asset", return_value=mock_stage_open.return_value
+        "ansys.tools.usdviewer.web.html_export.VTKConverter.load_asset", return_value=mock_stage_open.return_value
     ) as mock_load_asset:
         prepared = _prepare_source_for_web(input_file, tmp_path)
 
