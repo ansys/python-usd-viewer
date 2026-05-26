@@ -285,7 +285,8 @@ def _apply_preview_surface_textures(
     ----------
     shader : Any
         The UsdPreviewSurface shader to check for texture connections.
-        material : Any
+    material : Any
+        The GLTF material to modify with texture references.
     gltf : Any
         The glTF document to modify with new textures, images, and samplers as needed.
     builder : GLBBuilder
