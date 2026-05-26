@@ -23,8 +23,4 @@
 
 import importlib.metadata as importlib_metadata
 
-from ansys.tools.usdviewer.web.html_export import export_viewer_html
-
 __version__ = importlib_metadata.version(__name__.replace(".", "-"))
-
-__all__ = ["__version__", "export_viewer_html"]

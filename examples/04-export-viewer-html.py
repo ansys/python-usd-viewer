@@ -65,7 +65,7 @@ if __name__ == "__main__":
     page_path = source.parent / f"{source.stem}_page.html"
     page_path.write_text(
         _PAGE_TEMPLATE.format(
-            title=f"{source.name} – USD Viewer",
+            title=f"{source.name} - USD Viewer",
             model_name=source.name,
             viewer_filename=viewer_path.name,
         ),
