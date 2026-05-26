@@ -134,12 +134,12 @@ def _get_connected_shader_input(shader: Any, input_name: str) -> tuple[Any, str]
     return source_shader, output_name
 
 
-def _map_wrap_mode(token: Any) -> int:
+def _map_wrap_mode(wrap_mode: Any) -> int:
     """Map USD wrap token to glTF sampler wrap mode.
 
     Parameters
     ----------
-    token : Any
+    wrap_mode : Any
         The USD token representing the wrap mode (e.g., "repeat", "mirror", "clamp").
 
     Returns
@@ -147,9 +147,9 @@ def _map_wrap_mode(token: Any) -> int:
     int
         The corresponding glTF wrap mode constant (e.g., pygltflib.REPEAT).
     """
-    if token == "repeat":
+    if wrap_mode == "repeat":
         return pygltflib.REPEAT
-    if token == "mirror":
+    if wrap_mode == "mirror":
         return pygltflib.MIRRORED_REPEAT
     return pygltflib.CLAMP_TO_EDGE
 
