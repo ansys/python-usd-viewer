@@ -2109,7 +2109,7 @@ wheels = [
 
 [[package]]
 name = "vtk"
-version = "9.6.1"
+version = "9.6.2"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "matplotlib" },
