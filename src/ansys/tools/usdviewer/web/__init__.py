@@ -19,19 +19,9 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-"""
-.. _ref_plain_usd_view:
 
-=============================
-Plain usage of the USD Viewer
-=============================
+"""Web viewer package exports."""
 
-This example shows the plain usage of the USD Viewer.
-"""
-from ansys.tools.usdviewer.viewer import USDViewer
+from ansys.tools.usdviewer.web.html_export import export_viewer_html
 
-# Load USD file
-path = r"assets/display_color_vertex.usda"
-viewer = USDViewer(title="USD Viewer", size=(800, 800))
-viewer.load_usd(path)
-viewer.show()
+__all__ = ["export_viewer_html"]

@@ -36,13 +36,13 @@ from pxr import Usd
 import pyvista
 
 # Read a simple VTK file
-sphere = pyvista.read("sphere.vtk")
+sphere = pyvista.read("assets/sphere.vtk")
 
 # Create a new USD stage
 stage = Usd.Stage.CreateNew("sphere.usda")
 
 # Convert VTK to USD and add to stage
-stage = VTKConverter.convert_vtk_file_to_usd("sphere.vtk", stage)
+stage = VTKConverter.convert_vtk_file_to_usd("assets/sphere.vtk", stage)
 
 # View the USD file in the USD Viewer
 viewer = USDViewer(title="USD Viewer", size=(800, 800))

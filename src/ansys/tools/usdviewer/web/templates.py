@@ -19,19 +19,28 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-"""
-.. _ref_plain_usd_view:
 
-=============================
-Plain usage of the USD Viewer
-=============================
+"""HTML template rendering helpers for web viewer export."""
 
-This example shows the plain usage of the USD Viewer.
-"""
-from ansys.tools.usdviewer.viewer import USDViewer
+from __future__ import annotations
 
-# Load USD file
-path = r"assets/display_color_vertex.usda"
-viewer = USDViewer(title="USD Viewer", size=(800, 800))
-viewer.load_usd(path)
-viewer.show()
+import json
+from pathlib import Path
+
+_GLB_TEMPLATE_FILE = "glb_template.html"
+
+
+def build_viewer_html_glb(glb_b64: str, model_name: str) -> str:
+    """Build a self-contained HTML viewer that renders a base64-encoded GLB."""
+    template = _load_template(_GLB_TEMPLATE_FILE)
+    return template.replace("__MODEL_NAME_JSON__", json.dumps(model_name)).replace(
+        "__GLB_B64_JSON__", json.dumps(glb_b64)
+    )
+
+
+def _load_template(template_name: str) -> str:
+    """Load a viewer HTML template from the package directory."""
+    template_path = Path(__file__).with_name(template_name)
+    if not template_path.exists():
+        raise RuntimeError(f"Viewer template not found: {template_path}")
+    return template_path.read_text(encoding="utf-8")
