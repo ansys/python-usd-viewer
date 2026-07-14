@@ -36,3 +36,11 @@ updates:
       - "pyansys-ci-bot"
     commit-message:
       prefix: "ci"
+
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    cooldown:
+      default-days: 7
+    open-pull-requests-limit: 10
