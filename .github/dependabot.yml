@@ -22,11 +22,18 @@ updates:
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
-      interval: "weekly"
+      interval: "daily"
     cooldown:
       default-days: 7
-    open-pull-requests-limit: 10
+      exclude:
+        - "ansys/actions/*"
+    labels:
+      - "maintenance"
+    assignees:
+      - "pyansys-ci-bot"
+    commit-message:
+      prefix: "ci"
     groups:
-      actions:
-        patterns:
-          - "*"
+       actions:
+          patterns:
+            - "*"
