@@ -31,7 +31,6 @@ dependencies = [
   "pyopengl", # OpenUSD build dep
   "pyside6", # OpenUSD build dep
   "vtk",
-  "pygltflib",
 ]
 scripts.usd-setup = "ansys.tools.usdviewer.autosetup:main"
 
@@ -70,7 +69,6 @@ tests = [
 
 [tool.hatch.build.targets.wheel]
 packages = [ "src/ansys" ]
-include = [ "src/ansys/tools/usdviewer/web/*.html" ]
 
 [tool.ruff]
 line-length = 120
