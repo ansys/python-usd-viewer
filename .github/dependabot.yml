@@ -25,14 +25,15 @@ updates:
       interval: "daily"
     cooldown:
       default-days: 7
-      include:
-        - "*"
       exclude:
         - "ansys/actions/*"
     labels:
       - "maintenance"
-      - "dependencies"
     assignees:
       - "pyansys-ci-bot"
     commit-message:
       prefix: "ci"
+    groups:
+      actions:
+        patterns:
+          - "*"

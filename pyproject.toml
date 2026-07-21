@@ -31,6 +31,7 @@ dependencies = [
   "pyopengl", # OpenUSD build dep
   "pyside6", # OpenUSD build dep
   "vtk",
+  "pygltflib",
 ]
 scripts.usd-setup = "ansys.tools.usdviewer.autosetup:main"
 
@@ -52,7 +53,7 @@ dev = [
   { include-group = "tests" },
 ]
 doc = [
-  "ansys-sphinx-theme[autoapi]==1.8.1",
+  "ansys-sphinx-theme[autoapi]==1.9.0",
   "sphinx-click==6.2.0",
   "sphinx-copybutton==0.5.2",
   "sphinx-gallery==0.21.0",
@@ -61,7 +62,7 @@ examples = [
   "pyvista",
 ]
 tests = [
-  "pytest==9.0.3",
+  "pytest==9.1.1",
   "pytest-cov==7.1.0",
   "pytest-pyvista==0.3.3",
   "pyvista==0.47.0",
@@ -69,6 +70,7 @@ tests = [
 
 [tool.hatch.build.targets.wheel]
 packages = [ "src/ansys" ]
+include = [ "src/ansys/tools/usdviewer/web/*.html" ]
 
 [tool.ruff]
 line-length = 120
