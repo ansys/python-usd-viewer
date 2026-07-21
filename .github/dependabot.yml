@@ -34,6 +34,6 @@ updates:
     commit-message:
       prefix: "ci"
     groups:
-       actions:
-          patterns:
-            - "*"
+      actions:
+        patterns:
+          - "*"
