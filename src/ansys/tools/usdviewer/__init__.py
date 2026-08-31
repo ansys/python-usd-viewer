@@ -22,5 +22,14 @@
 """USD Viewer main module."""
 
 import importlib.metadata as importlib_metadata
+import os
 
 __version__ = importlib_metadata.version(__name__.replace(".", "-"))
+
+# When True, the viewer window is not shown. Useful for CI/CD, testing, and doc generation.
+# Can be set programmatically or via the USD_VIEWER_OFF_SCREEN environment variable.
+OFF_SCREEN: bool = os.environ.get("USD_VIEWER_OFF_SCREEN", "false").lower() == "true"
+
+# When True, indicates the viewer is being used to build a Sphinx gallery.
+# Implies off-screen rendering. Can be set via the USD_VIEWER_BUILDING_GALLERY env variable.
+BUILDING_GALLERY: bool = os.environ.get("USD_VIEWER_BUILDING_GALLERY", "false").lower() == "true"

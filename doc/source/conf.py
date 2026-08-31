@@ -7,7 +7,15 @@ from ansys_sphinx_theme import (
     get_version_match,
 )
 
+import ansys.tools.usdviewer as usdviewer
 from ansys.tools.usdviewer import __version__
+
+# Enable off-screen and gallery mode for the documentation build so that
+# example scripts run without opening a display (mirrors PyVista's pattern).
+os.environ["USD_VIEWER_OFF_SCREEN"] = "true"
+os.environ["USD_VIEWER_BUILDING_GALLERY"] = "true"
+usdviewer.OFF_SCREEN = True
+usdviewer.BUILDING_GALLERY = True
 
 # Project information
 project = "ansys-tools-usdviewer"
