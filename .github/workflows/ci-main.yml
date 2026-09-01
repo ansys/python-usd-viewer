@@ -22,7 +22,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Run Ansys documentation building action
-        uses: ansys/actions/doc-build@21c78f8b27683ae8c93557345392abe39ab21d2f # v11.0.4
+        uses: ansys/actions/doc-build@7e7af221736bc4d9fb84a2ab28f99518e9bca84c # v11.0.5
         with:
           group-dependencies-name: "doc"
           check-links: false
