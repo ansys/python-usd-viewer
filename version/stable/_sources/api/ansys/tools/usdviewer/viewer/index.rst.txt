@@ -1,0 +1,85 @@
+
+
+
+
+
+
+The ``viewer.py`` module
+========================
+
+.. py:module:: ansys.tools.usdviewer.viewer
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+
+
+
+
+.. py:currentmodule:: viewer
+.. tab-set::
+
+
+
+
+    .. tab-item:: Classes
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~ansys.tools.usdviewer.viewer.Widget`
+            - USD Viewer widget to display USD stages in the Qt app.
+
+
+          * - :py:obj:`~ansys.tools.usdviewer.viewer.USDViewer`
+            - USD Viewer to load and display USD files in a Qt window.
+
+
+
+
+
+
+
+
+
+
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    <span class="nf nf-cod-symbol_class"></span> Widget</api/ansys/tools/usdviewer/viewer/Widget>
+    <span class="nf nf-cod-symbol_class"></span> USDViewer</api/ansys/tools/usdviewer/viewer/USDViewer>
+
+
+
+
+
+
+
+
+
+Description
+-----------
+
+USD Viewer main module.
+
+
+
+
+
+
+
+
