@@ -1,0 +1,175 @@
+
+
+
+
+
+
+:class:`VTKConverter`
+=====================
+
+
+.. py:class:: ansys.tools.usdviewer.vtk_converter.VTKConverter
+
+   Convert VTK files to USD format for visualization.
+
+
+
+
+
+
+
+
+.. py:currentmodule:: VTKConverter
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~load_asset`
+            - Load a VTK asset into a given stage.
+
+
+
+
+   .. tab-item:: Static methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~convert_vtk_file_to_usd`
+            - Convert a VTK file to a USD file.
+          * - :py:attr:`~convert_vtk_to_usd`
+            - Convert a VTK file to a USD stage.
+          * - :py:attr:`~get_vtk_reader`
+            - Get the appropriate VTK reader based on the file extension.
+          * - :py:attr:`~convert_polydata_to_usd_mesh`
+            - Convert VTK polydata to USD mesh geometry.
+          * - :py:attr:`~convert_usd_to_vtk`
+            - Convert a USD mesh to VTK polydata.
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from ansys.tools.usdviewer.vtk_converter import VTKConverter
+
+
+
+Method detail
+-------------
+
+.. py:method:: convert_vtk_file_to_usd(vtk_file_path: Union[str, pathlib.Path], stage: pxr.Usd.Stage = None) -> None
+   :staticmethod:
+
+
+   Convert a VTK file to a USD file.
+
+   Parameters
+   ----------
+   vtk_file_path : Union[str, Path]
+       Path to the VTK file to convert.
+   stage : Usd.Stage
+       Stage to add the converted USD data to.
+
+
+.. py:method:: convert_vtk_to_usd(data: vtk.vtkDataSet, stage: pxr.Usd.Stage = None, mesh_name: str = 'VTKMesh') -> pxr.Usd.Stage
+   :staticmethod:
+
+
+   Convert a VTK file to a USD stage.
+
+   Parameters
+   ----------
+   vtk_file_path : Union[str, Path]
+       Path to the VTK file to convert.
+   stage : Usd.Stage
+       Stage to add the VTK data to.
+
+   Returns
+   -------
+   Usd.Stage
+       Stage containing the VTK data.
+
+
+.. py:method:: get_vtk_reader(file_path: pathlib.Path) -> vtk.vtkAlgorithm
+   :staticmethod:
+
+
+   Get the appropriate VTK reader based on the file extension.
+
+   Parameters
+   ----------
+   file_path : Path
+       Path to the VTK file.
+
+
+.. py:method:: convert_polydata_to_usd_mesh(polydata: vtk.vtkPolyData, stage: pxr.Usd.Stage = None, mesh_name: str = 'VTKMesh') -> None
+   :staticmethod:
+
+
+   Convert VTK polydata to USD mesh geometry.
+
+   Parameters
+   ----------
+   polydata : vtk.vtkPolyData
+       VTK polydata to convert.
+   stage : Usd.Stage
+       USD stage to add the mesh to.
+   mesh_name : str, default: ``"VTKMesh"``
+       Name of the mesh in USD.
+
+
+.. py:method:: convert_usd_to_vtk(stage: pxr.Usd.Stage, mesh_path: Optional[str] = None) -> Optional[vtk.vtkPolyData]
+   :staticmethod:
+
+
+   Convert a USD mesh to VTK polydata.
+
+   Parameters
+   ----------
+   stage : Usd.Stage
+       USD stage containing the mesh.
+   mesh_path : str, default: None
+       Path to the mesh in USD. If ``None``, the first mesh in the stage is used.
+
+   Returns
+   -------
+   Optional[vtk.vtkPolyData]
+       Converted VTK polydata or ``None`` if conversion failed.
+
+
+.. py:method:: load_asset(asset_path: str, stage: pxr.Usd.Stage) -> Optional[pxr.Usd.Stage]
+
+   Load a VTK asset into a given stage.
+
+   Parameters
+   ----------
+   asset_path : str
+       Path to the asset file.
+   stage : Usd.Stage
+       Stage to add the asset to.
+
+   Returns
+   -------
+   Optional[Usd.Stage]
+       Stage with the loaded asset or ``None`` if loading failed.
+
+
+
+
+
