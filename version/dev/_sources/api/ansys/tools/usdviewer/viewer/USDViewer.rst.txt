@@ -1,0 +1,112 @@
+
+
+
+
+
+
+:class:`USDViewer`
+==================
+
+
+.. py:class:: ansys.tools.usdviewer.viewer.USDViewer(title: str = 'Viewer', size: tuple[int, int] = (750, 750))
+
+   USD Viewer to load and display USD files in a Qt window.
+
+   Parameters
+   ----------
+   title : str, default: ``"Viewer"``
+       Title of the viewer window.
+   size : tuple[int, int], default: ``(750, 750)``
+       Size of the viewer window in this format: ``(width, height)``.
+
+
+
+.. py:currentmodule:: USDViewer
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~plot`
+            - Plot the given USD stage in the viewer window.
+          * - :py:attr:`~show`
+            - Show the USD Viewer window.
+          * - :py:attr:`~load_usd`
+            - Load a USD stage from a given file path.
+          * - :py:attr:`~load_asset`
+            - Load any supported asset (such as USD or VTK) as a USD stage.
+
+
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from ansys.tools.usdviewer.viewer import USDViewer
+
+
+
+Method detail
+-------------
+
+.. py:method:: plot(stage: pxr.Usd.Stage) -> None
+
+   Plot the given USD stage in the viewer window.
+
+   Parameters
+   ----------
+   stage : Usd.Stage
+       USD stage to display.
+
+
+
+.. py:method:: show() -> None
+
+   Show the USD Viewer window.
+
+   Displays the USD Viewer window and starts the Qt app event loop.
+
+
+.. py:method:: load_usd(path: str) -> pxr.Usd.Stage
+
+   Load a USD stage from a given file path.
+
+   Parameters
+   ----------
+   path : str
+       File path to the USD file.
+
+
+.. py:method:: load_asset(asset_path: str) -> pxr.Usd.Stage
+
+   Load any supported asset (such as USD or VTK) as a USD stage.
+
+   Parameters
+   ----------
+   asset_path : str
+       Path to the asset file. File options include USD, VTK, OBJ, PLY, and STL.
+
+   Returns
+   -------
+   Usd.Stage
+       Loaded USD stage.
+
+
+
+
+
