@@ -1,0 +1,103 @@
+
+
+
+
+
+
+The ``ansys.tools.usdviewer`` library
+=====================================
+
+.. py:module:: ansys.tools.usdviewer
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+.. py:currentmodule:: usdviewer
+.. tab-set::
+
+
+    .. tab-item:: Submodules
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~ansys.tools.usdviewer.autosetup`
+            - Auto-setup script for OpenUSD installation.
+
+
+          * - :py:obj:`~ansys.tools.usdviewer.viewer`
+            - USD Viewer main module.
+
+
+          * - :py:obj:`~ansys.tools.usdviewer.vtk_converter`
+            - Asset resolver for handling various file types and USD asset paths.
+
+
+
+
+
+
+
+
+    .. tab-item:: Attributes
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~__version__`
+            - 
+
+
+
+
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    <span class="nf nf-fa-file"></span> autosetup</api/ansys/tools/usdviewer/autosetup/index>
+    <span class="nf nf-fa-file"></span> viewer</api/ansys/tools/usdviewer/viewer/index>
+    <span class="nf nf-fa-file"></span> vtk_converter</api/ansys/tools/usdviewer/vtk_converter/index>
+
+
+
+
+
+
+
+
+
+
+
+Description
+-----------
+
+USD Viewer main module.
+
+
+
+
+
+
+
+Module detail
+-------------
+
+.. py:data:: __version__
+
+
+
