@@ -28,6 +28,8 @@ from unittest.mock import MagicMock
 import pytest
 import pyvista
 
+import ansys.tools.usdviewer as usdviewer
+
 # Check if real pxr is available
 PXR_AVAILABLE = True
 try:
@@ -105,6 +107,13 @@ def configure_pyvista():
     pyvista.set_plot_theme("document")
 
     return pyvista
+
+
+@pytest.fixture(scope="session", autouse=True)
+def configure_usdviewer():
+    """Configure the USD viewer for testing."""
+    usdviewer.OFF_SCREEN = True
+    return usdviewer
 
 
 # Mark for skipping tests that require real OpenUSD
