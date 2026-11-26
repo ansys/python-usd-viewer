@@ -1,0 +1,95 @@
+
+
+
+
+
+
+:class:`Widget`
+===============
+
+
+.. py:class:: ansys.tools.usdviewer.viewer.Widget(stage=None)
+
+   Bases: :py:obj:`PySide6.QtWidgets.QWidget`
+
+
+   USD Viewer widget to display USD stages in the Qt app.
+
+   Parameters
+   ----------
+   stage : Usd.Stage, optional
+       USD stage to display.
+
+
+
+.. py:currentmodule:: Widget
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~setStage`
+            - Set the USD stage to display.
+          * - :py:attr:`~closeEvent`
+            - Handle the close event to clean up resources.
+
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~model`
+            - 
+          * - :py:attr:`~view`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from ansys.tools.usdviewer.viewer import Widget
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: model
+
+.. py:attribute:: view
+
+
+
+Method detail
+-------------
+
+.. py:method:: setStage(stage)
+
+   Set the USD stage to display.
+
+
+.. py:method:: closeEvent(event)
+
+   Handle the close event to clean up resources.
+
+
+
+
+
